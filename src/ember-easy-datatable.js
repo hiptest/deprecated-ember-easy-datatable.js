@@ -88,7 +88,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   moveUp: function () {
     var table = this.get('table'),
-      selectedCell = table.find('th:focus, td:focus'),
+      selectedCell = this.getSelectedCell(),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell);
 
@@ -102,7 +102,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   moveDown: function () {
     var table = this.get('table'),
-      selectedCell = table.find('th:focus, td:focus'),
+      selectedCell = this.getSelectedCell(),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell),
       rowCount = table.find('tbody tr').length;
@@ -117,7 +117,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   moveRight: function () {
     var table = this.get('table'),
-      selectedCell = table.find('th:focus, td:focus'),
+      selectedCell = this.getSelectedCell(),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell),
       rowCount = table.find('tbody tr').length,
@@ -137,8 +137,7 @@ Ember.EasyDatatable = Ember.Object.extend({
   },
 
   moveLeft: function () {
-    var table = this.get('table'),
-      selectedCell = table.find('th:focus, td:focus'),
+    var selectedCell = this.getSelectedCell(),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell);
 
@@ -164,6 +163,13 @@ Ember.EasyDatatable = Ember.Object.extend({
       destinationRow = table.find('tbody tr:nth(%@)'.fmt(row));
     }
     destinationRow.find('th, td').eq(column).focus();
+  },
+
+  getSelectedCell: function () {
+    var active = $(document.activeElement);
+    if (active.closest(this.get('table'))) {
+      return active;
+    }
   },
 
   getColumnFor: function (element) {

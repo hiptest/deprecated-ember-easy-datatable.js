@@ -5,9 +5,9 @@
         .append('<table id="%@"><thead>%@</thead><tbody>%@</tbody></table>'.fmt(
           'sample1',
           '<tr><th></th><th>Name</th><th>Value 1</th><th>Value 2</th><th>Value 3</th>',
-          [0, 1, 2, 3].map(function () {
+          [0, 1, 2, 3].map(function (index) {
             return '<tr><th>#%@</th><td>Row %@</td><td>%@</td><td>%@</td><td>%@</th>'.fmt(
-              this, this, this, 10 + this, 20 + this
+              index, index, index, 10 + index, 20 + index
             )
           }).join('')
         ))
@@ -18,7 +18,7 @@
     }
   });
 
-  test('table', function () {
+  test('table property', function () {
     var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
 
     deepEqual(sut.get('table'), $('#sample1'), 'Provides the table selected with jQuery');
@@ -34,8 +34,6 @@
     equal(tabIndexes.length, 25, 'Each cell got a tabIndex after creation of the EasyDatatable');
     deepEqual(tabIndexes.uniq(), ['3.14'], 'The value at the object creation is used')
   });
-
-
 
   function getTabindex(selector) {
     return $(selector).find('td, th').map(function () {
