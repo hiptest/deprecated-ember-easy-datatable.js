@@ -1,5 +1,4 @@
 Ember.EasyDatatable = Ember.Object.extend({
-  table: null,
   tableSelector: '',
 
   selectionClass: 'selected',
@@ -45,7 +44,7 @@ Ember.EasyDatatable = Ember.Object.extend({
       })
       .on('blur', function () {
         self.set('selectedRow', null);
-      })
+      });
   }.on('init'),
 
   notifyCellSelection: function () {
@@ -69,9 +68,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     this.get('table').find('td, th')
       .on('keydown', function (event) {
-        if (event.ctrlKey) {
-
-        } else {
+        if (!event.ctrlKey) {
           self.move(event);
         }
       })
@@ -93,8 +90,7 @@ Ember.EasyDatatable = Ember.Object.extend({
     var table = this.get('table'),
       selectedCell = table.find('th:focus, td:focus'),
       row = this.getRowFor(selectedCell),
-      column = this.getColumnFor(selectedCell),
-      destinationRow = null;
+      column = this.getColumnFor(selectedCell);
 
     if (row === -1) {
       selectedCell.blur();
@@ -109,8 +105,7 @@ Ember.EasyDatatable = Ember.Object.extend({
       selectedCell = table.find('th:focus, td:focus'),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell),
-      rowCount = table.find('tbody tr').length,
-      destinationRow = null;
+      rowCount = table.find('tbody tr').length;
 
     if (row === rowCount -1) {
       selectedCell.blur();
@@ -126,8 +121,7 @@ Ember.EasyDatatable = Ember.Object.extend({
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell),
       rowCount = table.find('tbody tr').length,
-      columnCount = selectedCell.closest('tr').find('td, th').length,
-      destinationRow = null;
+      columnCount = selectedCell.closest('tr').find('td, th').length;
 
     if (column === columnCount - 1) {
       row += 1;
@@ -146,9 +140,7 @@ Ember.EasyDatatable = Ember.Object.extend({
     var table = this.get('table'),
       selectedCell = table.find('th:focus, td:focus'),
       row = this.getRowFor(selectedCell),
-      column = this.getColumnFor(selectedCell),
-      rowCount = table.find('tbody tr').length,
-      destinationRow = null;
+      column = this.getColumnFor(selectedCell);
 
     if (column === 0) {
       if (row === - 1) {
@@ -181,4 +173,4 @@ Ember.EasyDatatable = Ember.Object.extend({
   getRowFor: function(element) {
     return element.closest('tbody').find('tr').index(element.closest('tr'));
   }
-})
+});
