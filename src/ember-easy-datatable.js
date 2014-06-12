@@ -8,6 +8,17 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   tabindex: 1,
 
+  keyCodes: {
+    ARROW_LEFT: 37,
+    ARROW_UP: 38,
+    ARROW_RIGHT: 39,
+    ARROW_DOWN: 40,
+    ENTER: 13,
+    TAB: 9,
+    ESC: 27,
+    DEL: 46
+  },
+
   table: function () {
     return $(this.get('tableSelector'));
   }.property('tableSelector'),
@@ -22,10 +33,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     table.find('thead th')
       .on('focus', function () {
-        var th = $(this),
-          selectedColumn = th.index('%@ thead th'.fmt(self.get('tableSelector')));
-
-        self.set('selectedColumn', selectedColumn);
+        self.set('selectedColumn', self.getColumnFor($(this)));
       })
       .on('blur', function () {
         self.set('selectedColumn', null);
@@ -33,17 +41,14 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     table.find('tbody th')
       .on('focus', function () {
-        var row = $(this).closest('tr'),
-          selectedRow = row.index('%@ tbody tr'.fmt(self.get('tableSelector')));
-
-        self.set('selectedRow', selectedRow);
+        self.set('selectedRow', self.getRowFor($(this)));
       })
       .on('blur', function () {
         self.set('selectedRow', null);
       })
   }.on('init'),
 
-  updateSelection: function () {
+  notifyCellSelection: function () {
     var table = this.get('table'),
       selectionClass = this.get('selectionClass'),
       selectedRow = this.get('selectedRow'),
@@ -57,5 +62,123 @@ Ember.EasyDatatable = Ember.Object.extend({
         $(this).find('th, td').eq(selectedColumn).addClass(selectionClass);
       });
     }
-  }.on('init').observes('selectedRow', 'selectedColumn')
+  }.on('init').observes('selectedRow', 'selectedColumn'),
+
+  bindKeydown: function () {
+    var self = this;
+
+    this.get('table').find('td, th')
+      .on('keydown', function (event) {
+        if (event.ctrlKey) {
+
+        } else {
+          self.move(event);
+        }
+      })
+  }.on('init'),
+
+  move: function (event) {
+    if (event.which === this.keyCodes.ARROW_UP) {
+      this.moveUp();
+    } else if (event.which === this.keyCodes.ARROW_DOWN) {
+      this.moveDown();
+    } else if (event.which === this.keyCodes.ARROW_RIGHT) {
+      this.moveRight();
+    } else if (event.which === this.keyCodes.ARROW_LEFT) {
+      this.moveLeft();
+    }
+  },
+
+  moveUp: function () {
+    var table = this.get('table'),
+      selectedCell = table.find('th:focus, td:focus'),
+      row = this.getRowFor(selectedCell),
+      column = this.getColumnFor(selectedCell),
+      destinationRow = null;
+
+    if (row === -1) {
+      selectedCell.blur();
+      return;
+    }
+
+    this.focusCell(row - 1, column);
+  },
+
+  moveDown: function () {
+    var table = this.get('table'),
+      selectedCell = table.find('th:focus, td:focus'),
+      row = this.getRowFor(selectedCell),
+      column = this.getColumnFor(selectedCell),
+      rowCount = table.find('tbody tr').length,
+      destinationRow = null;
+
+    if (row === rowCount -1) {
+      selectedCell.blur();
+      return;
+    }
+
+    this.focusCell(row + 1, column);
+  },
+
+  moveRight: function () {
+    var table = this.get('table'),
+      selectedCell = table.find('th:focus, td:focus'),
+      row = this.getRowFor(selectedCell),
+      column = this.getColumnFor(selectedCell),
+      rowCount = table.find('tbody tr').length,
+      columnCount = selectedCell.closest('tr').find('td, th').length,
+      destinationRow = null;
+
+    if (column === columnCount - 1) {
+      row += 1;
+      column = -1;
+    }
+
+    if (row === rowCount) {
+      selectedCell.blur();
+      return;
+    }
+
+    this.focusCell(row, column + 1);
+  },
+
+  moveLeft: function () {
+    var table = this.get('table'),
+      selectedCell = table.find('th:focus, td:focus'),
+      row = this.getRowFor(selectedCell),
+      column = this.getColumnFor(selectedCell),
+      rowCount = table.find('tbody tr').length,
+      destinationRow = null;
+
+    if (column === 0) {
+      if (row === - 1) {
+        selectedCell.blur();
+        return;
+      }
+
+      row -= 1;
+    }
+
+    this.focusCell(row, column - 1);
+  },
+
+  focusCell: function (row, column) {
+    var table = this.get('table'),
+      destinationRow = null;
+
+    if (row === -1) {
+      destinationRow = table.find('thead tr');
+    } else {
+      destinationRow = table.find('tbody tr:nth(%@)'.fmt(row));
+    }
+    destinationRow.find('th, td').eq(column).focus();
+  },
+
+  getColumnFor: function (element) {
+    return element.closest('tr').find('th, td').index(element);
+  },
+
+  getRowFor: function(element) {
+    return element.closest('tbody').find('tr').index(element.closest('tr'));
+  }
 })
