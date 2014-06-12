@@ -1,4 +1,4 @@
-easy-datatable.js
-=================
+ember-easy-datatable.js
+=======================
 
-Simple Javascript library to navigate/edit/order a table.
+Simple Javascript/Ember.js library to navigate/edit/order a table.
