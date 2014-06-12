@@ -10,7 +10,8 @@ module.exports = function(grunt) {
           disposeCollector: true,
           src: ['src/*.js'],
           instrumentedFiles: 'temp/',
-          lcovReport: 'report'
+          lcovReport: 'report',
+          linesThresholdPct: 95
         }
       },
       files: ['tests/index.html']
