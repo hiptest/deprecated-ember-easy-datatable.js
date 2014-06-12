@@ -10,7 +10,7 @@
     },
 
     teardown: function () {
-      $('#qunit-fixtures table').remove();
+      $('#qunit-fixtures').empty();
       jQuery.fn.blur.restore();
       sut.focusCell.restore();
     }
