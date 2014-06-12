@@ -71,7 +71,7 @@ Ember.EasyDatatable = Ember.Object.extend({
         if (!event.ctrlKey) {
           self.move(event);
         }
-      })
+      });
   }.on('init'),
 
   move: function (event) {
