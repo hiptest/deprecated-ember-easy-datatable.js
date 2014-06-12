@@ -1,16 +1,7 @@
 (function () {
   module(Ember.EasyDatatable.toString(), {
     setup: function () {
-      $('#qunit-fixtures')
-        .append('<table id="%@"><thead>%@</thead><tbody>%@</tbody></table>'.fmt(
-          'sample1',
-          '<tr><th></th><th>Name</th><th>Value 1</th><th>Value 2</th><th>Value 3</th>',
-          [0, 1, 2, 3].map(function (index) {
-            return '<tr><th>#%@</th><td>Row %@</td><td>%@</td><td>%@</td><td>%@</th>'.fmt(
-              index, index, index, 10 + index, 20 + index
-            )
-          }).join('')
-        ))
+      createSampleTable();
     },
 
     teardown: function () {
@@ -35,9 +26,26 @@
     deepEqual(tabIndexes.uniq(), ['3.14'], 'The value at the object creation is used')
   });
 
-  function getTabindex(selector) {
-    return $(selector).find('td, th').map(function () {
-      return $(this).attr('tabindex')
-    }).get();
-  }
+  test('notifyCellSelection', function () {
+    var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
+
+    deepEqual(getSelectedCellsText(), [],
+      'There is no cell marked as selected yet');
+
+    sut.set('selectedColumn', 2);
+    deepEqual(getSelectedCellsText(), ['Value 1', '0', '1', '2', '3'],
+      'Once the selectedColumn property is set, 5 cells are marked as selected ...');
+
+    sut.set('selectedColumn', null);
+    deepEqual(getSelectedCellsText(), [],
+      '... and selection is removed if it is set to null');
+
+    sut.set('selectedRow', 2);
+    deepEqual(getSelectedCellsText(), ['#2', 'Row 2', '2', '12', '22'],
+      'Setting the selectedRow property as the same effect on rows ...');
+
+    sut.set('selectedRow', null);
+    deepEqual(getSelectedCellsText(), [],
+      '... and also empties the selection when set to null');
+  });
 })();

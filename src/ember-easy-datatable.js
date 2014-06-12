@@ -87,8 +87,7 @@ Ember.EasyDatatable = Ember.Object.extend({
   },
 
   moveUp: function () {
-    var table = this.get('table'),
-      selectedCell = this.getSelectedCell(),
+    var selectedCell = this.getSelectedCell(),
       row = this.getRowFor(selectedCell),
       column = this.getColumnFor(selectedCell);
 
@@ -167,16 +166,20 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   getSelectedCell: function () {
     var active = $(document.activeElement);
-    if (active.closest(this.get('table'))) {
+    if (active && active.closest(this.get('table')).length == 1) {
       return active;
     }
   },
 
   getColumnFor: function (element) {
-    return element.closest('tr').find('th, td').index(element);
+    if (element) {
+      return element.closest('tr').find('th, td').index(element);
+    }
   },
 
   getRowFor: function(element) {
-    return element.closest('tbody').find('tr').index(element.closest('tr'));
+    if (element) {
+      return element.closest('tbody').find('tr').index(element.closest('tr'));
+    }
   }
 });
