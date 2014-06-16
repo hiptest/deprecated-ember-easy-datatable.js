@@ -18,6 +18,8 @@ Ember.EasyDatatable = Ember.Object.extend({
     DEL: 46
   },
 
+  editorShown: false,
+
   table: function () {
     return $(this.get('tableSelector'));
   }.property('tableSelector'),
@@ -45,7 +47,41 @@ Ember.EasyDatatable = Ember.Object.extend({
       .on('blur', function () {
         self.set('selectedRow', null);
       });
+
+    table.find('td, th')
+      .on('click', function () {
+        self.set('editorShown', false);
+        self.set('editorShown', true);
+      });
   }.on('init'),
+
+  addRemoveEditor: function () {
+    var selectedCell = this.getSelectedCell(),
+      self = this;
+
+    if (this.get('editorShown')) {
+      selectedCell.append('<input type="text" value="%@" />'.fmt(selectedCell.text()));
+      selectedCell
+        .find('input')
+        .focus()
+        .on('keydown', function (event) {
+          if (event.which === self.keyCodes.ESC) {
+            $(this).parent().focus();
+            self.set('editorShown', false);
+          }
+
+          if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
+            self.validateCellEdition($(this).val(), event);
+          }
+
+          if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
+            event.stopPropagation();
+          }
+        });
+    } else {
+      this.get('table').find('input').remove();
+    }
+  }.observes('editorShown'),
 
   notifyCellSelection: function () {
     var table = this.get('table'),
@@ -70,6 +106,10 @@ Ember.EasyDatatable = Ember.Object.extend({
       .on('keydown', function (event) {
         if (!event.ctrlKey) {
           self.move(event);
+
+          if (event.which === self.keyCodes.ENTER) {
+            self.set('editorShown', true);
+          }
         }
       });
   }.on('init'),
@@ -167,6 +207,9 @@ Ember.EasyDatatable = Ember.Object.extend({
   getSelectedCell: function () {
     var active = $(document.activeElement);
     if (active && active.closest(this.get('table')).length === 1) {
+      if (!active.is('td, th')) {
+        return active.closest('td, th');
+      }
       return active;
     }
   },
@@ -177,5 +220,15 @@ Ember.EasyDatatable = Ember.Object.extend({
 
   getRowFor: function(element) {
     return element.closest('tbody').find('tr').index(element.closest('tr'));
+  },
+
+  validateCellEdition: function (value, event) {
+    var cell = this.getSelectedCell();
+    cell.html(value).focus();
+
+    if (event.which === this.keyCodes.ENTER) {
+      event.stopPropagation();
+    }
+    this.set('editorShown', false);
   }
 });

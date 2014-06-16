@@ -26,6 +26,28 @@
     deepEqual(tabIndexes.uniq(), ['3.14'], 'The value at the object creation is used')
   });
 
+  test('addRemoveEditor', function () {
+    var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'}),
+      cell = $('table td:first');
+
+    sinon.stub(sut, 'getSelectedCell', function () {
+      return cell;
+    });
+
+    equal(sut.get('table').find('input').length, 0,
+      'There is no input in the table at the beginning')
+
+    sut.set('editorShown', true);
+    equal(cell.find('input').length, 1,
+      'If editorShown is set to true, an input field is added to the current cell')
+
+    sut.set('editorShown', false);
+    equal(sut.get('table').find('input').length, 0,
+      'If editorShown is set to false, input is removed from the dom');
+
+    sut.getSelectedCell.restore();
+  })
+
   test('notifyCellSelection', function () {
     var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
 
@@ -74,6 +96,13 @@
     cell.focus();
     deepEqual(sut.getSelectedCell().get(0), cell.get(0),
       'It gives the jQuery element of the focused object ...')
+
+    cell.append('<input type="text" />')
+      .find('input')
+      .focus()
+
+    deepEqual(sut.getSelectedCell().get(0), cell.get(0),
+      'If the focus is in an element inside a cell, we still return the cell');
 
     $('#qunit-fixtures')
       .append('<input type="text" />')
