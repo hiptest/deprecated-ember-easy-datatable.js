@@ -1,6 +1,6 @@
 function registerDatatableHelpers () {
   function getDatatable () {
-    return $('#qunit-fixtures table');
+    return $('#app table');
   }
 
   function getSelectedCell() {

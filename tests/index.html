@@ -6,7 +6,9 @@
   </head>
   <body>
     <div id="qunit"></div>
-    <div id="qunit-fixtures"></div>
+    <div id="qunit-fixtures">
+    </div>
+    <div id="app"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
@@ -17,7 +19,14 @@
     <script src="./unit/helpers.js"></script>
     <script src="./unit/ember-easy-datatable_test.js"></script>
     <script src="./unit/keyboard_navigation_test.js"></script>
+    <script>
+      App = Ember.Application.create({
+        rootElement: '#app'
+      });
+      App.setupForTesting();
+    </script>
     <script src="./integration/helpers.js"></script>
-    <script src="./integration/integration_test.js"></script>
+    <script src="./integration/keyboard_navigation_test.js"></script>
+    <script src="./integration/content_edition_test.js"></script>
   </body>
 </html>

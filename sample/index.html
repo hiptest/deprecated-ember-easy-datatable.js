@@ -1,33 +1,12 @@
 <html>
   <head>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      td.selected {
-        background-color: #d9f6fe;
-      }
-
-      th.selected {
-        background-color: #ffb93e;
-      }
-
-      th, td {
-        position: relative;
-      }
-
-      th input, td input {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-
-        width: 100%;
-        height: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
+    <script type="text/x-handlebars">
       <h1>Sample datatable</h1>
+      {{outlet}}
+    </script>
 
+    <script type="text/x-handlebars" data-template-name="index">
       <table id="sample1" class="table table-stripped">
         <thead>
           <tr>
@@ -69,13 +48,44 @@
           </tr>
         </tbody>
       </table>
+    </script>
+    <style>
+      td.selected {
+        background-color: #d9f6fe;
+      }
+
+      th.selected {
+        background-color: #ffb93e;
+      }
+
+      th, td {
+        position: relative;
+      }
+
+      th input, td input {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.5.1/ember.min.js"></script>
     <script src="../src/ember-easy-datatable.js"></script>
     <script>
-      Ember.EasyDatatable.create({tableSelector: '#sample1'});
+      App = Ember.Application.create();
+      App.IndexView = Ember.View.extend({
+        addDatatable: function () {
+          Ember.EasyDatatable.create({tableSelector: '#sample1'});
+        }.on('didInsertElement')
+      });
     </script>
   </body>
 </html>

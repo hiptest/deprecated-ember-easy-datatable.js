@@ -59,45 +59,47 @@ Ember.EasyDatatable = Ember.Object.extend({
     var selectedCell = this.getSelectedCell(),
       self = this;
 
-    if (this.get('editorShown')) {
-      selectedCell.append('<input type="text" value="%@" />'.fmt(selectedCell.text()));
-      selectedCell
-        .find('input')
-        .on('focus', function () {
-          var th = $(this).closest('th');
-          if (th.length === 0) {
-            return;
-          }
+    Ember.run(this, function () {
+      if (this.get('editorShown')) {
+        selectedCell
+          .append('<input type="text" value="%@" />'.fmt(selectedCell.text()))
+          .find('input')
+          .on('focus', function () {
+            var th = $(this).closest('th');
 
-          if ($(this).closest('thead').length === 1) {
-            self.set('selectedColumn', self.getColumnFor(th));
-          } else {
-            self.set('selectedRow', self.getRowFor(th));
-          }
-        })
-        .on('blur', function () {
-          self.set('selectedRow', null);
-          self.set('selectedColumn', null);
-        })
-        .on('keydown', function (event) {
-          if (event.which === self.keyCodes.ESC) {
-            $(this).parent().focus();
-            self.set('editorShown', false);
-          }
+            if (th.length === 0) {
+              return;
+            }
 
-          if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
-            self.validateCellEdition($(this).val(), event);
-          }
+            if ($(this).closest('thead').length === 1) {
+              self.set('selectedColumn', self.getColumnFor(th));
+            } else {
+              self.set('selectedRow', self.getRowFor(th));
+            }
+          })
+          .on('blur', function () {
+            self.set('selectedRow', null);
+            self.set('selectedColumn', null);
+          })
+          .on('keydown', function (event) {
+            if (event.which === self.keyCodes.ESC) {
+              $(this).parent().focus();
+              self.set('editorShown', false);
+            }
 
-          if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
-            event.stopPropagation();
-          }
-        })
-        .focus();
+            if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
+              self.validateCellEdition($(this).val(), event);
+            }
 
-    } else {
-      this.get('table').find('input').remove();
-    }
+            if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
+              event.stopPropagation();
+            }
+          })
+          .focus();
+      } else {
+        selectedCell.find('input').remove();
+      }
+    });
   }.observes('editorShown'),
 
   notifyCellSelection: function () {

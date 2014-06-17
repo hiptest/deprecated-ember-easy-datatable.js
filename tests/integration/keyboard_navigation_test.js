@@ -1,28 +1,20 @@
 (function () {
-  var sut, App = Ember.Application.create({
-    rootElement: '#qunit-fixtures'
-  });
-
-  App.setupForTesting();
-  registerDatatableHelpers();
-  App.injectTestHelpers();
-
-  Ember.Test.adapter = Ember.Test.QUnitAdapter.extend({
-    exception: function (error) {
-      console.log(error.stack);
-      this._super(error);
-    }
-  }).create();
-
-  module('%@: integration tests'.fmt(Ember.EasyDatatable.toString()), {
+  module('%@ integration - keyboard navigation'.fmt(Ember.EasyDatatable.toString()), {
     setup: function () {
-      createSampleTable();
-      sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
+      App.IndexView = Ember.View.extend({
+        template: Ember.Handlebars.compile(makeSampleTable()),
+
+        addDatatable: function () {
+          Ember.EasyDatatable.create({tableSelector: '#sample1'});
+        }.on('didInsertElement')
+      });
+
+      registerDatatableHelpers();
+      App.injectTestHelpers();
     },
 
     teardown: function () {
       App.reset();
-      $('#qunit-fixtures').empty();
     }
   });
 
@@ -87,67 +79,5 @@
         'Same thing it a <th> in the body')
       .clickOnDatatableCell(2, 3)
       .assertHightlightedCellsText([])
-  });
-
-  test('Content edition - click and edit', function () {
-    visit('/')
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
-      .clickOnDatatableCell(1, 1)
-      .typeInDatatable('This is my row')
-      .pressEnterInDatatable()
-      .assertDatatableContent([
-        ['This is my row', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ]);
-  });
-
-  test('Content edition - navigate, press enter and edit', function () {
-    visit('/')
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
-      .clickOnDatatableCell(1, 1)
-      .pressEscInDatatable()
-      .pressRightKeyInDatatable()
-      .pressDownKeyInDatatable()
-      .pressEnterInDatatable()
-      .typeInDatatable('My new value')
-      .pressEnterInDatatable()
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', 'My new value', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
-  });
-
-  test('Content edition - navigate, start typing to replace the cell content', function () {
-    visit('/')
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
-      .clickOnDatatableCell(1, 1)
-      .pressEscInDatatable()
-      .typeInDatatable('I type something without having an input')
-      .pressEnterInDatatable()
-      .assertDatatableContent([
-        ['I type something without having an input', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
   });
 })();
