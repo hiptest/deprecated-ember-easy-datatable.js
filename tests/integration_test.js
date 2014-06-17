@@ -89,7 +89,7 @@
       .assertHightlightedCellsText([])
   });
 
-  test('Content edition', function () {
+  test('Content edition - click and edit', function () {
     visit('/')
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],
@@ -98,24 +98,56 @@
         ['Row 3', '3', '13', '23']
       ])
       .clickOnDatatableCell(1, 1)
-      .fillInDatatable('This is my row')
+      .typeInDatatable('This is my row')
       .pressEnterInDatatable()
       .assertDatatableContent([
         ['This is my row', '0', '10', '20'],
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
+      ]);
+  });
+
+  test('Content edition - navigate, press enter and edit', function () {
+    visit('/')
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
       ])
+      .clickOnDatatableCell(1, 1)
+      .pressEscInDatatable()
       .pressRightKeyInDatatable()
       .pressDownKeyInDatatable()
       .pressEnterInDatatable()
-      .fillInDatatable('My new value')
+      .typeInDatatable('My new value')
       .pressEnterInDatatable()
       .assertDatatableContent([
-        ['This is my row', '0', '10', '20'],
+        ['Row 0', '0', '10', '20'],
         ['Row 1', 'My new value', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
       ])
-  })
+  });
+
+  // test('Content edition - navigate, start typing to replace the cell content', function () {
+  //   visit('/')
+  //     .assertDatatableContent([
+  //       ['Row 0', '0', '10', '20'],
+  //       ['Row 1', '1', '11', '21'],
+  //       ['Row 2', '2', '12', '22'],
+  //       ['Row 3', '3', '13', '23']
+  //     ])
+  //     .clickOnDatatableCell(1, 1)
+  //     .pressEscInDatatable()
+  //     .typeInDatatable('I type something without having an input')
+  //     .pressEnterInDatatable()
+  //     .assertDatatableContent([
+  //       ['Row 0', '0', '10', '20'],
+  //       ['Row 1', 'I type something without having an input', '11', '21'],
+  //       ['Row 2', '2', '12', '22'],
+  //       ['Row 3', '3', '13', '23']
+  //     ])
+  // });
 })();

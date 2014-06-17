@@ -55,16 +55,29 @@ function registerDatatableHelpers () {
   }
 
   Ember.Test.registerAsyncHelper('pressKey', function (app, keyCode, ctrlKey) {
-    // Does not eask for an element, send event to the currently focused element.
+    // Does not ask for an element, send event to the currently focused element.
     var
       $el = $(document.activeElement),
-      eventData = { which: keyCode, keyCode: keyCode, ctrlKey: ctrlKey || false },
+      eventData = {
+        which: keyCode,
+        keyCode: keyCode,
+        key: String.fromCharCode(keyCode),
+        ctrlKey: ctrlKey || false
+      },
       keyDownEvent = Ember.$.Event("keydown", eventData),
       keyUpEvent = Ember.$.Event("keyup", eventData);
 
     Ember.run(function () {
       $el.trigger(keyDownEvent);
       $el.trigger(keyUpEvent);
+
+      // Update input value if needed
+      if ($el.is('input[type=text]')) {
+        $el.val('%@%@%@'.fmt(
+          $el.val().slice(0, $el.get(0).selectionStart),
+          String.fromCharCode(keyCode),
+          $el.val().slice($el.get(0).selectionEnd)))
+      }
     });
     return wait(app);
   });
@@ -122,8 +135,14 @@ function registerDatatableHelpers () {
     return click(element);
   });
 
-  Ember.Test.registerAsyncHelper('fillInDatatable', function (app, value) {
-    return fillIn('table input', value);
+  Ember.Test.registerAsyncHelper('typeInDatatable', function (app, value) {
+    if (value === '') {
+      return wait(app);
+    }
+
+    return pressKey(value.charCodeAt(0)).then(function () {
+      return typeInDatatable(value.slice(1));
+    })
   });
 
   Ember.Test.registerAsyncHelper('pressEnterInDatatable', function (app) {
