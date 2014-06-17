@@ -107,7 +107,6 @@ function registerDatatableHelpers () {
   });
 
   Ember.Test.registerAsyncHelper('assertHightlightedCellsText', function (app, content, message) {
-    console.log($(document.activeElement), $('table').find('td.selected, th.selected'))
     var highlighted = $('table').find('td.selected, th.selected').map(function () {
       return $(this).text();
     }).get();
