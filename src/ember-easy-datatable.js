@@ -121,10 +121,12 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     this.get('table').find('td, th')
       .on('keydown', function (event) {
-        if (!event.ctrlKey) {
-          self.move(event);
+        var moved;
 
-          if (event.which === self.keyCodes.ENTER) {
+        if (!event.ctrlKey) {
+          moved = self.move(event);
+
+          if (!moved && event.which !== self.keyCodes.ESC) {
             self.set('editorShown', true);
           }
         }
@@ -134,13 +136,25 @@ Ember.EasyDatatable = Ember.Object.extend({
   move: function (event) {
     if (event.which === this.keyCodes.ARROW_UP) {
       this.moveUp();
-    } else if (event.which === this.keyCodes.ARROW_DOWN) {
-      this.moveDown();
-    } else if (event.which === this.keyCodes.ARROW_RIGHT) {
-      this.moveRight();
-    } else if (event.which === this.keyCodes.ARROW_LEFT) {
-      this.moveLeft();
+      return true;
     }
+
+    if (event.which === this.keyCodes.ARROW_DOWN) {
+      this.moveDown();
+      return true;
+    }
+
+    if (event.which === this.keyCodes.ARROW_RIGHT) {
+      this.moveRight();
+      return true;
+    }
+
+    if (event.which === this.keyCodes.ARROW_LEFT) {
+      this.moveLeft();
+      return true;
+    }
+
+    return (event.which === this.keyCodes.TAB);
   },
 
   moveUp: function () {

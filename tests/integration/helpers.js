@@ -30,15 +30,18 @@ function registerDatatableHelpers () {
       keyUpEvent = Ember.$.Event("keyup", eventData);
 
     Ember.run(function () {
+      var focused;
       $el.trigger(keyDownEvent);
       $el.trigger(keyUpEvent);
 
+      focused = $(document.activeElement);
+
       // Update input value if needed
-      if ($el.is('input[type=text]')) {
-        $el.val('%@%@%@'.fmt(
-          $el.val().slice(0, $el.get(0).selectionStart),
+      if (focused.is('input[type=text]')) {
+        focused.val('%@%@%@'.fmt(
+          focused.val().slice(0, focused.get(0).selectionStart),
           String.fromCharCode(keyCode),
-          $el.val().slice($el.get(0).selectionEnd)))
+          focused.val().slice(focused.get(0).selectionEnd)))
       }
     });
     return wait(app);
