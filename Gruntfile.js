@@ -17,10 +17,18 @@ module.exports = function(grunt) {
       files: ['tests/index.html']
     },
     jshint: {
-      all: ['src/*.js']
+      source: {
+        src: ['src/**/*.js']
+      },
+      tests: {
+        options: {
+          'debug': true,
+        },
+        src: ['tests/**/*.js'],
+      }
     }
   });
 
   grunt.registerTask('default', 'jshint');
   grunt.registerTask('travis', ['jshint',  'qunit']);
-}
+};

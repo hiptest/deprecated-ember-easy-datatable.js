@@ -5,9 +5,9 @@ function makeSampleTable() {
       [0, 1, 2, 3].map(function (index) {
         return '<tr><th>#%@</th><td>Row %@</td><td>%@</td><td>%@</td><td>%@</th>'.fmt(
           index, index, index, 10 + index, 20 + index
-        )
+        );
       }).join('')
-    )
+    );
 }
 
 function createSampleTable () {
@@ -16,13 +16,13 @@ function createSampleTable () {
 
 function getTabindex (selector) {
   return $(selector).find('td, th').map(function () {
-    return $(this).attr('tabindex')
+    return $(this).attr('tabindex');
   }).get();
 }
 
 function getSelectedCellsText () {
   return $('#sample1 .selected').map(function () {
-    return $(this).text()
+    return $(this).text();
   }).get();
 }
 
@@ -33,7 +33,7 @@ function selectCell (row, column, tableSelector) {
   if (row == -1) {
     selectedRow = $('%@ thead tr'.fmt(tableSelector));
   } else {
-    selectedRow = $('%@ tbody tr:nth(%@)'.fmt(tableSelector, row))
+    selectedRow = $('%@ tbody tr:nth(%@)'.fmt(tableSelector, row));
   }
 
   return selectedRow.find('th, td').eq(column).focus();

@@ -66,7 +66,7 @@
         ['Row 1', 'My new value', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
-      ])
+      ]);
   });
 
   test('navigate, start typing to replace the cell content', function () {
@@ -90,7 +90,7 @@
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
-      ])
+      ]);
   });
 
   test('cells with a class "protected" can not be edited', function () {

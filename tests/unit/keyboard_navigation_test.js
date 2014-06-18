@@ -43,7 +43,7 @@
       '... and as you could guess, the the left arrow keycode, it calls moveLeft. Yep it is full of surprises ....');
     ok(moved, '(and it returns true)');
 
-    moved = sut.move({which: 9})
+    moved = sut.move({which: 9});
     ok(sut.moveRight.calledOnce,
       'The tab key does not trigger moveRight, it uses the default browser behavior ...');
     ok(moved, '... but it still returns true');
@@ -111,7 +111,7 @@
   });
 
   test('moveLeft', function () {
-    var cell = selectCell(-1, 0)
+    var cell = selectCell(-1, 0);
     sut.moveLeft();
 
     ok(cell.blur.calledOnce,
@@ -120,13 +120,13 @@
       '... and do not try to focus another cell');
 
 
-    cell = selectCell(1, 2)
+    cell = selectCell(1, 2);
     sut.moveLeft();
 
     deepEqual(sut.focusCell.firstCall.args, [1, 1],
       'By default, we move to the cell on the left');
 
-    cell = selectCell(2, 0)
+    cell = selectCell(2, 0);
     sut.moveLeft();
     deepEqual(sut.focusCell.secondCall.args, [1, -1],
       'If the cell is the first one of the row, we focus the last one of the next row');

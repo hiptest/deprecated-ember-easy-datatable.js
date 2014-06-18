@@ -61,7 +61,7 @@
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
-      ])
+      ]);
   });
 
   test('Row header', function () {
@@ -82,7 +82,7 @@
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
       .assertCurrentCellHasNotError()
-      .assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22'])
+      .assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22']);
   });
 
   test('Column header', function () {
@@ -103,6 +103,6 @@
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
       .assertCurrentCellHasNotError()
-      .assertHightlightedCellsText(['Value 951', '10', '11', '12', '13'])
+      .assertHightlightedCellsText(['Value 951', '10', '11', '12', '13']);
   });
 })();

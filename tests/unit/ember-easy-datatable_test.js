@@ -23,7 +23,7 @@
     var tabIndexes = getTabindex('#sample1');
 
     equal(tabIndexes.length, 25, 'Each cell got a tabIndex after creation of the EasyDatatable');
-    deepEqual(tabIndexes.uniq(), ['3.14'], 'The value at the object creation is used')
+    deepEqual(tabIndexes.uniq(), ['3.14'], 'The value at the object creation is used');
   });
 
   test('addRemoveEditor', function () {
@@ -35,18 +35,18 @@
     });
 
     equal(sut.get('table').find('input').length, 0,
-      'There is no input in the table at the beginning')
+      'There is no input in the table at the beginning');
 
     sut.set('editorShown', true);
     equal(cell.find('input').length, 1,
-      'If editorShown is set to true, an input field is added to the current cell')
+      'If editorShown is set to true, an input field is added to the current cell');
 
     sut.set('editorShown', false);
     equal(sut.get('table').find('input').length, 0,
       'If editorShown is set to false, input is removed from the dom');
 
     sut.getSelectedCell.restore();
-  })
+  });
 
   test('notifyCellSelection', function () {
     var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
@@ -84,7 +84,7 @@
     // in the table there is one <th> at the beginning of each row, so the 3rd <td> is the
     // fourth cell.
     deepEqual(spy.secondCall.thisValue.get(0), $('#sample1 tbody tr:nth(2) td:nth(3)').get(0),
-      '... otherwise it uses the row from the tbody')
+      '... otherwise it uses the row from the tbody');
 
     jQuery.fn.focus.restore();
   });
@@ -95,11 +95,11 @@
 
     cell.focus();
     deepEqual(sut.getSelectedCell().get(0), cell.get(0),
-      'It gives the jQuery element of the focused object ...')
+      'It gives the jQuery element of the focused object ...');
 
     cell.append('<input type="text" />')
       .find('input')
-      .focus()
+      .focus();
 
     deepEqual(sut.getSelectedCell().get(0), cell.get(0),
       'If the focus is in an element inside a cell, we still return the cell');
@@ -121,7 +121,7 @@
 
     // Due to the <th> in each row, the 3rd <td> is the 4th cell.
     equal(sut.getColumnFor($('#sample1 tr:nth(3) td:nth(3)')), 4,
-      '... as expected')
+      '... as expected');
   });
 
   test('getRowFor', function () {

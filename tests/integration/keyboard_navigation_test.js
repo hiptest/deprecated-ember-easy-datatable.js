@@ -50,7 +50,7 @@
       .pressDownKeyInDatatable()
       .pressDownKeyInDatatable()
       .assertSelectedDatatableCell(2, 0,
-        'Navigation can also be done to the body <th> cells')
+        'Navigation can also be done to the body <th> cells');
   });
 
   test('Highliting on header selection', function () {
@@ -78,6 +78,6 @@
       .assertHightlightedCellsText(['#2', 'Row 2', '2', '12', '22'],
         'Same thing it a <th> in the body')
       .clickOnDatatableCell(2, 3)
-      .assertHightlightedCellsText([])
+      .assertHightlightedCellsText([]);
   });
 })();

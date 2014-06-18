@@ -26,7 +26,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
           focused.val('%@%@%@'.fmt(
             focused.val().slice(0, focused.get(0).selectionStart),
             String.fromCharCode(keyCode),
-            focused.val().slice(focused.get(0).selectionEnd)))
+            focused.val().slice(focused.get(0).selectionEnd)));
         }
       });
     },
@@ -36,7 +36,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
     },
 
     assertDatatableHeader: function (content, message) {
-      deepEqual(this.getDatatableHeaders(), content, message || 'Headers are correct')
+      deepEqual(this.getDatatableHeaders(), content, message || 'Headers are correct');
     },
 
     assertDatatableContent: function (content, message) {
@@ -81,32 +81,32 @@ DatatableIntegrationHelpers = Ember.Object.create({
     typeInDatatable: function (value) {
       if (value !== '') {
         return pressKey(value.charCodeAt(0))
-          .typeInDatatable(value.slice(1))
+          .typeInDatatable(value.slice(1));
       }
     },
 
     pressEnterInDatatable: function () {
-      return pressKey(13)
+      return pressKey(13);
     },
 
     pressEscInDatatable: function () {
-      return pressKey(27)
+      return pressKey(27);
     },
 
     pressUpKeyInDatatable: function () {
-      return pressKey(38)
+      return pressKey(38);
     },
 
     pressDownKeyInDatatable: function () {
-      return pressKey(40)
+      return pressKey(40);
     },
 
     pressRightKeyInDatatable: function () {
-      return pressKey(39)
+      return pressKey(39);
     },
 
     pressLeftKeyInDatatable: function () {
-      return pressKey(37)
+      return pressKey(37);
     }
   },
 
@@ -122,7 +122,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
         return result || wait(app);
       });
-    })
+    });
   },
 
   getDatatable: function () {
@@ -139,7 +139,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
       column = rowElement.find('td, th').index(selected),
       row = rowElement.closest('table').find('tr').index(rowElement);
 
-    return {row: row, column: column}
+    return {row: row, column: column};
   },
 
   getDatatableHeaders: function () {
