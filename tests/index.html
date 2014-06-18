@@ -16,10 +16,6 @@
     <script src="http://builds.emberjs.com/release/ember.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/1.7.3/sinon-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qunit/1.14.0/qunit.min.js"></script>
-    <script src="../src/ember-easy-datatable.js"></script>
-    <script src="./unit/helpers.js"></script>
-    <script src="./unit/ember-easy-datatable_test.js"></script>
-    <script src="./unit/keyboard_navigation_test.js"></script>
     <script>
       Ember.Test.adapter = Ember.Test.QUnitAdapter.extend({
         exception: function (error) {
@@ -27,7 +23,12 @@
           this._super(error);
         }
       }).create();
-
+    </script>
+    <script src="../dist/ember-easy-datatable.js"></script>
+    <script src="./unit/helpers.js"></script>
+    <script src="./unit/ember-easy-datatable_test.js"></script>
+    <script src="./unit/keyboard_navigation_test.js"></script>
+    <script>
       App = Ember.Application.create({
         rootElement: '#app'
       });
