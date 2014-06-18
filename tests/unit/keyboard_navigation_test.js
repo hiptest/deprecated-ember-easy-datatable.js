@@ -17,39 +17,32 @@
   });
 
   test('move', function () {
-    var moved;
     sinon.stub(sut, 'moveUp', Ember.K);
     sinon.stub(sut, 'moveRight', Ember.K);
     sinon.stub(sut, 'moveDown', Ember.K);
     sinon.stub(sut, 'moveLeft', Ember.K);
 
-    moved = sut.move({which: 38});
+    sut.move({which: 38});
     ok(sut.moveUp.calledOnce,
       'When triggered with the arrow_up keycode, it calls moveUp ...');
-    ok(moved, '(and it returns true)');
 
-    moved = sut.move({which: 39});
+    sut.move({which: 39});
     ok(sut.moveRight.calledOnce,
       '... with the right arrow keycode, it calls moveRight ...');
-    ok(moved, '(and it returns true)');
 
-    moved = sut.move({which: 40});
+    sut.move({which: 40});
     ok(sut.moveDown.calledOnce,
       '... with the arraow down keycode, oh surprise, it calls moveDown ...');
-    ok(moved, '(and it returns true)');
 
-    moved = sut.move({which: 37});
+    sut.move({which: 37});
     ok(sut.moveLeft.calledOnce,
       '... and as you could guess, the the left arrow keycode, it calls moveLeft. Yep it is full of surprises ....');
-    ok(moved, '(and it returns true)');
 
-    moved = sut.move({which: 9});
+    sut.move({which: 9});
     ok(sut.moveRight.calledOnce,
       'The tab key does not trigger moveRight, it uses the default browser behavior ...');
-    ok(moved, '... but it still returns true');
 
-    moved = sut.move({which: 13});
-    ok(!moved, 'If another key is hit, it returns false');
+
 
     sut.moveUp.restore();
     sut.moveRight.restore();

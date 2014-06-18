@@ -133,4 +133,15 @@
     equal(sut.getRowFor($('#sample1 thead th:first')), -1,
       '... except for header element, there it returns -1');
   });
+
+  test('processEdition', function () {
+    var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
+
+    throws(
+      function() {
+        sut.processEdition('somethingWrong');
+      },
+      "An error is thrown if the type argument is incorrect"
+    );
+  });
 })();
