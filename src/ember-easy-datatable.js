@@ -82,6 +82,10 @@ Ember.EasyDatatable = Ember.Object.extend({
               self.set('selectedRow', self.getRowFor(th));
             }
           })
+          .on('blur', function () {
+            self.set('selectedColumn', null);
+            self.set('selectedRow', null);
+          })
           .on('keydown', function (event) {
             if (event.which === self.keyCodes.ESC) {
               $(this).parent().focus();

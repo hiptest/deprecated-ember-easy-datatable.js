@@ -19,7 +19,7 @@
   });
 
   test('click and edit', function () {
-    expect(2);
+    expect(4);
 
     visit('/')
       .assertDatatableContent([
@@ -29,8 +29,11 @@
         ['Row 3', '3', '13', '23']
       ])
       .clickOnDatatableCell(1, 1)
+      .assertEditorShown()
       .typeInDatatable('This is my row')
       .pressEnterInDatatable()
+      .clickOnDatatableCell(0, 0)
+      .assertEditorShown()
       .assertDatatableContent([
         ['This is my row', '0', '10', '20'],
         ['Row 1', '1', '11', '21'],
@@ -40,7 +43,7 @@
   });
 
   test('navigate, press enter and edit', function () {
-    expect(2);
+    expect(4);
 
     visit('/')
       .assertDatatableContent([
@@ -54,8 +57,10 @@
       .pressRightKeyInDatatable()
       .pressDownKeyInDatatable()
       .pressEnterInDatatable()
+      .assertEditorShown()
       .typeInDatatable('My new value')
       .pressEnterInDatatable()
+      .assertEditorNotShown()
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],
         ['Row 1', 'My new value', '11', '21'],
@@ -65,7 +70,7 @@
   });
 
   test('navigate, start typing to replace the cell content', function () {
-    expect(2);
+    expect(4);
 
     visit('/')
       .assertDatatableContent([
@@ -77,7 +82,9 @@
       .clickOnDatatableCell(1, 1)
       .pressEscInDatatable()
       .typeInDatatable('I type something without having an input')
+      .assertEditorShown()
       .pressEnterInDatatable()
+      .assertEditorNotShown()
       .assertDatatableContent([
         ['I type something without having an input', '0', '10', '20'],
         ['Row 1', '1', '11', '21'],
@@ -120,5 +127,5 @@
       .assertEditorShown(
         '(but it still works in non protected cells)')
       .pressEscInDatatable();
-  })
+  });
 })();
