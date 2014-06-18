@@ -58,7 +58,7 @@
       .clickOnDatatableCell(1, 1)
       .pressEscInDatatable()
       .assertHightlightedCellsText([],
-        'When a <td> cel is focused, it does not highlight anything')
+        'When a <td> cell is focused, it does not highlight anything')
       .pressUpKeyInDatatable()
       .assertHightlightedCellsText(['Name', 'Row 0', 'Row 1', 'Row 2', 'Row 3'],
         'If a cell in the <thead> is selected, then all cells in the column are highlited')

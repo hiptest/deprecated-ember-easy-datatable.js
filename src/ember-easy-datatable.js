@@ -1,11 +1,11 @@
 Ember.EasyDatatable = Ember.Object.extend({
+  tabindex: 1,
   tableSelector: '',
-
   selectionClass: 'selected',
+  protectedClass: 'protected',
+
   selectedColumn: null,
   selectedRow: null,
-
-  tabindex: 1,
 
   keyCodes: {
     ARROW_LEFT: 37,
@@ -61,6 +61,11 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     Ember.run(this, function () {
       if (this.get('editorShown')) {
+        if (selectedCell.hasClass(this.get('protectedClass'))) {
+          this.set('editorShown', false);
+          return;
+        }
+
         selectedCell
           .append('<input type="text" value="%@" />'.fmt(selectedCell.text()))
           .find('input')

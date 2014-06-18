@@ -48,7 +48,6 @@ function registerDatatableHelpers () {
     return wait(app);
   });
 
-
   Ember.Test.registerAsyncHelper('debug', function (app) {
     return wait(app);
   });
@@ -86,7 +85,7 @@ function registerDatatableHelpers () {
   });
 
   Ember.Test.registerAsyncHelper('assertHightlightedCellsText', function (app, content, message) {
-    var highlighted = $('table').find('td.selected, th.selected').map(function () {
+    var highlighted = getDatatable().find('td.selected, th.selected').map(function () {
       return $(this).text();
     }).get();
 
@@ -94,8 +93,18 @@ function registerDatatableHelpers () {
     return wait(app);
   });
 
+  Ember.Test.registerAsyncHelper('assertEditorShown', function (app, message) {
+    ok(getDatatable().find('input').length === 1, message || 'Editor is displayed');
+    return wait(app);
+  });
+
+  Ember.Test.registerAsyncHelper('assertEditorNotShown', function (app, message) {
+    ok(getDatatable().find('input').length === 0, message || 'Editor is not displayed');
+    return wait(app);
+  });
+
   Ember.Test.registerAsyncHelper('clickOnDatatableCell', function (app, row, column) {
-    var element = $('table tr:nth(%@)'.fmt(row)).find('td, th').eq(column);
+    var element = getDatatable().find('tr:nth(%@)'.fmt(row)).find('td, th').eq(column);
     element.focus();
 
     return click(element);

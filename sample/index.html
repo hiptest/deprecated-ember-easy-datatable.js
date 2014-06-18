@@ -10,8 +10,8 @@
       <table id="sample1" class="table table-stripped">
         <thead>
           <tr>
-            <th></th>
-            <th>Name</th>
+            <th class="protected"></th>
+            <th class="protected">Name</th>
             <th>Value 1</th>
             <th>Value 2</th>
             <th>Value 3</th>
@@ -23,28 +23,28 @@
             <td>My first row</td>
             <td>1</td>
             <td>2</td>
-            <td>3</td>
+            <td class="protected">3</td>
           </tr>
           <tr>
             <th>#2</th>
             <td>My second row</td>
             <td>11</td>
             <td>12</td>
-            <td>13</td>
+            <td class="protected">13</td>
           </tr>
           <tr>
             <th>#3</th>
             <td>My third row</td>
             <td>21</td>
             <td>22</td>
-            <td>23</td>
+            <td class="protected">23</td>
           </tr>
           <tr>
             <th>#4</th>
             <td>My last row</td>
             <td>31</td>
             <td>32</td>
-            <td>33</td>
+            <td class="protected">33</td>
           </tr>
         </tbody>
       </table>
@@ -56,6 +56,10 @@
 
       th.selected {
         background-color: #ffb93e;
+      }
+
+      td.protected, th.protected {
+        background-color: #eee;
       }
 
       th, td {
