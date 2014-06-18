@@ -82,10 +82,6 @@ Ember.EasyDatatable = Ember.Object.extend({
               self.set('selectedRow', self.getRowFor(th));
             }
           })
-          .on('blur', function () {
-            self.set('selectedRow', null);
-            self.set('selectedColumn', null);
-          })
           .on('keydown', function (event) {
             if (event.which === self.keyCodes.ESC) {
               $(this).parent().focus();
@@ -102,7 +98,7 @@ Ember.EasyDatatable = Ember.Object.extend({
           })
           .focus();
       } else {
-        selectedCell.find('input').remove();
+        this.get('table').find('input').remove();
       }
     });
   }.observes('editorShown'),
