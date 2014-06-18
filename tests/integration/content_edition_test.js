@@ -9,7 +9,7 @@
         }.on('didInsertElement')
       });
 
-      registerDatatableHelpers();
+      DatatableIntegrationHelpers.registerHelpers();
       App.injectTestHelpers();
     },
 

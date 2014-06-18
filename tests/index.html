@@ -21,6 +21,13 @@
     <script src="./unit/ember-easy-datatable_test.js"></script>
     <script src="./unit/keyboard_navigation_test.js"></script>
     <script>
+      Ember.Test.adapter = Ember.Test.QUnitAdapter.extend({
+        exception: function (error) {
+          console.log(error.stack);
+          this._super(error);
+        }
+      }).create();
+
       App = Ember.Application.create({
         rootElement: '#app'
       });
