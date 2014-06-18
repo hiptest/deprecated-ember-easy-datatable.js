@@ -93,7 +93,7 @@ Ember.EasyDatatable = Ember.Object.extend({
             }
 
             if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
-              self.validateCellEdition($(this).val(), event);
+              self.cellIsEdited($(this).val(), event);
             }
 
             if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
@@ -257,13 +257,60 @@ Ember.EasyDatatable = Ember.Object.extend({
     return element.closest('tbody').find('tr').index(element.closest('tr'));
   },
 
-  validateCellEdition: function (value, event) {
-    var cell = this.getSelectedCell();
-    cell.html(value).focus();
+  cellIsEdited: function (value, event) {
+    var cell = this.getSelectedCell(),
+      row = this.getRowFor(cell),
+      column = this.getColumnFor(cell);
 
-    if (event.which === this.keyCodes.ENTER) {
-      event.stopPropagation();
+    if (row === -1) {
+      return this.processEdition('ColumnHeader', value, row, column, event);
     }
-    this.set('editorShown', false);
+
+    if (cell.closest('th').length === 1) {
+      return this.processEdition('RowHeader', value, row, column, event);
+    }
+    return this.processEdition('Cell', value, row, column, event);
+  },
+
+  validateCellValue: function (value, row, column) {
+    return true;
+  },
+
+  validateRowHeaderValue: function (value, row, column) {
+    return true;
+  },
+
+  validateColumnHeaderValue: function (value, row, column) {
+    return true;
+  },
+
+  updateCellValue: function (value, row, column) {
+    this.get('table').find('tbody tr:nth(%@)'.fmt(row)).find('th, td').eq(column).html(value);
+  },
+
+  updateRowHeaderValue: function (value, row, column) {
+    this.get('table').find('tbody tr:nth(%@)'.fmt(row)).find('th, td').eq(column).html(value);
+  },
+
+  updateColumnHeaderValue: function (value, row, column) {
+    this.get('table').find('thead th:nth(%@)'.fmt(column)).html(value);
+  },
+
+  processEdition: function (type, value, row, column, event) {
+    var allowedTypes = ['Cell', 'RowHeader', 'ColumnHeader'],
+      validator = this['validate%@Value'.fmt(type)],
+      applicator = this['update%@Value'.fmt(type)];
+
+    Ember.assert('"%@" if not a valid type for processEdition, acepted values are: %@'.fmt(type, allowedTypes), allowedTypes.contains(type));
+
+    if (validator.apply(this, [value, row, column])) {
+      this.getSelectedCell().focus();
+      applicator.apply(this, [value, row, column]);
+
+      if (event.which === this.keyCodes.ENTER) {
+        event.stopPropagation();
+      }
+      this.set('editorShown', false);
+    }
   }
 });

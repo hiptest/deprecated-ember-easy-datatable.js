@@ -1,0 +1,23 @@
+td.selected {
+  background-color: #d9f6fe;
+}
+
+th.selected {
+  background-color: #ffb93e;
+}
+
+td.protected, th.protected {
+  background-color: #eee;
+}
+
+th, td {
+  position: relative;
+}
+
+th input, td input {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
