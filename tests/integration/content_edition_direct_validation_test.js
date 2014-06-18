@@ -7,20 +7,20 @@
         addDatatable: function () {
           Ember.EasyDatatable.create({
             tableSelector: '#sample1',
-              validateCellValue: function (value, row, column) {
-                // Only numeric values are allowed in the cells
-                return !Ember.isNone(value.match(/^[0-9]+$/));
-              },
+            validateCellValue: function (value, row, column) {
+              // Only numeric values are allowed in the cells
+              return !Ember.isNone(value.match(/^[0-9]+$/));
+            },
 
-              validateRowHeaderValue: function (value, row, column) {
-                // Should be #<numeric value>
-                return !Ember.isNone(value.match(/^#[0-9]+$/));
-              },
+            validateRowHeaderValue: function (value, row, column) {
+              // Should be #<numeric value>
+              return !Ember.isNone(value.match(/^#[0-9]+$/));
+            },
 
-              validateColumnHeaderValue: function (value, row, column) {
-                // Should be "Value <numeric value>"
-                return !Ember.isNone(value.match(/^Value [0-9]+$/));
-              }
+            validateColumnHeaderValue: function (value, row, column) {
+              // Should be "Value <numeric value>"
+              return !Ember.isNone(value.match(/^Value [0-9]+$/));
+            }
           });
         }.on('didInsertElement')
       });
@@ -35,7 +35,7 @@
   });
 
   test('Cell edition', function () {
-    expect(5);
+    expect(6);
 
     visit('/')
       .assertDatatableContent([
@@ -49,12 +49,13 @@
       .pressEnterInDatatable()
       .assertEditorShown(
         'The editor is still there as validation failed')
-      .assertEditorShown()
+      .assertCurrentCellHasError()
       .pressEscInDatatable()
       .typeInDatatable('1664')
       .pressEnterInDatatable()
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
+      .assertCurrentCellHasNotError()
       .assertDatatableContent([
         ['Row 0', '1664', '10', '20'],
         ['Row 1', '1', '11', '21'],
@@ -64,7 +65,7 @@
   });
 
   test('Row header', function () {
-    expect(6);
+    expect(7);
 
     visit('/')
       .clickOnDatatableCell(3, 0)
@@ -74,17 +75,18 @@
       .pressEnterInDatatable()
       .assertEditorShown(
         'The editor is still there as validation failed')
-      .assertEditorShown()
+      .assertCurrentCellHasError()
       .pressEscInDatatable()
       .typeInDatatable('#123')
       .pressEnterInDatatable()
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
+      .assertCurrentCellHasNotError()
       .assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22'])
   });
 
   test('Column header', function () {
-    expect(6);
+    expect(7);
 
     visit('/')
       .clickOnDatatableCell(0, 3)
@@ -94,12 +96,13 @@
       .pressEnterInDatatable()
       .assertEditorShown(
         'The editor is still there as validation failed')
-      .assertEditorShown()
+      .assertCurrentCellHasError()
       .pressEscInDatatable()
       .typeInDatatable('Value 951')
       .pressEnterInDatatable()
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
+      .assertCurrentCellHasNotError()
       .assertHightlightedCellsText(['Value 951', '10', '11', '12', '13'])
   });
 })();

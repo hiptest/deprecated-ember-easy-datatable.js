@@ -62,7 +62,15 @@
       App = Ember.Application.create();
       App.IndexView = Ember.View.extend({
         addDatatable: function () {
-          Ember.EasyDatatable.create({tableSelector: '#sample1'});
+          Ember.EasyDatatable.create({
+            tableSelector: '#sample1',
+            validationErrorClasses: ['alert', 'alert-danger'],
+
+            validateCellValue: function (value, row, column) {
+              // Only numeric values are allowed in the cells
+              return column < 2 || !Ember.isNone(value.match(/^[0-9]+$/));
+            },
+          });
         }.on('didInsertElement')
       });
     </script>

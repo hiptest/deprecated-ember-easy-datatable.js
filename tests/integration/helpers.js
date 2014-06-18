@@ -103,6 +103,16 @@ function registerDatatableHelpers () {
     return wait(app);
   });
 
+  Ember.Test.registerAsyncHelper('assertCurrentCellHasError', function (app, message) {
+    ok(getSelectedCell().hasClass('error'), message || 'Current cell is in error');
+    return wait(app);
+  });
+
+  Ember.Test.registerAsyncHelper('assertCurrentCellHasNotError', function (app, message) {
+    ok(!getSelectedCell().hasClass('error'), message || 'Current cell is not in error');
+    return wait(app);
+  });
+
   Ember.Test.registerAsyncHelper('clickOnDatatableCell', function (app, row, column) {
     var element = getDatatable().find('tr:nth(%@)'.fmt(row)).find('td, th').eq(column);
     element.focus();

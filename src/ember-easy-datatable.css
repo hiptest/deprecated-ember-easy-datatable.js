@@ -21,3 +21,8 @@ th input, td input {
   width: 100%;
   height: 100%;
 }
+
+th.alert-danger input, td.alert-danger input {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}

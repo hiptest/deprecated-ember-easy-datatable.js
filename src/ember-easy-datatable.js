@@ -3,6 +3,7 @@ Ember.EasyDatatable = Ember.Object.extend({
   tableSelector: '',
   selectionClass: 'selected',
   protectedClass: 'protected',
+  validationErrorClasses: ['error'],
 
   selectedColumn: null,
   selectedRow: null,
@@ -85,6 +86,7 @@ Ember.EasyDatatable = Ember.Object.extend({
           .on('blur', function () {
             self.set('selectedColumn', null);
             self.set('selectedRow', null);
+            $(this).parent().removeClass(self.get('validationErrorClasses').join(' '));
           })
           .on('keydown', function (event) {
             if (event.which === self.keyCodes.ESC) {
@@ -304,13 +306,18 @@ Ember.EasyDatatable = Ember.Object.extend({
     Ember.assert('"%@" if not a valid type for processEdition, acepted values are: %@'.fmt(type, allowedTypes), allowedTypes.contains(type));
 
     if (validator.apply(this, [value, row, column])) {
-      this.getSelectedCell().focus();
+      this.getSelectedCell()
+        .removeClass(this.get('validationErrorClasses').join(' '))
+        .focus();
       applicator.apply(this, [value, row, column]);
 
       if (event.which === this.keyCodes.ENTER) {
         event.stopPropagation();
       }
       this.set('editorShown', false);
+    } else {
+      this.getSelectedCell()
+        .addClass(this.get('validationErrorClasses').join(' '));
     }
   }
 });
