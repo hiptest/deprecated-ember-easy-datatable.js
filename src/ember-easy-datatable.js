@@ -1,5 +1,3 @@
-// Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, Ember.EasyDatatableEditor
-
 Ember.EasyDatatable = Ember.Object.extend({
   tabindex: 1,
   tableSelector: '',

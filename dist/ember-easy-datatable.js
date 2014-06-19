@@ -338,8 +338,6 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     }
   }
 });
-// Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, Ember.EasyDatatableEditor
-
 Ember.EasyDatatable = Ember.Object.extend({
   tabindex: 1,
   tableSelector: '',
@@ -347,7 +345,7 @@ Ember.EasyDatatable = Ember.Object.extend({
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
-  createSubObjects: function () {
+  addBehaviors: function () {
     var self = this,
       subObjects = {
         EasyDatatableHighlighter: ['selectionClass'],
@@ -365,11 +363,11 @@ Ember.EasyDatatable = Ember.Object.extend({
       };
 
     Ember.keys(subObjects).forEach(function (subCls) {
-      Ember[subCls].create(self.makeSubObjectsCreationElements(subObjects[subCls]));
+      Ember[subCls].create(self.makeSubObjectsCreationHash(subObjects[subCls]));
     });
   }.on('init'),
 
-  makeSubObjectsCreationElements: function (copiedKeys) {
+  makeSubObjectsCreationHash: function (copiedKeys) {
     var self = this,
       creationElements = {
         tabindex: this.get('tabindex'),
@@ -378,6 +376,7 @@ Ember.EasyDatatable = Ember.Object.extend({
 
     copiedKeys.forEach(function (key) {
       var value = self.get(key) || self[key];
+
       if (!Ember.isNone(value)) {
         creationElements[key] = value;
       }
