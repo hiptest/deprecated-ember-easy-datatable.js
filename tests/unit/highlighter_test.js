@@ -4,7 +4,7 @@
   module(Ember.EasyDatatableHighlighter.toString(), {
     setup: function () {
       createSampleTable();
-      sut = Ember.Object.createWithMixins(Ember.EasyDatatableHighlighter, {
+      sut = Ember.EasyDatatableHighlighter.create({
         tableSelector: '#sample1'}
       );
     },

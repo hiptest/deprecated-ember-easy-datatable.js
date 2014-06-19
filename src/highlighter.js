@@ -1,4 +1,4 @@
-Ember.EasyDatatableHighlighter = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.EasyDatatableUtils, {
   selectionClass: 'selected',
 
   selectedColumn: null,

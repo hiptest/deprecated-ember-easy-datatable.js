@@ -1,4 +1,4 @@
-Ember.EasyDatatableKeyboardMoves = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils, {
   bindKeydownForMovements: function () {
     var self = this;
 

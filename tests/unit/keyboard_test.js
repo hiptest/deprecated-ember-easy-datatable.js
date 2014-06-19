@@ -4,7 +4,7 @@
   module(Ember.EasyDatatableKeyboardMoves.toString(), {
     setup: function () {
       createSampleTable();
-      sut = Ember.Object.createWithMixins(Ember.EasyDatatableKeyboardMoves, {
+      sut = Ember.EasyDatatableKeyboardMoves.create({
         tableSelector: '#sample1'}
       );
       sinon.spy(sut, 'focusCell', Ember.K);

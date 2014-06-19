@@ -4,9 +4,9 @@
   module(Ember.EasyDatatableEditor.toString(), {
     setup: function () {
       createSampleTable();
-      sut = Ember.Object.createWithMixins(Ember.EasyDatatableEditor, {
-        tableSelector: '#sample1'}
-      );
+      sut = Ember.EasyDatatableEditor.create({
+        tableSelector: '#sample1'
+      });
     },
 
     teardown: function () {
@@ -97,7 +97,7 @@
     sut.get('table').addClass('this is a long list of classes');
     sut.removeErrorClasses(sut.get('table'));
     equal(sut.get('table').attr('class'), 'this is a list',
-      'It an element is specified, the error classes are removed from it');
+      'If an element is specified, the error classes are removed from it');
   });
 
   test('cellIsEdited', function () {

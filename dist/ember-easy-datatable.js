@@ -37,7 +37,7 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   }
 });
 
-Ember.EasyDatatableHighlighter = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.EasyDatatableUtils, {
   selectionClass: 'selected',
 
   selectedColumn: null,
@@ -80,7 +80,7 @@ Ember.EasyDatatableHighlighter = Ember.Mixin.create(Ember.EasyDatatableUtils, {
     }
   }.on('init').observes('selectedRow', 'selectedColumn')
 });
-Ember.EasyDatatableKeyboardMoves = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils, {
   bindKeydownForMovements: function () {
     var self = this;
 
@@ -188,7 +188,7 @@ Ember.EasyDatatableKeyboardMoves = Ember.Mixin.create(Ember.EasyDatatableUtils, 
     destinationRow.find('th, td').eq(column).focus();
   }
 });
-Ember.EasyDatatableEditor = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
@@ -338,11 +338,50 @@ Ember.EasyDatatableEditor = Ember.Mixin.create(Ember.EasyDatatableUtils, {
     }
   }
 });
-Ember.EasyDatatable = Ember.Object.extend(
-  Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, Ember.EasyDatatableEditor,{
+// Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, Ember.EasyDatatableEditor
+
+Ember.EasyDatatable = Ember.Object.extend({
   tabindex: 1,
   tableSelector: '',
   selectionClass: 'selected',
   protectedClass: 'protected',
-  validationErrorClasses: ['error']
+  validationErrorClasses: ['error'],
+
+  createSubObjects: function () {
+    var self = this,
+      subObjects = {
+        EasyDatatableHighlighter: ['selectionClass'],
+        EasyDatatableKeyboardMoves: [],
+        EasyDatatableEditor: [
+          'protectedClass',
+          'validationErrorClasses',
+          'validateCellValue',
+          'validateRowHeaderValue',
+          'validateColumnHeaderValue',
+          'updateCellValue',
+          'updateRowHeaderValue',
+          'updateColumnHeaderValue'
+        ]
+      };
+
+    Ember.keys(subObjects).forEach(function (subCls) {
+      Ember[subCls].create(self.makeSubObjectsCreationElements(subObjects[subCls]));
+    });
+  }.on('init'),
+
+  makeSubObjectsCreationElements: function (copiedKeys) {
+    var self = this,
+      creationElements = {
+        tabindex: this.get('tabindex'),
+        tableSelector: this.get('tableSelector')
+      };
+
+    copiedKeys.forEach(function (key) {
+      var value = self.get(key) || self[key];
+      if (!Ember.isNone(value)) {
+        creationElements[key] = value;
+      }
+    });
+    return creationElements;
+  }
 });

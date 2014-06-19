@@ -1,4 +1,4 @@
-Ember.EasyDatatableEditor = Ember.Mixin.create(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
