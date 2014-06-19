@@ -1,11 +1,13 @@
 (function () {
   var sut;
 
-  module('%@: keyboard navigation'.fmt(Ember.EasyDatatable.toString()), {
+  module(Ember.EasyDatatableKeyboardMoves.toString(), {
     setup: function () {
       createSampleTable();
-      sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
-      sinon.stub(sut, 'focusCell', Ember.K);
+      sut = Ember.Object.createWithMixins(Ember.EasyDatatableKeyboardMoves, {
+        tableSelector: '#sample1'}
+      );
+      sinon.spy(sut, 'focusCell', Ember.K);
       sinon.spy(jQuery.fn, 'blur');
     },
 
@@ -41,8 +43,6 @@
     sut.move({which: 9});
     ok(sut.moveRight.calledOnce,
       'The tab key does not trigger moveRight, it uses the default browser behavior ...');
-
-
 
     sut.moveUp.restore();
     sut.moveRight.restore();
@@ -123,5 +123,22 @@
     sut.moveLeft();
     deepEqual(sut.focusCell.secondCall.args, [1, -1],
       'If the cell is the first one of the row, we focus the last one of the next row');
+  });
+
+  test('focusCell', function () {
+    var focusSpy = sinon.spy(jQuery.fn, 'focus');
+
+    sut.focusCell(-1, 0);
+    deepEqual(focusSpy.firstCall.thisValue.get(0), $('#sample1 thead th:first').get(0),
+      'If the row equals -1, the focus is given to the header cell');
+
+    sut.focusCell(2, 4);
+    // It might look weird to select the 4th cell and check that it's the 3rd <td>, but
+    // in the table there is one <th> at the beginning of each row, so the 3rd <td> is the
+    // fourth cell.
+    deepEqual(focusSpy.secondCall.thisValue.get(0), $('#sample1 tbody tr:nth(2) td:nth(3)').get(0),
+      '... otherwise it uses the row from the tbody');
+
+    jQuery.fn.focus.restore();
   });
 })();

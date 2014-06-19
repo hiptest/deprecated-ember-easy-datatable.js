@@ -6,10 +6,6 @@ Ember.EasyDatatable = Ember.Object.extend(
 
   editorShown: false,
 
-  addTabindex: function () {
-    this.get('table').find('th, td').attr('tabindex', this.get('tabindex'));
-  }.on('init'),
-
   bindFocusBlur: function () {
     var table = this.get('table'),
       self = this;

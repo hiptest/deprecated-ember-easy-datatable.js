@@ -1,4 +1,5 @@
 Ember.EasyDatatableUtils = Ember.Mixin.create({
+  tabindex: 1,
   tableSelector: '',
 
   keyCodes: {
@@ -15,6 +16,10 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   table: function () {
     return $(this.get('tableSelector'));
   }.property('tableSelector'),
+
+  addTabindex: function () {
+    this.get('table').find('th, td').attr('tabindex', this.get('tabindex'));
+  }.on('init'),
 
   getSelectedCell: function () {
     var active = $(document.activeElement);
@@ -190,10 +195,6 @@ Ember.EasyDatatable = Ember.Object.extend(
   validationErrorClasses: ['error'],
 
   editorShown: false,
-
-  addTabindex: function () {
-    this.get('table').find('th, td').attr('tabindex', this.get('tabindex'));
-  }.on('init'),
 
   bindFocusBlur: function () {
     var table = this.get('table'),
