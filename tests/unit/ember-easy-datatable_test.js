@@ -30,15 +30,4 @@
 
     sut.getSelectedCell.restore();
   });
-
-  test('processEdition', function () {
-    var sut = Ember.EasyDatatable.create({tableSelector: '#sample1'});
-
-    throws(
-      function() {
-        sut.processEdition('somethingWrong');
-      },
-      "An error is thrown if the type argument is incorrect"
-    );
-  });
 })();

@@ -188,15 +188,13 @@ Ember.EasyDatatableKeyboardMoves = Ember.Mixin.create(Ember.EasyDatatableUtils, 
     destinationRow.find('th, td').eq(column).focus();
   }
 });
-Ember.EasyDatatable = Ember.Object.extend(
-  Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, {
-  tabindex: 1,
+Ember.EasyDatatableEditor = Ember.Mixin.create(Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
   editorShown: false,
 
-  bindFocusBlur: function () {
+  bindShowEditorOnClick: function () {
     var table = this.get('table'),
       self = this;
 
@@ -207,50 +205,61 @@ Ember.EasyDatatable = Ember.Object.extend(
       });
   }.on('init'),
 
-  addRemoveEditor: function () {
+  addEditor: function () {
     var selectedCell = this.getSelectedCell(),
       self = this;
 
-    Ember.run(this, function () {
-      if (this.get('editorShown')) {
-        if (selectedCell.hasClass(this.get('protectedClass'))) {
-          this.set('editorShown', false);
-          return;
+    if (selectedCell.hasClass(this.get('protectedClass'))) {
+      this.set('editorShown', false);
+      return;
+    }
+
+    selectedCell
+      .append('<input type="text" value="%@" />'.fmt(selectedCell.text()))
+      .find('input')
+      .on('blur', function () {
+        self.removeErrorClasses($(this).parent());
+      })
+      .on('keydown', function (event) {
+        if (event.which === self.keyCodes.ESC) {
+          $(this).parent().focus();
+          self.set('editorShown', false);
         }
 
-        selectedCell
-          .append('<input type="text" value="%@" />'.fmt(selectedCell.text()))
-          .find('input')
-          .on('focus', function () {
-            var th = $(this).closest('th');
+        if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
+          self.cellIsEdited($(this).val(), event);
+        }
 
-            if (th.length === 0) {
-              return;
-            }
-          })
-          .on('blur', function () {
-            $(this).parent().removeClass(self.get('validationErrorClasses').join(' '));
-          })
-          .on('keydown', function (event) {
-            if (event.which === self.keyCodes.ESC) {
-              $(this).parent().focus();
-              self.set('editorShown', false);
-            }
+        if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
+          event.stopPropagation();
+        }
+      })
+      .focus();
+  },
 
-            if ([self.keyCodes.ENTER, self.keyCodes.TAB].contains(event.which)) {
-              self.cellIsEdited($(this).val(), event);
-            }
+  removeEditor: function () {
+    this.get('table').find('input').remove();
+  },
 
-            if ([self.keyCodes.ARROW_UP, self.keyCodes.ARROW_DOWN, self.keyCodes.ARROW_LEFT, self.keyCodes.ARROW_RIGHT].contains(event.which)) {
-              event.stopPropagation();
-            }
-          })
-          .focus();
+  addRemoveEditor: function () {
+    Ember.run(this, function () {
+      if (this.get('editorShown')) {
+        this.addEditor();
       } else {
-        this.get('table').find('input').remove();
+        this.removeEditor();
       }
     });
   }.observes('editorShown'),
+
+  addErrorClasses: function (element) {
+    element = element || this.getSelectedCell();
+    element.addClass(this.get('validationErrorClasses').join(' '));
+  },
+
+  removeErrorClasses: function (element) {
+    element = element || this.getSelectedCell();
+    element.removeClass(this.get('validationErrorClasses').join(' '));
+  },
 
   bindKeydown: function () {
     var self = this,
@@ -317,20 +326,23 @@ Ember.EasyDatatable = Ember.Object.extend(
 
     Ember.assert('"%@" if not a valid type for processEdition, accepted values are: %@'.fmt(type, allowedTypes), allowedTypes.contains(type));
 
+    event.stopPropagation();
+    event.preventDefault();
+
     if (validator.apply(this, [value, row, column])) {
-      this.getSelectedCell()
-        .removeClass(this.get('validationErrorClasses').join(' '))
-        .focus();
-
+      this.getSelectedCell().focus();
       applicator.apply(this, [value, row, column]);
-
-      if (event.which === this.keyCodes.ENTER) {
-        event.stopPropagation();
-      }
       this.set('editorShown', false);
     } else {
-      this.getSelectedCell()
-        .addClass(this.get('validationErrorClasses').join(' '));
+      this.addErrorClasses();
     }
   }
+});
+Ember.EasyDatatable = Ember.Object.extend(
+  Ember.EasyDatatableHighlighter, Ember.EasyDatatableKeyboardMoves, Ember.EasyDatatableEditor,{
+  tabindex: 1,
+  tableSelector: '',
+  selectionClass: 'selected',
+  protectedClass: 'protected',
+  validationErrorClasses: ['error']
 });

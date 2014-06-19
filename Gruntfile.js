@@ -7,7 +7,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     concat: {
       dist: {
-        src: ['src/utils.js', 'src/highlighter.js', 'src/keyboard.js', 'src/ember-easy-datatable.js'],
+        src: [
+          'src/utils.js',
+          'src/highlighter.js',
+          'src/keyboard.js',
+          'src/editor.js',
+          'src/ember-easy-datatable.js'
+        ],
         dest: 'dist/ember-easy-datatable.js',
         nonull: true,
       },
@@ -25,18 +31,18 @@ module.exports = function(grunt) {
       files: ['tests/index.html']
     },
     jshint: {
-      source: {
+      sources: {
         src: ['src/**/*.js']
       },
       tests: {
         options: {
           'debug': true,
         },
-        src: ['tests/**/*.js'],
+        src: ['tests/unit/*.js', 'tests/integration/*.js'],
       }
     }
   });
 
   grunt.registerTask('default', 'jshint');
-  grunt.registerTask('travis', ['jshint',  'qunit']);
+  grunt.registerTask('travis', ['jshint:sources',  'qunit']);
 };
