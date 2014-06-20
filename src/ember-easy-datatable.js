@@ -5,26 +5,41 @@ Ember.EasyDatatable = Ember.Object.extend({
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
+  behaviors: null,
+
+  allowedBehaviors: null,
+  behaviorContructors: {
+    highlighter: Ember.EasyDatatableHighlighter,
+    keyboard: Ember.EasyDatatableKeyboardMoves,
+    editor: Ember.EasyDatatableEditor
+  },
+  behaviorAttributes: {
+    highlighter: ['selectionClass'],
+    keyboard: [],
+    editor: [
+      'protectedClass',
+      'validationErrorClasses',
+      'validateCellValue',
+      'validateRowHeaderValue',
+      'validateColumnHeaderValue',
+      'updateCellValue',
+      'updateRowHeaderValue',
+      'updateColumnHeaderValue'
+    ]
+  },
+
   addBehaviors: function () {
     var self = this,
-      subObjects = {
-        EasyDatatableHighlighter: ['selectionClass'],
-        EasyDatatableKeyboardMoves: [],
-        EasyDatatableEditor: [
-          'protectedClass',
-          'validationErrorClasses',
-          'validateCellValue',
-          'validateRowHeaderValue',
-          'validateColumnHeaderValue',
-          'updateCellValue',
-          'updateRowHeaderValue',
-          'updateColumnHeaderValue'
-        ]
-      };
+      allowedBehaviors = this.get('allowedBehaviors') || Ember.keys(this.get('behaviorContructors')),
+      behaviors = {};
 
-    Ember.keys(subObjects).forEach(function (subCls) {
-      Ember[subCls].create(self.makeSubObjectsCreationHash(subObjects[subCls]));
+    allowedBehaviors.forEach(function (behavior) {
+      var constructor = self.get('behaviorContructors')[behavior],
+        attributes = self.makeSubObjectsCreationHash(self.get('behaviorAttributes')[behavior]);
+
+      behaviors[behavior] = constructor.create(attributes);
     });
+    this.set('behaviors', behaviors);
   }.on('init'),
 
   makeSubObjectsCreationHash: function (copiedKeys) {
