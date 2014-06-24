@@ -132,19 +132,48 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
   processEdition: function (type, value, row, column, event) {
     var allowedTypes = ['Cell', 'RowHeader', 'ColumnHeader'],
       validator = this['validate%@Value'.fmt(type)],
-      applicator = this['update%@Value'.fmt(type)];
+      applicator = this['update%@Value'.fmt(type)],
+      validationResult;
 
     Ember.assert('"%@" if not a valid type for processEdition, accepted values are: %@'.fmt(type, allowedTypes), allowedTypes.contains(type));
 
     event.stopPropagation();
     event.preventDefault();
 
-    if (validator.apply(this, [value, row, column])) {
-      this.getSelectedCell().focus();
-      applicator.apply(this, [value, row, column]);
-      this.set('editorShown', false);
-    } else {
-      this.addErrorClasses();
+    validationResult = validator.apply(this, [value, row, column]);
+    if (typeof(validationResult) === 'boolean') {
+      this.processDirectEdition(validationResult, value, row, column, applicator);
+      return;
     }
+    this.processPromiseEdition(validationResult, value, row, column, applicator);
+  },
+
+  processDirectEdition: function (validationResult, value, row, column, applicator) {
+    if (validationResult) {
+      this.processEditionSuccess(value, row, column, applicator);
+    } else {
+      this.processEditionFailure();
+    }
+  },
+
+  processPromiseEdition: function (validationResult, value, row, column, applicator) {
+    var self = this;
+
+    validationResult.then(function () {
+        self.processEditionSuccess(value, row, column, applicator);
+      },
+      function () {
+        self.processEditionFailure();
+      });
+  },
+
+  processEditionSuccess: function (value, row, column, applicator) {
+    this.getSelectedCell().focus();
+    applicator.apply(this, [value, row, column]);
+    this.set('editorShown', false);
+  },
+
+  processEditionFailure: function () {
+    this.addErrorClasses();
   }
 });

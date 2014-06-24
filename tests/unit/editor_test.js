@@ -1,5 +1,5 @@
 (function () {
-  var sut;
+  var sut, fakeEvent, server;
 
   module(Ember.EasyDatatableEditor.toString(), {
     setup: function () {
@@ -7,9 +7,16 @@
       sut = Ember.EasyDatatableEditor.create({
         tableSelector: '#sample1'
       });
+      server = sinon.fakeServer.create();
+      server.autoRespond = true;
+      fakeEvent = {
+        preventDefault: function () {},
+        stopPropagation: function () {}
+      };
     },
 
     teardown: function () {
+      server.restore();
       $('#qunit-fixtures').empty();
     }
   });
@@ -163,10 +170,7 @@
   });
 
   test('processEdition: wrong type', function () {
-    var validatorStub = sinon.stub(sut, 'validateCellValue'),
-      event = {
-        stopPropagation: function () {}
-      };
+    var validatorStub = sinon.stub(sut, 'validateCellValue');
 
     throws(
       function() {
@@ -177,44 +181,36 @@
   });
 
   test('processEdition: event is stopped', function () {
-    var validatorStub = sinon.stub(sut, 'validateRowHeaderValue'),
-      event = {
-        preventDefault: function () {},
-        stopPropagation: function () {}
-      };
+    var validatorStub = sinon.stub(sut, 'validateRowHeaderValue');
 
     validatorStub.onFirstCall().returns(true);
     validatorStub.onSecondCall().returns(false);
 
-    sinon.spy(event, 'preventDefault');
-    sinon.spy(event, 'stopPropagation');
+    sinon.spy(fakeEvent, 'preventDefault');
+    sinon.spy(fakeEvent, 'stopPropagation');
 
     $('#sample1 tbody tr:first th:first').focus().click();
-    sut.processEdition('RowHeader', 0, 0, 'My value', event);
-    ok(event.preventDefault.calledOnce && event.stopPropagation.calledOnce,
+    sut.processEdition('RowHeader', 0, 0, 'My value', fakeEvent);
+    ok(fakeEvent.preventDefault.calledOnce && fakeEvent.stopPropagation.calledOnce,
       'Event default and propagation are stopped if validation succeded');
 
     $('#sample1 tbody tr:first td:first').focus().click();
-    sut.processEdition('RowHeader', 0, 1, 'My value', event);
-    ok(event.preventDefault.calledTwice && event.stopPropagation.calledTwice,
+    sut.processEdition('RowHeader', 0, 1, 'My value', fakeEvent);
+    ok(fakeEvent.preventDefault.calledTwice && fakeEvent.stopPropagation.calledTwice,
       'Same thing if validation failed');
 
-    event.preventDefault.restore();
-    event.stopPropagation.restore();
+    fakeEvent.preventDefault.restore();
+    fakeEvent.stopPropagation.restore();
   });
 
-  test('processEdition: validation success', function () {
-    var event = {
-        preventDefault: function () {},
-        stopPropagation: function () {}
-      };
 
-    $('#sample1 tbody tr:first td:first').focus().click();
+  test('processEdition: validation success (direct validation, returns a boolean)', function () {
     sinon.stub(sut, 'validateCellValue').returns(true);
+    $('#sample1 tbody tr:first td:first').focus().click();
     sinon.stub(sut, 'updateCellValue', Ember.K);
     sinon.spy(sut, 'removeErrorClasses');
 
-    sut.processEdition('Cell', 0, 1, 'My value', event);
+    sut.processEdition('Cell', 0, 1, 'My value', fakeEvent);
     ok(sut.removeErrorClasses.calledOnce,
        'The errors are removed');
     ok(sut.updateCellValue.calledOnce,
@@ -226,20 +222,16 @@
 
     sut.updateCellValue.restore();
     sut.removeErrorClasses.restore();
+    sut.validateCellValue.restore();
   });
 
-  test('processEdition: validation failed', function () {
-    var event = {
-        preventDefault: function () {},
-        stopPropagation: function () {}
-      };
-
+  test('processEdition: validation failed (direct validation, returns a boolean)', function () {
     sinon.stub(sut, 'validateCellValue').returns(false);
     sinon.stub(sut, 'updateCellValue', Ember.K);
     sinon.spy(sut, 'addErrorClasses');
 
     $('#sample1 tbody tr:first td:first').focus().click();
-    sut.processEdition('Cell', 0, 0, 'My value', event);
+    sut.processEdition('Cell', 0, 0, 'My value', fakeEvent);
     ok(sut.addErrorClasses.calledOnce,
       'If validation failed, then the errors are added');
     ok(sut.get('editorShown'),
@@ -249,6 +241,88 @@
 
     sut.updateCellValue.restore();
     sut.addErrorClasses.restore();
+    sut.validateCellValue.restore();
   });
 
+  // test('processEdition: validation success (validation via Ajax, returns an Ember promise object)', function () {
+  //   sinon.stub(sut, 'validateCellValue', function (value, row, column) {
+  //     return promise = new Promise(function(resolve, reject){
+  //       $.ajax('/validate', {
+  //         type: 'POST',
+  //         data: {
+  //           value: value,
+  //           row: row,
+  //           column: column
+  //         },
+  //         success: function (response) {
+  //           console.log('Ok, success');
+  //           resolve(response);
+  //         },
+  //         error: function () {
+  //           console.log('Hum, failure');
+  //           reject()
+  //         }
+  //       });
+  //     });
+  //     return promise;
+  //   });
+  //   server.respondWith("POST", "/validate", [200, {}, 'Yay, it worked']);
+
+  //   $('#sample1 tbody tr:first td:first').focus().click();
+  //   sinon.stub(sut, 'updateCellValue', Ember.K);
+  //   sinon.spy(sut, 'removeErrorClasses');
+
+  //   sut.processEdition('Cell', 0, 1, 'My value', fakeEvent);
+  //   ok(sut.removeErrorClasses.calledOnce,
+  //      'The errors are removed');
+  //   ok(sut.updateCellValue.calledOnce,
+  //      'The function to update the cell value is called');
+  //   ok(!sut.get('editorShown'),
+  //      'The editor is not shown');
+  //   deepEqual(document.activeElement, sut.getSelectedCell().get(0),
+  //      'The current cell gets the focus back');
+
+  //   sut.updateCellValue.restore();
+  //   sut.removeErrorClasses.restore();
+  //   sut.validateCellValue.restore();
+  // });
+
+  // test('processEdition: validation failed (validation via Ajax, returns an Ember promise object)', function () {
+  //   sinon.stub(sut, 'validateCellValue', function (value, row, column) {
+  //     return promise = new Promise(function(resolve, reject){
+  //       $.ajax('/validate', {
+  //         type: 'POST',
+  //         data: {
+  //           value: value,
+  //           row: row,
+  //           column: column
+  //         },
+  //         success: function (response) {
+  //           resolve(response);
+  //         },
+  //         error: function () {
+  //           reject()
+  //         }
+  //       });
+  //     });
+  //     return promise;
+  //   });
+  //   QUnit.stop();
+  //   server.respondWith("POST", "/validate", [403, {}, 'Nope, not good ...']);
+  //   sinon.stub(sut, 'updateCellValue', Ember.K);
+
+  //   sinon.spy(sut, 'addErrorClasses');
+
+  //   $('#sample1 tbody tr:first td:first').focus().click();
+  //   sut.processEdition('Cell', 0, 0, 'My value', fakeEvent);
+  //   ok(sut.addErrorClasses.calledOnce,
+  //     'If validation failed, then the errors are added');
+  //   ok(sut.get('editorShown'),
+  //     'And the editor is still shown');
+  //   equal(sut.updateCellValue.callCount, 0,
+  //     'The method to update the value is not called');
+  //   sut.updateCellValue.restore();
+  //   sut.addErrorClasses.restore();
+  //   sut.validateCellValue.restore();
+  // });
 })();
