@@ -322,22 +322,143 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
   processEdition: function (type, value, row, column, event) {
     var allowedTypes = ['Cell', 'RowHeader', 'ColumnHeader'],
       validator = this['validate%@Value'.fmt(type)],
-      applicator = this['update%@Value'.fmt(type)];
+      applicator = this['update%@Value'.fmt(type)],
+      validationResult;
 
     Ember.assert('"%@" if not a valid type for processEdition, accepted values are: %@'.fmt(type, allowedTypes), allowedTypes.contains(type));
 
     event.stopPropagation();
     event.preventDefault();
 
-    if (validator.apply(this, [value, row, column])) {
-      this.getSelectedCell().focus();
-      applicator.apply(this, [value, row, column]);
-      this.set('editorShown', false);
+    validationResult = validator.apply(this, [value, row, column]);
+    if (typeof(validationResult) === 'boolean') {
+      this.processDirectEdition(validationResult, value, row, column, applicator);
+      return;
+    }
+    this.processPromiseEdition(validationResult, value, row, column, applicator);
+  },
+
+  processDirectEdition: function (validationResult, value, row, column, applicator) {
+    if (validationResult) {
+      this.processEditionSuccess(value, row, column, applicator);
     } else {
-      this.addErrorClasses();
+      this.processEditionFailure();
+    }
+  },
+
+  processPromiseEdition: function (validationResult, value, row, column, applicator) {
+    var self = this;
+
+    validationResult.then(function () {
+        self.processEditionSuccess(value, row, column, applicator);
+      },
+      function () {
+        self.processEditionFailure();
+      });
+  },
+
+  processEditionSuccess: function (value, row, column, applicator) {
+    this.getSelectedCell().focus();
+    applicator.apply(this, [value, row, column]);
+    this.set('editorShown', false);
+  },
+
+  processEditionFailure: function () {
+    this.addErrorClasses();
+  }
+});
+Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.EasyDatatableUtils, {
+  bindKeydownForOrdering: function () {
+    var table = this.get('table'),
+      self = this;
+
+    table
+      .on('keydown', 'thead th', function (event) {
+        var column = self.getColumnFor(self.getSelectedCell());
+
+        if (event.ctrlKey) {
+          if (event.which === self.keyCodes.ARROW_RIGHT && self.allowMoveColumnRight(column)) {
+            self.moveColumnRight(column);
+          } else if (event.which === self.keyCodes.ARROW_LEFT && self.allowMoveColumnLeft(column)) {
+            self.moveColumnLeft(column);
+          }
+        }
+      });
+
+    table
+      .on('keydown', 'tbody th', function (event) {
+        var row = self.getRowFor(self.getSelectedCell());
+
+        if (event.ctrlKey) {
+          if (event.which === self.keyCodes.ARROW_UP && self.allowMoveRowUp(row)) {
+            self.moveRowUp(row);
+          } else if (event.which === self.keyCodes.ARROW_DOWN && self.allowMoveRowDown(row)) {
+            self.moveRowDown(row);
+          }
+        }
+      });
+  }.on('init'),
+
+  moveColumnRight: function (column) {
+    this._moveColumn(column, column + 1);
+  },
+
+  moveColumnLeft: function (column) {
+    this._moveColumn(column, column - 1);
+  },
+
+  moveRowUp: function (row) {
+    this._moveRow(row, row - 1);
+  },
+
+  moveRowDown: function (row) {
+    this._moveRow(row, row + 1);
+  },
+
+  allowMoveColumnRight: function (column) {
+    return column < this.get('table').find('thead tr:first th').length - 1;
+  },
+
+  allowMoveColumnLeft: function (column) {
+    return column > 0;
+  },
+
+  allowMoveRowUp: function (row) {
+    return row > 0;
+  },
+
+  allowMoveRowDown: function (row) {
+    return row < this.get('table').find('tbody tr').length - 1;
+  },
+
+  _moveColumn: function (from, to) {
+    var table = this.get('table'),
+      self = this;
+
+    table.find('tr').each(function () {
+      self._moveElement($(this), 'th, td', from, to);
+    });
+    table.find('thead tr:first th:nth(%@)'.fmt(to)).focus();
+  },
+
+  _moveRow: function (from, to) {
+    var table = this.get('table');
+    this._moveElement(table.find('tbody'), 'tr', from, to);
+    table.find('tbody tr:nth(%@) th'.fmt(to)).focus();
+  },
+
+  _moveElement: function (container, childrenSelector, from, to) {
+    var moved = container.find(childrenSelector).eq(from),
+      realTo = to > from ? to + 1 : to;
+
+    if (realTo === 0) {
+      moved.insertBefore(container.find(childrenSelector).eq(0));
+    } else {
+      moved.insertAfter(container.find(childrenSelector).eq(realTo - 1));
     }
   }
 });
+
 Ember.EasyDatatable = Ember.Object.extend({
   tabindex: 1,
   tableSelector: '',
@@ -345,26 +466,52 @@ Ember.EasyDatatable = Ember.Object.extend({
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
+  behaviors: null,
+
+  allowedBehaviors: null,
+  behaviorContructors: {
+    highlighter: Ember.EasyDatatableHighlighter,
+    keyboard: Ember.EasyDatatableKeyboardMoves,
+    editor: Ember.EasyDatatableEditor,
+    orderer: Ember.EasyDatatableOrderer
+  },
+  behaviorAttributes: {
+    highlighter: ['selectionClass'],
+    keyboard: [],
+    editor: [
+      'protectedClass',
+      'validationErrorClasses',
+      'validateCellValue',
+      'validateRowHeaderValue',
+      'validateColumnHeaderValue',
+      'updateCellValue',
+      'updateRowHeaderValue',
+      'updateColumnHeaderValue'
+    ],
+    orderer: [
+      'moveColumnRight',
+      'moveColumnLeft',
+      'moveRowUp',
+      'moveRowDown',
+      'allowMoveColumnRight',
+      'allowMoveColumnLeft',
+      'allowMoveRowUp',
+      'allowMoveRowDown'
+    ]
+  },
+
   addBehaviors: function () {
     var self = this,
-      subObjects = {
-        EasyDatatableHighlighter: ['selectionClass'],
-        EasyDatatableKeyboardMoves: [],
-        EasyDatatableEditor: [
-          'protectedClass',
-          'validationErrorClasses',
-          'validateCellValue',
-          'validateRowHeaderValue',
-          'validateColumnHeaderValue',
-          'updateCellValue',
-          'updateRowHeaderValue',
-          'updateColumnHeaderValue'
-        ]
-      };
+      allowedBehaviors = this.get('allowedBehaviors') || Ember.keys(this.get('behaviorContructors')),
+      behaviors = {};
 
-    Ember.keys(subObjects).forEach(function (subCls) {
-      Ember[subCls].create(self.makeSubObjectsCreationHash(subObjects[subCls]));
+    allowedBehaviors.forEach(function (behavior) {
+      var constructor = self.get('behaviorContructors')[behavior],
+        attributes = self.makeSubObjectsCreationHash(self.get('behaviorAttributes')[behavior]);
+
+      behaviors[behavior] = constructor.create(attributes);
     });
+    this.set('behaviors', behaviors);
   }.on('init'),
 
   makeSubObjectsCreationHash: function (copiedKeys) {

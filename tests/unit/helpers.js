@@ -38,3 +38,13 @@ function selectCell (row, column, tableSelector) {
 
   return selectedRow.find('th, td').eq(column).focus();
 }
+
+function tableContent() {
+  var table = [];
+  $('#sample1').find('tr').each(function () {
+    table.push($(this).find('th, td').map(function() {
+      return $(this).text();
+    }).get());
+  });
+  return table;
+}
