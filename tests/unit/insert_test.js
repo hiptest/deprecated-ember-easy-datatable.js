@@ -1,5 +1,5 @@
 (function () {
-  var sut, fakeEvent, server;
+  var sut;
 
   module(Ember.EasyDatatableInserter.toString(), {
     setup: function () {
@@ -7,16 +7,9 @@
       sut = Ember.EasyDatatableInserter.create({
         tableSelector: '#sample1'
       });
-      server = sinon.fakeServer.create();
-      server.autoRespond = true;
-      fakeEvent = {
-        preventDefault: function () {},
-        stopPropagation: function () {}
-      };
     },
 
     teardown: function () {
-      server.restore();
       $('#qunit-fixtures').empty();
     }
   });
