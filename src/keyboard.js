@@ -2,8 +2,8 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
   bindKeydownForMovements: function () {
     var self = this;
 
-    this.get('table').find('td, th')
-      .on('keydown', function (event) {
+    this.get('table')
+      .on('keydown', 'td, th', function (event) {
         if (!event.ctrlKey) {
           self.move(event);
         }

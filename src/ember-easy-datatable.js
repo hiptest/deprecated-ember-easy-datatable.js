@@ -12,7 +12,8 @@ Ember.EasyDatatable = Ember.Object.extend({
     highlighter: Ember.EasyDatatableHighlighter,
     keyboard: Ember.EasyDatatableKeyboardMoves,
     editor: Ember.EasyDatatableEditor,
-    orderer: Ember.EasyDatatableOrderer
+    orderer: Ember.EasyDatatableOrderer,
+    inserter: Ember.EasyDatatableInserter
   },
   behaviorAttributes: {
     highlighter: ['selectionClass'],
@@ -36,7 +37,8 @@ Ember.EasyDatatable = Ember.Object.extend({
       'allowMoveColumnLeft',
       'allowMoveRowUp',
       'allowMoveRowDown'
-    ]
+    ],
+    inserter: []
   },
 
   addBehaviors: function () {

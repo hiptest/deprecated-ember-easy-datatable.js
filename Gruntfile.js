@@ -13,6 +13,7 @@ module.exports = function(grunt) {
           'src/keyboard.js',
           'src/editor.js',
           'src/orderer.js',
+          'src/insert.js',
           'src/ember-easy-datatable.js'
         ],
         dest: 'dist/ember-easy-datatable.js',

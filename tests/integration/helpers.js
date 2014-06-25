@@ -1,6 +1,6 @@
 DatatableIntegrationHelpers = Ember.Object.create({
   helpers: {
-    pressKey: function (keyCode, ctrlKey) {
+    pressKey: function (keyCode, ctrlKey, shiftKey) {
       // Does not ask for an element, send event to the currently focused element.
       var
         $el = $(document.activeElement),
@@ -8,7 +8,8 @@ DatatableIntegrationHelpers = Ember.Object.create({
           which: keyCode,
           keyCode: keyCode,
           key: String.fromCharCode(keyCode),
-          ctrlKey: ctrlKey || false
+          ctrlKey: ctrlKey || false,
+          shiftKey: shiftKey || false
         },
         keyDownEvent = Ember.$.Event("keydown", eventData),
         keyUpEvent = Ember.$.Event("keyup", eventData);
@@ -123,6 +124,10 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
     pressCtrlLeftKeyInDatatable: function () {
       return pressKey(37, true);
+    },
+
+    pressShiftPlusKeyInDatatable: function () {
+      return pressKey(107, false, true);
     }
   },
 
@@ -168,9 +173,11 @@ DatatableIntegrationHelpers = Ember.Object.create({
     var datatable = [];
 
     this.getDatatable().find('tbody tr').each(function () {
-      datatable.push($(this).find('td').map(function () {
-        return $(this).text();
-      }).get());
+      var row = [];
+      $(this).find('td').each(function () {
+        row.push($(this).text());
+      });
+      datatable.push(row);
     });
     return datatable;
   },

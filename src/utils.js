@@ -10,7 +10,9 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     ENTER: 13,
     TAB: 9,
     ESC: 27,
-    DEL: 46
+    DEL: 46,
+    PLUS: 107,
+    SHIFT: 16
   },
 
   table: function () {

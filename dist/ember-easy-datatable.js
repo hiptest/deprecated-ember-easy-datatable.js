@@ -10,7 +10,9 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     ENTER: 13,
     TAB: 9,
     ESC: 27,
-    DEL: 46
+    DEL: 46,
+    PLUS: 107,
+    SHIFT: 16
   },
 
   table: function () {
@@ -84,8 +86,8 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
   bindKeydownForMovements: function () {
     var self = this;
 
-    this.get('table').find('td, th')
-      .on('keydown', function (event) {
+    this.get('table')
+      .on('keydown', 'td, th', function (event) {
         if (!event.ctrlKey) {
           self.move(event);
         }
@@ -198,10 +200,30 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     var table = this.get('table'),
       self = this;
 
-    table.find('thead, tbody').find('td, th')
-      .on('click', function () {
+    table
+      .on('click', 'thead th, tbody th, tbody td', function () {
         self.set('editorShown', false);
         self.set('editorShown', true);
+      });
+  }.on('init'),
+
+  bindKeydown: function () {
+    var self = this,
+      nonEditionKeys = [
+        this.keyCodes.ARROW_UP,
+        this.keyCodes.ARROW_RIGHT,
+        this.keyCodes.ARROW_DOWN,
+        this.keyCodes.ARROW_LEFT,
+        this.keyCodes.TAB,
+        this.keyCodes.ESC,
+        this.keyCodes.SHIFT
+      ];
+
+    this.get('table')
+      .on('keydown', 'thead th, tbody th, tbody td', function (event) {
+        if (!event.ctrlKey && !nonEditionKeys.contains(event.which)) {
+          self.set('editorShown', true);
+        }
       });
   }.on('init'),
 
@@ -260,25 +282,6 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     element = element || this.getSelectedCell();
     element.removeClass(this.get('validationErrorClasses').join(' '));
   },
-
-  bindKeydown: function () {
-    var self = this,
-      nonEditionKeys = [
-        this.keyCodes.ARROW_UP,
-        this.keyCodes.ARROW_RIGHT,
-        this.keyCodes.ARROW_DOWN,
-        this.keyCodes.ARROW_LEFT,
-        this.keyCodes.TAB,
-        this.keyCodes.ESC
-      ];
-
-    this.get('table').find('td, th')
-      .on('keydown', function (event) {
-        if (!event.ctrlKey && !nonEditionKeys.contains(event.which)) {
-          self.set('editorShown', true);
-        }
-      });
-  }.on('init'),
 
   cellIsEdited: function (value, event) {
     var cell = this.getSelectedCell(),
@@ -459,6 +462,80 @@ Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.EasyDatatableUtils, {
   }
 });
 
+Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
+  bindKeydownForInsertion: function () {
+    var self = this,
+      table = this.get('table');
+
+    table
+      .on('keydown', 'thead th', function (event) {
+        var index = self.getColumnFor(self.getSelectedCell());
+
+        if (event.shiftKey && event.which === self.keyCodes.PLUS) {
+          if (self.canInsertColumn(index)) {
+            event.stopPropagation();
+            self.insertColumnAfter(index);
+          }
+        }
+      })
+      .on('keydown', 'tbody th', function (event) {
+        var index = self.getRowFor(self.getSelectedCell());
+
+        if (event.shiftKey && event.which === self.keyCodes.PLUS) {
+          if (self.canInsertRow(index)) {
+            event.stopPropagation();
+            self.insertRowAfter(index);
+          }
+        }
+      });
+  }.on('init'),
+
+  canInsertRow: function (index) {
+    return true;
+  },
+
+  canInsertColumn: function (index) {
+    return true;
+  },
+
+  insertRowAfter: function (index) {
+    var self = this,
+      row = this.get('table').find('tbody tr:nth(%@)'.fmt(index)),
+      newRow = '<tr>%@</tr>'.fmt(row.find('th, td').map(function () {
+        var cell = $(this),
+          cellType = self.getCellType(cell);
+
+        return '<%@ class="%@" tabindex="%@"></%@>'.fmt(
+          cellType,
+          cell.attr('class'),
+          self.get('tabindex'),
+          cellType);
+      }).get().join(''));
+
+    $(newRow).insertAfter(row);
+    this.get('table').find('tbody tr:nth(%@) th'.fmt(index + 1)).focus();
+  },
+
+  insertColumnAfter: function (index) {
+    var self = this;
+
+    this.get('table').find('tr').each(function () {
+      var row = $(this),
+        cell = row.find('th, td').eq(index),
+        cellType = self.getCellType(cell);
+
+      $('<%@ tabindex="%@"></%@>'.fmt(
+        cellType,
+        self.get('tabindex'),
+        cellType)).insertAfter(cell);
+    });
+    this.get('table').find('thead th:nth(%@)'.fmt(index + 1)).focus();
+  },
+
+  getCellType: function (cell) {
+    return cell.is('td') ? 'td' : 'th';
+  }
+});
 Ember.EasyDatatable = Ember.Object.extend({
   tabindex: 1,
   tableSelector: '',
@@ -473,7 +550,8 @@ Ember.EasyDatatable = Ember.Object.extend({
     highlighter: Ember.EasyDatatableHighlighter,
     keyboard: Ember.EasyDatatableKeyboardMoves,
     editor: Ember.EasyDatatableEditor,
-    orderer: Ember.EasyDatatableOrderer
+    orderer: Ember.EasyDatatableOrderer,
+    inserter: Ember.EasyDatatableInserter
   },
   behaviorAttributes: {
     highlighter: ['selectionClass'],
@@ -497,7 +575,8 @@ Ember.EasyDatatable = Ember.Object.extend({
       'allowMoveColumnLeft',
       'allowMoveRowUp',
       'allowMoveRowDown'
-    ]
+    ],
+    inserter: []
   },
 
   addBehaviors: function () {

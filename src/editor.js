@@ -8,10 +8,33 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     var table = this.get('table'),
       self = this;
 
-    table.find('thead, tbody').find('td, th')
-      .on('click', function () {
+    table
+      .on('click', 'thead th, tbody th, tbody td', function () {
         self.set('editorShown', false);
         self.set('editorShown', true);
+      });
+  }.on('init'),
+
+  bindKeydown: function () {
+    var self = this,
+      nonEditionKeys = [
+        this.keyCodes.ARROW_UP,
+        this.keyCodes.ARROW_RIGHT,
+        this.keyCodes.ARROW_DOWN,
+        this.keyCodes.ARROW_LEFT,
+        this.keyCodes.TAB,
+        this.keyCodes.ESC,
+        this.keyCodes.SHIFT
+      ];
+
+    this.get('table')
+      .on('keydown', 'thead th, tbody th, tbody td', function (event) {
+        if (event.ctrlKey) { return; }
+        if (nonEditionKeys.contains(event.which)) { return; }
+        if (event.shiftKey && event.which === self.keyCodes.PLUS) { return; }
+
+        self.set('editorShown', true);
+
       });
   }.on('init'),
 
@@ -70,25 +93,6 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     element = element || this.getSelectedCell();
     element.removeClass(this.get('validationErrorClasses').join(' '));
   },
-
-  bindKeydown: function () {
-    var self = this,
-      nonEditionKeys = [
-        this.keyCodes.ARROW_UP,
-        this.keyCodes.ARROW_RIGHT,
-        this.keyCodes.ARROW_DOWN,
-        this.keyCodes.ARROW_LEFT,
-        this.keyCodes.TAB,
-        this.keyCodes.ESC
-      ];
-
-    this.get('table').find('td, th')
-      .on('keydown', function (event) {
-        if (!event.ctrlKey && !nonEditionKeys.contains(event.which)) {
-          self.set('editorShown', true);
-        }
-      });
-  }.on('init'),
 
   cellIsEdited: function (value, event) {
     var cell = this.getSelectedCell(),
