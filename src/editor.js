@@ -8,7 +8,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     var table = this.get('table'),
       self = this;
 
-    table.find('td, th')
+    table.find('thead, tbody').find('td, th')
       .on('click', function () {
         self.set('editorShown', false);
         self.set('editorShown', true);
