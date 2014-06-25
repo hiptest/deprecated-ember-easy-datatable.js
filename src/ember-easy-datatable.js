@@ -13,7 +13,8 @@ Ember.EasyDatatable = Ember.Object.extend({
     keyboard: Ember.EasyDatatableKeyboardMoves,
     editor: Ember.EasyDatatableEditor,
     orderer: Ember.EasyDatatableOrderer,
-    inserter: Ember.EasyDatatableInserter
+    inserter: Ember.EasyDatatableInserter,
+    remover: Ember.EasyDatatableRemover
   },
   behaviorAttributes: {
     highlighter: ['selectionClass'],
@@ -38,7 +39,8 @@ Ember.EasyDatatable = Ember.Object.extend({
       'allowMoveRowUp',
       'allowMoveRowDown'
     ],
-    inserter: []
+    inserter: [],
+    remover: []
   },
 
   addBehaviors: function () {

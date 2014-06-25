@@ -94,6 +94,10 @@ DatatableIntegrationHelpers = Ember.Object.create({
       return pressKey(27);
     },
 
+    pressDelKeyInDatatable: function () {
+      return pressKey(46);
+    },
+
     pressUpKeyInDatatable: function () {
       return pressKey(38);
     },

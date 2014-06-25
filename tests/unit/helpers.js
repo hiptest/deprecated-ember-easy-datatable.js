@@ -26,6 +26,12 @@ function getSelectedCellsText () {
   }).get();
 }
 
+function getColumnText(index) {
+  return $('#sample1 tr').map(function () {
+    return $(this).find('th, td').eq(index).text();
+  }).get();
+}
+
 function selectCell (row, column, tableSelector) {
   tableSelector = tableSelector || '#sample1';
   var selectedRow;

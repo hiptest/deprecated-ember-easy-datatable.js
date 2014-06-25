@@ -24,7 +24,8 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
         this.keyCodes.ARROW_LEFT,
         this.keyCodes.TAB,
         this.keyCodes.ESC,
-        this.keyCodes.SHIFT
+        this.keyCodes.SHIFT,
+        this.keyCodes.DEL
       ];
 
     this.get('table')
