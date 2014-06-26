@@ -54,17 +54,20 @@
     });
 
     deepEqual(Ember.EasyDatatableHighlighter.create.getCall(0).args, [{
+      datatable: sut,
       tabindex: 3.14,
       tableSelector: '#sample1',
       selectionClass: 'easy-datatable-selected'
     }], 'On creation, the highlighter gets the tabindex, tableSelector and also the class used to highlight the cells');
 
     deepEqual(Ember.EasyDatatableKeyboardMoves.create.getCall(0).args, [{
+      datatable: sut,
       tabindex: 3.14,
       tableSelector: '#sample1',
     }], 'The keyboard mover only get the tabindex and tabselector');
 
     deepEqual(Ember.EasyDatatableEditor.create.getCall(0).args, [{
+      datatable: sut,
       tabindex: 3.14,
       tableSelector: '#sample1',
       protectedClass: '.easy-datatable-protected',
@@ -86,22 +89,38 @@
       tableSelector: '#sample1'
     });
 
-    deepEqual(sut.makeSubObjectsCreationHash([]), {tabindex: 3.14, tableSelector: '#sample1'},
-      'Default creation arguments are tabindex and tableSelector (the ones used by EasyDatatableUtils)');
+    deepEqual(sut.makeSubObjectsCreationHash([]), {
+      datatable: sut,
+      tabindex: 3.14,
+      tableSelector: '#sample1'
+    }, 'Default creation arguments are the datatable, tabindex and tableSelector (the ones used by EasyDatatableUtils)');
 
     sut.someValue = 42;
-    deepEqual(sut.makeSubObjectsCreationHash(['someValue']), {tabindex: 3.14, tableSelector: '#sample1', someValue: 42},
-      'It can get values set in a classical JS way ...');
+    deepEqual(sut.makeSubObjectsCreationHash(['someValue']), {
+      datatable: sut,
+      tabindex: 3.14,
+      tableSelector: '#sample1',
+      someValue: 42
+    }, 'It can get values set in a classical JS way ...');
 
     sut.set('anotherValue', 'Tralala');
-    deepEqual(sut.makeSubObjectsCreationHash(['anotherValue']), {tabindex: 3.14, tableSelector: '#sample1', anotherValue: 'Tralala'},
-      '... and also the ones in an Ember way (get/set)');
+    deepEqual(sut.makeSubObjectsCreationHash(['anotherValue']), {
+      datatable: sut,
+      tabindex: 3.14,
+      tableSelector: '#sample1',
+      anotherValue: 'Tralala'
+    }, '... and also the ones in an Ember way (get/set)');
 
     sut.someFunction = function (x) { return x + 1;};
-    deepEqual(sut.makeSubObjectsCreationHash(['someFunction']), {tabindex: 3.14, tableSelector: '#sample1', someFunction: sut.someFunction},
-      'Functions can also be returned: note that it is the same function, not a copy (same thing applies for objects)');
+    deepEqual(sut.makeSubObjectsCreationHash(['someFunction']), {
+      datatable: sut,
+      tabindex: 3.14,
+      tableSelector: '#sample1',
+      someFunction: sut.someFunction
+    }, 'Functions can also be returned: note that it is the same function, not a copy (same thing applies for objects)');
 
     deepEqual(sut.makeSubObjectsCreationHash(['someValue', 'anotherValue', 'someFunction']), {
+      datatable: sut,
       tabindex: 3.14,
       tableSelector: '#sample1',
       someValue: 42,
@@ -109,7 +128,10 @@
       someFunction: sut.someFunction
     }, 'Of course any specified key is taken into account');
 
-    deepEqual(sut.makeSubObjectsCreationHash(['unknownProperty']), {tabindex: 3.14, tableSelector: '#sample1'},
-      'In case the the asked key is unknown, it is not added to creation hash');
+    deepEqual(sut.makeSubObjectsCreationHash(['unknownProperty']), {
+      datatable: sut,
+      tabindex: 3.14,
+      tableSelector: '#sample1'
+    }, 'In case the the asked key is unknown, it is not added to creation hash');
   });
 })();

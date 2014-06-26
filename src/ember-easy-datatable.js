@@ -60,6 +60,7 @@ Ember.EasyDatatable = Ember.Object.extend({
   makeSubObjectsCreationHash: function (copiedKeys) {
     var self = this,
       creationElements = {
+        datatable: this,
         tabindex: this.get('tabindex'),
         tableSelector: this.get('tableSelector')
       };

@@ -1,4 +1,5 @@
 Ember.EasyDatatableUtils = Ember.Mixin.create({
+  datatable: null,
   tabindex: 1,
   tableSelector: '',
 
