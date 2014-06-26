@@ -25,14 +25,15 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
         this.keyCodes.TAB,
         this.keyCodes.ESC,
         this.keyCodes.SHIFT,
-        this.keyCodes.DEL
+        this.keyCodes.DEL,
+        this.keyCodes.INSER
       ];
 
     this.get('table')
       .on('keydown', 'thead th, tbody th, tbody td', function (event) {
-        if (event.ctrlKey) { return; }
-        if (nonEditionKeys.contains(event.which)) { return; }
-        if (event.shiftKey && event.which === self.keyCodes.PLUS) { return; }
+        if (event.ctrlKey || nonEditionKeys.contains(event.which)) {
+          return;
+        }
 
         self.set('editorShown', true);
 

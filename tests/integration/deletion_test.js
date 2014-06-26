@@ -30,7 +30,7 @@
       ])
       .clickOnDatatableCell(1, 1)
       .pressEnterInDatatable()
-      .pressDelKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],
         ['Row 1', '1', '11', '21'],
@@ -38,7 +38,7 @@
         ['Row 3', '3', '13', '23']
       ], 'Nothing happens if it is not done in a row header')
       .pressLeftKeyInDatatable()
-      .pressDelKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
       .assertDatatableContent([
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
@@ -58,7 +58,7 @@
       ])
       .clickOnDatatableCell(1, 1)
       .pressEnterInDatatable()
-      .pressDelKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],
         ['Row 1', '1', '11', '21'],
@@ -66,7 +66,7 @@
         ['Row 3', '3', '13', '23']
       ], 'Nothing happens if it is not done in a column header')
       .pressUpKeyInDatatable()
-      .pressDelKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
       .assertDatatableContent([
         ['0', '10', '20'],
         ['1', '11', '21'],

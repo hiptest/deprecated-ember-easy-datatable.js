@@ -7,7 +7,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.EasyDatatableUtils, {
       .on('keydown', 'thead th', function (event) {
         var index = self.getColumnFor(self.getSelectedCell());
 
-        if (event.which === self.keyCodes.DEL) {
+        if (event.ctrlKey && event.which === self.keyCodes.DEL) {
           if (self.canDeleteColumn(index)) {
             event.stopPropagation();
             self.deleteColumn(index);
@@ -17,7 +17,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.EasyDatatableUtils, {
       .on('keydown', 'tbody th', function (event) {
         var index = self.getRowFor(self.getSelectedCell());
 
-        if (event.which === self.keyCodes.DEL) {
+        if (event.ctrlKey && event.which === self.keyCodes.DEL) {
           if (self.canDeleteRow(index)) {
             event.stopPropagation();
             self.deleteRow(index);

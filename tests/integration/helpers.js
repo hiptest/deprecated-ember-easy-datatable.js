@@ -94,10 +94,6 @@ DatatableIntegrationHelpers = Ember.Object.create({
       return pressKey(27);
     },
 
-    pressDelKeyInDatatable: function () {
-      return pressKey(46);
-    },
-
     pressUpKeyInDatatable: function () {
       return pressKey(38);
     },
@@ -130,8 +126,12 @@ DatatableIntegrationHelpers = Ember.Object.create({
       return pressKey(37, true);
     },
 
-    pressShiftPlusKeyInDatatable: function () {
-      return pressKey(107, false, true);
+    pressCtrlDelKeyInDatatable: function () {
+      return pressKey(46, true);
+    },
+
+    pressCtrlInserKeyInDatatable: function () {
+      return pressKey(45, true);
     }
   },
 

@@ -7,7 +7,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
       .on('keydown', 'thead th', function (event) {
         var index = self.getColumnFor(self.getSelectedCell());
 
-        if (event.shiftKey && event.which === self.keyCodes.PLUS) {
+        if (event.ctrlKey && event.which === self.keyCodes.INSER) {
           if (self.canInsertColumn(index)) {
             event.stopPropagation();
             self.insertColumnAfter(index);
@@ -17,7 +17,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
       .on('keydown', 'tbody th', function (event) {
         var index = self.getRowFor(self.getSelectedCell());
 
-        if (event.shiftKey && event.which === self.keyCodes.PLUS) {
+        if (event.ctrlKey && event.which === self.keyCodes.INSER) {
           if (self.canInsertRow(index)) {
             event.stopPropagation();
             self.insertRowAfter(index);
