@@ -50,7 +50,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
     }
 
     selectedCell
-      .append('<input type="text" value="%@" />'.fmt(selectedCell.text()))
+      .append('<input type="text" value="%@" />'.fmt(this.getCellValue(selectedCell)))
       .find('input')
       .on('blur', function () {
         self.removeErrorClasses($(this).parent());
@@ -70,6 +70,10 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
         }
       })
       .focus();
+  },
+
+  getCellValue: function (cell) {
+    return cell.text();
   },
 
   removeEditor: function () {
