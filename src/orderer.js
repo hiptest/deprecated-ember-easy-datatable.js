@@ -32,18 +32,22 @@ Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
   moveColumnRight: function (column) {
     this._moveColumn(column, column + 1);
+    this.notifyEvent('columnMovedRight', {column: column});
   },
 
   moveColumnLeft: function (column) {
     this._moveColumn(column, column - 1);
+    this.notifyEvent('columnMovedLeft', {column: column});
   },
 
   moveRowUp: function (row) {
     this._moveRow(row, row - 1);
+    this.notifyEvent('rowMovedUp', {row: row});
   },
 
   moveRowDown: function (row) {
     this._moveRow(row, row + 1);
+    this.notifyEvent('rowMovedDown', {row: row});
   },
 
   allowMoveColumnRight: function (column) {

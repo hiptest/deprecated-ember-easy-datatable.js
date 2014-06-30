@@ -38,5 +38,13 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
 
   getRowFor: function(element) {
     return element.closest('tbody').find('tr').index(element.closest('tr'));
+  },
+
+  notifyEvent: function (event, data) {
+    var datatable = this.get('datatable');
+
+    if (!Ember.isNone(datatable)) {
+      datatable.dispatchEvent(event, data);
+    }
   }
 });

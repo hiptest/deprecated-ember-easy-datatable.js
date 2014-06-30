@@ -38,6 +38,14 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
 
   getRowFor: function(element) {
     return element.closest('tbody').find('tr').index(element.closest('tr'));
+  },
+
+  notifyEvent: function (event, data) {
+    var datatable = this.get('datatable');
+
+    if (!Ember.isNone(datatable)) {
+      datatable.dispatchEvent(event, data);
+    }
   }
 });
 
@@ -445,18 +453,22 @@ Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
   moveColumnRight: function (column) {
     this._moveColumn(column, column + 1);
+    this.notifyEvent('columnMovedRight', {column: column});
   },
 
   moveColumnLeft: function (column) {
     this._moveColumn(column, column - 1);
+    this.notifyEvent('columnMovedLeft', {column: column});
   },
 
   moveRowUp: function (row) {
     this._moveRow(row, row - 1);
+    this.notifyEvent('rowMovedUp', {row: row});
   },
 
   moveRowDown: function (row) {
     this._moveRow(row, row + 1);
+    this.notifyEvent('rowMovedDown', {row: row});
   },
 
   allowMoveColumnRight: function (column) {
@@ -555,6 +567,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatat
 
     $(newRow).insertAfter(row);
     this.get('table').find('tbody tr:nth(%@) th'.fmt(index + 1)).focus();
+    this.notifyEvent('rowAddedAfter', {index: index});
   },
 
   insertColumnAfter: function (index) {
@@ -571,6 +584,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatat
         cellType)).insertAfter(cell);
     });
     this.get('table').find('thead th:nth(%@)'.fmt(index + 1)).focus();
+    this.notifyEvent('columnAddedAfter', {index: index});
   },
 
   getCellType: function (cell) {
@@ -619,6 +633,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
     index = Math.min(index, table.find('tbody tr').length - 1);
     table.find('tbody tr:nth(%@) th'.fmt(index)).focus();
+    this.notifyEvent('rowDeleted', {index: index});
   },
 
   deleteColumn: function (index) {
@@ -630,6 +645,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
     index = Math.min(index, table.find('thead th').length - 1);
     table.find('thead th:nth(%@)'.fmt(index)).focus();
+    this.notifyEvent('columnDeleted', {index: index});
   }
 });
 Ember.EasyDatatable = Ember.Object.extend(Ember.Evented, {
@@ -714,6 +730,6 @@ Ember.EasyDatatable = Ember.Object.extend(Ember.Evented, {
     this.trigger(event, data);
     Ember.keys(behaviors).forEach(function (behavior) {
       behaviors[behavior].trigger(event, data);
-    })
+    });
   }
 });

@@ -50,6 +50,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatat
 
     $(newRow).insertAfter(row);
     this.get('table').find('tbody tr:nth(%@) th'.fmt(index + 1)).focus();
+    this.notifyEvent('rowAddedAfter', {index: index});
   },
 
   insertColumnAfter: function (index) {
@@ -66,6 +67,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatat
         cellType)).insertAfter(cell);
     });
     this.get('table').find('thead th:nth(%@)'.fmt(index + 1)).focus();
+    this.notifyEvent('columnAddedAfter', {index: index});
   },
 
   getCellType: function (cell) {

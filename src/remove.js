@@ -40,6 +40,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
     index = Math.min(index, table.find('tbody tr').length - 1);
     table.find('tbody tr:nth(%@) th'.fmt(index)).focus();
+    this.notifyEvent('rowDeleted', {index: index});
   },
 
   deleteColumn: function (index) {
@@ -51,5 +52,6 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatata
 
     index = Math.min(index, table.find('thead th').length - 1);
     table.find('thead th:nth(%@)'.fmt(index)).focus();
+    this.notifyEvent('columnDeleted', {index: index});
   }
 });
