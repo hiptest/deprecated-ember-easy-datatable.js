@@ -97,6 +97,13 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
   }.on('init'),
 
   move: function (event) {
+    var navigationKeys = [
+      this.keyCodes.ARROW_UP,
+      this.keyCodes.ARROW_DOWN,
+      this.keyCodes.ARROW_RIGHT,
+      this.keyCodes.ARROW_LEFT,
+      this.keyCodes.TAB];
+
     if (event.which === this.keyCodes.ARROW_UP) {
       this.moveUp();
     }
@@ -113,7 +120,9 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
       this.moveLeft();
     }
 
-    this.preventDefaultInViewport(event);
+    if (navigationKeys.contains(event.which)) {
+      this.preventDefaultInViewport(event);
+    }
   },
 
   moveUp: function () {
@@ -204,10 +213,10 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
     var rect = el.getBoundingClientRect();
 
     return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
     );
   },
 
