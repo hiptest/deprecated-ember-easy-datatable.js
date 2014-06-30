@@ -1,4 +1,4 @@
-Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForOrdering: function () {
     var table = this.get('table'),
       self = this;

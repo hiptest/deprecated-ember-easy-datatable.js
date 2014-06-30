@@ -134,4 +134,36 @@
       tableSelector: '#sample1'
     }, 'In case the the asked key is unknown, it is not added to creation hash');
   });
+
+  test('dispatchEvent', function () {
+    var sut = Ember.EasyDatatable.extend({
+      behaviorContructors: {
+        highlighter: Ember.EasyDatatableHighlighter,
+        keyboard: Ember.EasyDatatableKeyboardMoves.extend({
+          doSomething: function (data) {}.on('someEvent'),
+          shouldNotBeCalled: function (data) {}.on('someOtherEvent'),
+        })
+      },
+
+      doSomethingElse: function (data) {}.on('someEvent')
+    }).create();
+
+    sinon.spy(sut.behaviors.keyboard, 'doSomething');
+    sinon.spy(sut.behaviors.keyboard, 'shouldNotBeCalled');
+    sinon.spy(sut, 'doSomethingElse');
+
+    sut.dispatchEvent('someEvent', {x: 1});
+
+    deepEqual(sut.behaviors.keyboard.doSomething.getCall(0).args, [{x: 1}],
+      'If a listener exists, it is triggered on the datatable object ...');
+    deepEqual(sut.doSomethingElse.getCall(0).args, [{x: 1}],
+      '... and on each of its behaviors');
+
+    equal(sut.behaviors.keyboard.shouldNotBeCalled.callCount, 0,
+      'Of course, only the listeners are triggered');
+
+    sut.behaviors.keyboard.doSomething.restore();
+    sut.behaviors.keyboard.shouldNotBeCalled.restore();
+    sut.doSomethingElse.restore();
+  })
 })();

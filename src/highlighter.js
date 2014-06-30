@@ -1,4 +1,4 @@
-Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   selectionClass: 'selected',
 
   selectedColumn: null,

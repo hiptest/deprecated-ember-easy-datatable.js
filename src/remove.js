@@ -1,4 +1,4 @@
-Ember.EasyDatatableRemover = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForDeletion: function () {
     var self = this,
       table = this.get('table');

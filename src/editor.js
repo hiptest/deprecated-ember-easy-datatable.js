@@ -1,4 +1,4 @@
-Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 

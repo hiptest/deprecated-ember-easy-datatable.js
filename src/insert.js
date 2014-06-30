@@ -1,4 +1,4 @@
-Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForInsertion: function () {
     var self = this,
       table = this.get('table');

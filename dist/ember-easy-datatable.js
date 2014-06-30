@@ -41,7 +41,7 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   }
 });
 
-Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   selectionClass: 'selected',
 
   selectedColumn: null,
@@ -84,7 +84,7 @@ Ember.EasyDatatableHighlighter = Ember.Object.extend(Ember.EasyDatatableUtils, {
     }
   }.on('init').observes('selectedRow', 'selectedColumn')
 });
-Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForMovements: function () {
     var self = this;
 
@@ -226,7 +226,7 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.EasyDatatableUtils,
     }
   }
 });
-Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
   validationErrorClasses: ['error'],
 
@@ -411,7 +411,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.EasyDatatableUtils, {
     this.addErrorClasses();
   }
 });
-Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForOrdering: function () {
     var table = this.get('table'),
       self = this;
@@ -503,7 +503,7 @@ Ember.EasyDatatableOrderer = Ember.Object.extend(Ember.EasyDatatableUtils, {
   }
 });
 
-Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableInserter = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForInsertion: function () {
     var self = this,
       table = this.get('table');
@@ -577,7 +577,7 @@ Ember.EasyDatatableInserter = Ember.Object.extend(Ember.EasyDatatableUtils, {
     return cell.is('td') ? 'td' : 'th';
   }
 });
-Ember.EasyDatatableRemover = Ember.Object.extend(Ember.EasyDatatableUtils, {
+Ember.EasyDatatableRemover = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   bindKeydownForDeletion: function () {
     var self = this,
       table = this.get('table');
@@ -632,7 +632,7 @@ Ember.EasyDatatableRemover = Ember.Object.extend(Ember.EasyDatatableUtils, {
     table.find('thead th:nth(%@)'.fmt(index)).focus();
   }
 });
-Ember.EasyDatatable = Ember.Object.extend({
+Ember.EasyDatatable = Ember.Object.extend(Ember.Evented, {
   tabindex: 1,
   tableSelector: '',
   selectionClass: 'selected',
@@ -707,5 +707,13 @@ Ember.EasyDatatable = Ember.Object.extend({
       }
     });
     return creationElements;
+  },
+
+  dispatchEvent: function (event, data) {
+    var behaviors = this.get('behaviors');
+    this.trigger(event, data);
+    Ember.keys(behaviors).forEach(function (behavior) {
+      behaviors[behavior].trigger(event, data);
+    })
   }
 });

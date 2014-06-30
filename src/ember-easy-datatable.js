@@ -1,4 +1,4 @@
-Ember.EasyDatatable = Ember.Object.extend({
+Ember.EasyDatatable = Ember.Object.extend(Ember.Evented, {
   tabindex: 1,
   tableSelector: '',
   selectionClass: 'selected',
@@ -73,5 +73,13 @@ Ember.EasyDatatable = Ember.Object.extend({
       }
     });
     return creationElements;
+  },
+
+  dispatchEvent: function (event, data) {
+    var behaviors = this.get('behaviors');
+    this.trigger(event, data);
+    Ember.keys(behaviors).forEach(function (behavior) {
+      behaviors[behavior].trigger(event, data);
+    });
   }
 });
