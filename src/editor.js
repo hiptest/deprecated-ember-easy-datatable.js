@@ -150,31 +150,11 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
     event.stopPropagation();
     event.preventDefault();
 
-    validationResult = validator.apply(this, [value, row, column]);
-    if (typeof(validationResult) === 'boolean') {
-      this.processDirectEdition(validationResult, value, row, column, applicator);
-      return;
-    }
-    this.processPromiseEdition(validationResult, value, row, column, applicator);
-  },
-
-  processDirectEdition: function (validationResult, value, row, column, applicator) {
-    if (validationResult) {
-      this.processEditionSuccess(value, row, column, applicator);
-    } else {
-      this.processEditionFailure();
-    }
-  },
-
-  processPromiseEdition: function (validationResult, value, row, column, applicator) {
-    var self = this;
-
-    validationResult.then(function () {
-        self.processEditionSuccess(value, row, column, applicator);
-      },
-      function () {
-        self.processEditionFailure();
-      });
+    this.validateAndProcess(
+      validator,
+      this.processEditionSuccess,
+      this.processEditionFailure,
+      [value, row, column, applicator]);
   },
 
   processEditionSuccess: function (value, row, column, applicator) {

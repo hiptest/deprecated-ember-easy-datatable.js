@@ -46,5 +46,34 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     if (!Ember.isNone(datatable)) {
       datatable.dispatchEvent(event, data);
     }
+  },
+
+  validateAndProcess: function (validator, success, failure, args) {
+    var result = validator.apply(this, args);
+
+    if (typeof(result) === 'boolean') {
+      this.processForBoolean(result, success, failure, args);
+    } else {
+      this.processForPromise(result, success, failure, args);
+    }
+  },
+
+  processForBoolean: function (result, success, failure, args) {
+    if (result) {
+      success.apply(this, args);
+    } else {
+      failure.apply(this, args);
+    }
+  },
+
+  processForPromise: function  (result, success, failure, args) {
+    var self = this;
+
+    result.then(function () {
+      success.apply(self, args);
+    },
+    function () {
+      failure.apply(self, args);
+    });
   }
 });
