@@ -82,6 +82,7 @@
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
       .assertCurrentCellHasNotError()
+      .pressUpKeyInDatatable()
       .assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22']);
   });
 
@@ -100,6 +101,7 @@
       .pressEscInDatatable()
       .typeInDatatable('Value 951')
       .pressEnterInDatatable()
+      .pressUpKeyInDatatable()
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
       .assertCurrentCellHasNotError()

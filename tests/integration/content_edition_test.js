@@ -128,4 +128,47 @@
         '(but it still works in non protected cells)')
       .pressEscInDatatable();
   });
+
+  test('cells with a class "protected" can not be edited', function () {
+    expect(7);
+
+    visit('/')
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .clickOnDatatableCell(2, 2)
+      .typeInDatatable('x')
+      .pressEnterInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', 'x', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .assertSelectedDatatableCell(3, 2,
+        'If the cell value is validated using enter, then cell below is selected')
+      .typeInDatatable('y')
+      .pressTabKeyInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', 'x', '11', '21'],
+        ['Row 2', 'y', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .assertSelectedDatatableCell(3, 3,
+        'If the cell value is validated using tab, then cell on the right is selected')
+      .typeInDatatable('z')
+      .pressShiftTabKeyInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', 'x', '11', '21'],
+        ['Row 2', 'y', 'z', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .assertSelectedDatatableCell(3, 2,
+        'If the cell value is validated using shift+tab, then cell on the left is selected')
+  });
 })();

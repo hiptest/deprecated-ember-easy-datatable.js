@@ -46,6 +46,35 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     if (!Ember.isNone(datatable)) {
       datatable.dispatchEvent(event, data);
     }
+  },
+
+  validateAndProcess: function (validator, success, failure, args) {
+    var result = validator.apply(this, args);
+
+    if (typeof(result) === 'boolean') {
+      this.processForBoolean(result, success, failure, args);
+    } else {
+      this.processForPromise(result, success, failure, args);
+    }
+  },
+
+  processForBoolean: function (result, success, failure, args) {
+    if (result) {
+      success.apply(this, args);
+    } else {
+      failure.apply(this, args);
+    }
+  },
+
+  processForPromise: function  (result, success, failure, args) {
+    var self = this;
+
+    result.then(function () {
+      success.apply(self, args);
+    },
+    function () {
+      failure.apply(self, args);
+    });
   }
 });
 
@@ -232,7 +261,21 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
     if (this.isElementInViewport(this.getSelectedCell())) {
       event.preventDefault();
     }
-  }
+  },
+
+  moveAfterEdition: function (data) {
+    if (data.event.which === this.keyCodes.ENTER) {
+      this.moveDown();
+    }
+
+    if (data.event.which === this.keyCodes.TAB) {
+      if (data.event.shiftKey) {
+        this.moveLeft();
+      } else {
+        this.moveRight();
+      }
+    }
+  }.on('cellEdited')
 });
 Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatableUtils, {
   protectedClass: 'protected',
@@ -386,37 +429,18 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
     event.stopPropagation();
     event.preventDefault();
 
-    validationResult = validator.apply(this, [value, row, column]);
-    if (typeof(validationResult) === 'boolean') {
-      this.processDirectEdition(validationResult, value, row, column, applicator);
-      return;
-    }
-    this.processPromiseEdition(validationResult, value, row, column, applicator);
+    this.validateAndProcess(
+      validator,
+      this.processEditionSuccess,
+      this.processEditionFailure,
+      [value, row, column, applicator, event]);
   },
 
-  processDirectEdition: function (validationResult, value, row, column, applicator) {
-    if (validationResult) {
-      this.processEditionSuccess(value, row, column, applicator);
-    } else {
-      this.processEditionFailure();
-    }
-  },
-
-  processPromiseEdition: function (validationResult, value, row, column, applicator) {
-    var self = this;
-
-    validationResult.then(function () {
-        self.processEditionSuccess(value, row, column, applicator);
-      },
-      function () {
-        self.processEditionFailure();
-      });
-  },
-
-  processEditionSuccess: function (value, row, column, applicator) {
+  processEditionSuccess: function (value, row, column, applicator, event) {
     this.getSelectedCell().focus();
     applicator.apply(this, [value, row, column]);
     this.set('editorShown', false);
+    this.notifyEvent('cellEdited', {value: value, row: row, column: column, event: event});
   },
 
   processEditionFailure: function () {

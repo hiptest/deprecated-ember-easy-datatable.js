@@ -165,5 +165,5 @@
     sut.behaviors.keyboard.doSomething.restore();
     sut.behaviors.keyboard.shouldNotBeCalled.restore();
     sut.doSomethingElse.restore();
-  })
+  });
 })();

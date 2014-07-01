@@ -154,13 +154,14 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
       validator,
       this.processEditionSuccess,
       this.processEditionFailure,
-      [value, row, column, applicator]);
+      [value, row, column, applicator, event]);
   },
 
-  processEditionSuccess: function (value, row, column, applicator) {
+  processEditionSuccess: function (value, row, column, applicator, event) {
     this.getSelectedCell().focus();
     applicator.apply(this, [value, row, column]);
     this.set('editorShown', false);
+    this.notifyEvent('cellEdited', {value: value, row: row, column: column, event: event});
   },
 
   processEditionFailure: function () {

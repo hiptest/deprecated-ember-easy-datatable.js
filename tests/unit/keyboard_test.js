@@ -23,7 +23,7 @@
     sinon.stub(sut, 'moveRight', Ember.K);
     sinon.stub(sut, 'moveDown', Ember.K);
     sinon.stub(sut, 'moveLeft', Ember.K);
-    sinon.stub(sut, 'preventDefaultInViewport', Ember.K)
+    sinon.stub(sut, 'preventDefaultInViewport', Ember.K);
 
     sut.move({which: 38});
     ok(sut.moveUp.calledOnce,

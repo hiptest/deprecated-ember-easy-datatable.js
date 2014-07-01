@@ -29,7 +29,7 @@
         ['Row 3', '3', '13', '23']
       ])
       .clickOnDatatableCell(1, 1)
-      .pressEnterInDatatable()
+      .pressEscInDatatable()
       .pressCtrlInserKeyInDatatable()
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],
@@ -59,7 +59,7 @@
         ['Row 3', '3', '13', '23']
       ])
       .clickOnDatatableCell(1, 1)
-      .pressEnterInDatatable()
+      .pressEscInDatatable()
       .pressCtrlInserKeyInDatatable()
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],

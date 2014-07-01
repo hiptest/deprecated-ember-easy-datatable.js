@@ -138,5 +138,19 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
     if (this.isElementInViewport(this.getSelectedCell())) {
       event.preventDefault();
     }
-  }
+  },
+
+  moveAfterEdition: function (data) {
+    if (data.event.which === this.keyCodes.ENTER) {
+      this.moveDown();
+    }
+
+    if (data.event.which === this.keyCodes.TAB) {
+      if (data.event.shiftKey) {
+        this.moveLeft();
+      } else {
+        this.moveRight();
+      }
+    }
+  }.on('cellEdited')
 });
