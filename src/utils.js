@@ -33,11 +33,11 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   },
 
   getColumnFor: function (element) {
-    return element.closest('tr').find('th, td').index(element);
+    return element && element.closest('tr').find('th, td').index(element);
   },
 
   getRowFor: function(element) {
-    return element.closest('tbody').find('tr').index(element.closest('tr'));
+    return element && element.closest('tbody').find('tr').index(element.closest('tr'));
   },
 
   notifyEvent: function (event, data) {

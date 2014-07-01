@@ -55,6 +55,9 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
       .on('blur', function () {
         self.removeErrorClasses($(this).parent());
       })
+      .on('focus, click', function (event) {
+        event.stopPropagation();
+      })
       .on('keydown', function (event) {
         if (event.which === self.keyCodes.ESC) {
           $(this).parent().focus();

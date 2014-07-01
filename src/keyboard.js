@@ -119,11 +119,9 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
 
   isElementInViewport: function (el) {
     // Based on http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport/7557433#7557433
-    //special bonus for those using jQuery
-    if (el instanceof jQuery) {
-        el = el[0];
+    if (Ember.isNone(el)) {
+      return;
     }
-
     var rect = el.getBoundingClientRect();
 
     return (
@@ -135,7 +133,8 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
   },
 
   preventDefaultInViewport: function (event) {
-    if (this.isElementInViewport(this.getSelectedCell())) {
+    var selectedCell = this.getSelectedCell();
+    if (selectedCell && this.isElementInViewport(selectedCell.get(0))) {
       event.preventDefault();
     }
   },

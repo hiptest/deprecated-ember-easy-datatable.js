@@ -169,6 +169,6 @@
         ['Row 3', '3', '13', '23']
       ])
       .assertSelectedDatatableCell(3, 2,
-        'If the cell value is validated using shift+tab, then cell on the left is selected')
+        'If the cell value is validated using shift+tab, then cell on the left is selected');
   });
 })();
