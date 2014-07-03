@@ -81,4 +81,132 @@
     equal(sut.getRowFor($('#sample1 thead th:first')), -1,
       '... except for header element, there it returns -1');
   });
+
+  test('notifyEvent', function () {
+    var sut = Ember.Object.createWithMixins(Ember.EasyDatatableUtils);
+
+    sut.notifyEvent('someEvent', {my: 'data'});
+    ok(true, 'If no datatable is set, nothing happens ...');
+
+    sut.set('datatable', Ember.Object.create({
+      dispatchEvent: Ember.K
+    }));
+
+    sinon.spy(sut.get('datatable'), 'dispatchEvent');
+    sut.notifyEvent('someEvent', {my: 'data'});
+
+    deepEqual(sut.get('datatable').dispatchEvent.getCall(0).args, ['someEvent', {my: 'data'}],
+      'Otherwise it calls the "dispatchEvent" method on the datatable');
+
+    sut.get('datatable').dispatchEvent.restore();
+  });
+
+  test('validateAndProcess', function () {
+    var sut = Ember.Object.createWithMixins(Ember.EasyDatatableUtils, {
+      booleanValidator: function (x) {
+        return x > 1;
+      },
+
+      promiseValidator: function (x) {
+        return new Ember.RSVP.Promise(function (resolve, reject) {
+          if (x > 1) {
+            resolve();
+          } else {
+            reject();
+          }
+        });
+      },
+
+      otherValidator: function () {
+        return [];
+      },
+
+      successCallback: Ember.K,
+      failureCallback: Ember.K
+    });
+
+    sinon.stub(sut, 'processForBoolean', Ember.K);
+    sinon.stub(sut, 'processForPromise', Ember.K);
+    sinon.spy(sut, 'booleanValidator');
+    sinon.spy(sut, 'promiseValidator');
+
+    sut.validateAndProcess(sut.booleanValidator, sut.successCallback, sut.failureCallback, [1, 2, 3]);
+    deepEqual(sut.booleanValidator.getCall(0).args, [1, 2, 3],
+      'It calls the validator to determine the result type ...');
+    deepEqual(sut.processForBoolean.getCall(0).args, [false, sut.successCallback, sut.failureCallback, [1, 2, 3]],
+      '... and calls the processor for the type, using the result as first argument');
+
+    sut.validateAndProcess(sut.otherValidator, sut.successCallback, sut.failureCallback, [7, 8, 9]);
+    ok(sut.processForBoolean.calledTwice,
+      'It uses booleanValidator by default (if the result is not a Ember.RSVP.Promise)');
+
+    sut.validateAndProcess(sut.promiseValidator, sut.successCallback, sut.failureCallback, [4, 5, 6]);
+    deepEqual(sut.promiseValidator.getCall(0).args, [4, 5, 6],
+      'The process with promise is the same, calling the validator ...');
+    deepEqual(sut.processForPromise.getCall(0).args.slice(1), [sut.successCallback, sut.failureCallback, [4, 5, 6]],
+      '... calling the correct processor ...');
+    ok(sut.processForPromise.getCall(0).args[0] instanceof Ember.RSVP.Promise,
+      '... using the validation result as first argument');
+
+    sut.processForBoolean.restore();
+    sut.processForPromise.restore();
+    sut.booleanValidator.restore();
+    sut.promiseValidator.restore();
+  });
+
+  test('processForBoolean', function () {
+    var sut = Ember.Object.createWithMixins(Ember.EasyDatatableUtils, {
+      successCallback: Ember.K,
+      failureCallback: Ember.K
+    });
+
+    sinon.spy(sut, 'successCallback');
+    sinon.spy(sut, 'failureCallback');
+
+    sut.processForBoolean(true, sut.successCallback, sut.failureCallback, [1, 2, 3]);
+    deepEqual(sut.successCallback.getCall(0).args, [1, 2, 3],
+      'If the result is true, it calls the success callback ...');
+
+    sut.processForBoolean(false, sut.successCallback, sut.failureCallback, [4, 5, 6]);
+    deepEqual(sut.failureCallback.getCall(0).args, [4, 5, 6],
+      '... otherwise it calls the failure callback');
+
+    sut.successCallback.restore();
+    sut.failureCallback.restore();
+  });
+
+  test('processForPromise', function () {
+
+    var sut = Ember.Object.createWithMixins(Ember.EasyDatatableUtils, {
+      promiseValidator: function (x) {
+        return new Ember.RSVP.Promise(function(resolve, reject){
+          if (x > 2) {
+            resolve(x);
+          } else {
+            reject(x);
+          }
+        });
+      },
+      successCallback: Ember.K,
+      failureCallback: Ember.K
+    });
+
+    sinon.spy(sut, 'successCallback');
+    sinon.spy(sut, 'failureCallback');
+
+    Ember.run(function () {
+      sut.processForPromise(sut.promiseValidator(3), sut.successCallback, sut.failureCallback, [1, 2, 3]);
+    });
+    deepEqual(sut.successCallback.getCall(0).args, [1, 2, 3],
+      'If the result is true, it calls the success callback ...');
+
+    Ember.run(function() {
+      sut.processForPromise(sut.promiseValidator(0), sut.successCallback, sut.failureCallback, [4, 5, 6]);
+    });
+    deepEqual(sut.failureCallback.getCall(0).args, [4, 5, 6],
+      '... otherwise it calls the failure callback');
+
+    sut.successCallback.restore();
+    sut.failureCallback.restore();
+ });
 })();

@@ -51,10 +51,10 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   validateAndProcess: function (validator, success, failure, args) {
     var result = validator.apply(this, args);
 
-    if (typeof(result) === 'boolean') {
-      this.processForBoolean(result, success, failure, args);
-    } else {
+    if (result instanceof Ember.RSVP.Promise) {
       this.processForPromise(result, success, failure, args);
+    } else  {
+      this.processForBoolean(result, success, failure, args);
     }
   },
 
