@@ -134,6 +134,7 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
 
   preventDefaultInViewport: function (event) {
     var selectedCell = this.getSelectedCell();
+
     if (selectedCell && this.isElementInViewport(selectedCell.get(0))) {
       event.preventDefault();
     }

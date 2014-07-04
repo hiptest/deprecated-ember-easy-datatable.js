@@ -143,4 +143,65 @@
 
     jQuery.fn.focus.restore();
   });
+
+  test('preventDefaultInViewport', function () {
+    var event = {preventDefault: Ember.K},
+      isElementInViewportStub = sinon.stub(sut, 'isElementInViewport');
+    sinon.spy(event, 'preventDefault');
+
+    ok(Ember.isNone(sut.getSelectedCell()),
+      'No cell is selectd yet ...');
+
+    sut.preventDefaultInViewport(event);
+    equal(event.preventDefault.callCount, 0,
+      '... so the system does not try to prevent the default event ...');
+    equal(isElementInViewportStub.callCount, 0,
+      '... and did not event check if the element was in the viewport (this avoid JS errors)');
+
+    selectCell(0, 0);
+    isElementInViewportStub.returns(true);
+    sut.preventDefaultInViewport(event);
+
+    equal(event.preventDefault.callCount, 1,
+      'We did a movement and the selected element is visible, so we prevent the default element behavior (which is scrolling in the page)');
+
+    isElementInViewportStub.returns(false);
+    sut.preventDefaultInViewport(event);
+
+    equal(event.preventDefault.callCount, 1,
+      'We did a movement and the selected element is outside the viewport, we do not prevent default and the page should scroll to keep the element visible');
+
+    event.preventDefault.restore();
+    sut.isElementInViewport.restore();
+  });
+
+  test('moveAfterEdition', function () {
+    sinon.stub(sut, 'moveDown', Ember.K);
+    sinon.stub(sut, 'moveLeft', Ember.K);
+    sinon.stub(sut, 'moveRight', Ember.K);
+    sinon.spy(sut, 'moveAfterEdition');
+
+    sut.trigger('cellEdited', {event: {}});
+    ok(sut.moveAfterEdition.calledOnce,
+      'It is binded on the "cellEdited" event');
+
+    sut.trigger('cellEdited', {event: {which: 13}});
+    ok(sut.moveDown.calledOnce,
+       'If the cell was edited by hiting the enter key, then the cell below is selected');
+
+    sut.trigger('cellEdited', {event: {which: 9}});
+    ok(sut.moveDown.calledOnce,
+       'If the cell was edited by hiting the tab key, then the cell on the right is selected ...');
+
+    sut.trigger('cellEdited', {event: {which: 9, shiftKey: true}});
+    ok(sut.moveDown.calledOnce,
+       '... expect if the shift key was pressed, in which case it is the cell on the left that gets selected');
+
+
+    sut.moveDown.restore();
+    sut.moveLeft.restore();
+    sut.moveRight.restore();
+    sut.moveAfterEdition.restore();
+  });
+
 })();
