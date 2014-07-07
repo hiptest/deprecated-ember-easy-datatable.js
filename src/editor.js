@@ -73,6 +73,24 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
         }
       })
       .focus();
+    this.updateCSSForFirefox();
+  },
+
+  updateCSSForFirefox: function () {
+    // Firefox does not really display the input as expected ...
+    if (navigator.userAgent.search("Firefox") === -1) {
+      return;
+    }
+
+    var selectedCell = this.getSelectedCell(),
+      input = selectedCell.find('input');
+
+    input.css({
+      width: selectedCell.outerWidth(),
+      height: selectedCell.outerHeight(),
+      top: selectedCell.position().top,
+      left: selectedCell.position().left
+    });
   },
 
   getCellValue: function (cell) {

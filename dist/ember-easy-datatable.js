@@ -51,10 +51,10 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
   validateAndProcess: function (validator, success, failure, args) {
     var result = validator.apply(this, args);
 
-    if (typeof(result) === 'boolean') {
-      this.processForBoolean(result, success, failure, args);
-    } else {
+    if (result instanceof Ember.RSVP.Promise) {
       this.processForPromise(result, success, failure, args);
+    } else  {
+      this.processForBoolean(result, success, failure, args);
     }
   },
 
@@ -257,6 +257,7 @@ Ember.EasyDatatableKeyboardMoves = Ember.Object.extend(Ember.Evented, Ember.Easy
 
   preventDefaultInViewport: function (event) {
     var selectedCell = this.getSelectedCell();
+
     if (selectedCell && this.isElementInViewport(selectedCell.get(0))) {
       event.preventDefault();
     }
@@ -351,6 +352,24 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
         }
       })
       .focus();
+    this.updateCSSForFirefox();
+  },
+
+  updateCSSForFirefox: function () {
+    // Firefox does not really display the input as expected ...
+    if (navigator.userAgent.search("Firefox") === -1) {
+      return;
+    }
+
+    var selectedCell = this.getSelectedCell(),
+      input = selectedCell.find('input');
+
+    input.css({
+      width: selectedCell.outerWidth(),
+      height: selectedCell.outerHeight(),
+      top: selectedCell.position().top,
+      left: selectedCell.position().left
+    })
   },
 
   getCellValue: function (cell) {
