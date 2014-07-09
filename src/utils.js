@@ -17,6 +17,16 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     SHIFT: 16
   },
 
+  needFirefoxFixes: function () {
+    var match = navigator.userAgent.match(/Firefox\/(\d+)/);
+    if (Ember.isNone(match)) {
+      return false;
+    }
+
+    // Not 100% sure about the version were it started working correctly ...
+    return parseInt(match[1]) < 30;
+  },
+
   table: function () {
     return $(this.get('tableSelector'));
   }.property('tableSelector'),

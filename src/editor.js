@@ -78,7 +78,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
 
   updateCSSForFirefox: function () {
     // Firefox does not really display the input as expected ...
-    if (navigator.userAgent.search("Firefox") === -1) {
+    if (!this.needFirefoxFixes()) {
       return;
     }
 
