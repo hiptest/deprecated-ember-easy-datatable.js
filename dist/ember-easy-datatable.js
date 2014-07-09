@@ -17,6 +17,16 @@ Ember.EasyDatatableUtils = Ember.Mixin.create({
     SHIFT: 16
   },
 
+  needFirefoxFixes: function () {
+    var match = navigator.userAgent.match(/Firefox\/(\d+)/);
+    if (Ember.isNone(match)) {
+      return false;
+    }
+
+    // Not 100% sure about the version were it started working correctly ...
+    return parseInt(match[1]) < 30;
+  },
+
   table: function () {
     return $(this.get('tableSelector'));
   }.property('tableSelector'),
@@ -357,7 +367,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
 
   updateCSSForFirefox: function () {
     // Firefox does not really display the input as expected ...
-    if (navigator.userAgent.search("Firefox") === -1) {
+    if (!this.needFirefoxFixes()) {
       return;
     }
 
@@ -369,7 +379,7 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
       height: selectedCell.outerHeight(),
       top: selectedCell.position().top,
       left: selectedCell.position().left
-    })
+    });
   },
 
   getCellValue: function (cell) {
