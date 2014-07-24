@@ -73,17 +73,19 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
         }
       })
       .focus();
-    this.updateCSSForFirefox();
+    this.placeEditor();
+    this.selectAllEditorContent();
   },
 
-  updateCSSForFirefox: function () {
-    // Firefox does not really display the input as expected ...
-    if (!this.needFirefoxFixes()) {
-      return;
-    }
-
+  placeEditor: function () {
     var selectedCell = this.getSelectedCell(),
       input = selectedCell.find('input');
+
+    // We need absolute positionning before checking the width/height of the cell
+    // Otherwise, the input counts in the cell size
+    input.css({
+      position: 'absolute'
+    });
 
     input.css({
       width: selectedCell.outerWidth(),
@@ -91,6 +93,15 @@ Ember.EasyDatatableEditor = Ember.Object.extend(Ember.Evented, Ember.EasyDatatab
       top: selectedCell.position().top,
       left: selectedCell.position().left
     });
+  },
+
+  selectAllEditorContent: function () {
+    var selectedCell = this.getSelectedCell(),
+      input = selectedCell.find('input'),
+      domInput = input.get(0);
+
+    domInput.selectionStart = 0;
+    domInput.selectionEnd = input.val().length;
   },
 
   getCellValue: function (cell) {
