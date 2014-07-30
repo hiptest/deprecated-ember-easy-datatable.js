@@ -163,7 +163,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
   },
 
   getSelectedCell: function () {
-    return $(document.activeElement).closest('td, th');
+    return this.getDatatable().find('th.selected, td.selected').eq(0);
   },
 
   getSelectedPosition: function () {
@@ -187,7 +187,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
     this.getDatatable().find('tbody tr').each(function () {
       var row = [];
       $(this).find('td').each(function () {
-        row.push($(this).text());
+        row.push($(this).text().trim());
       });
       datatable.push(row);
     });
@@ -196,7 +196,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
   getHighlightedCellsText: function () {
     return this.getDatatable().find('td.highlighted, th.highlighted').map(function () {
-      return $(this).text();
+      return $(this).text().trim();
     }).get();
   },
 

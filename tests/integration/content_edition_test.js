@@ -1,12 +1,21 @@
 (function () {
-  module('%@ integration - content edition'.fmt(Ember.EasyDatatable.toString()), {
+  var table;
+  module('%@ integration - content edition'.fmt(EasyDatatable.toString()), {
     setup: function () {
-      App.IndexView = Ember.View.extend({
-        template: Ember.Handlebars.compile(makeSampleTable()),
+      EasyDatatable.declareDatatable(App);
+      table = EasyDatatable.makeDatatable({
+        headers: ['', 'Name', 'Value 1', 'Value 2', 'Value 3'],
+        body: [
+          [{isHeader: true, value: '#0'}, 'Row 0', 0, 10, 20],
+          [{isHeader: true, value: '#1'}, 'Row 1', 1, 11, 21],
+          [{isHeader: true, value: '#2'}, 'Row 2', 2, 12, 22],
+          [{isHeader: true, value: '#3'}, 'Row 3', 3, 13, 23]
+        ]
+      });
 
-        addDatatable: function () {
-          Ember.EasyDatatable.create({tableSelector: '#sample1'});
-        }.on('didInsertElement')
+      App.IndexView = Ember.View.extend({
+        table: table,
+        template: Ember.Handlebars.compile('{{render "easy_datatable" view.table}}'),
       });
 
       DatatableIntegrationHelpers.registerHelpers();
@@ -97,10 +106,12 @@
     expect(6);
 
     visit('/')
-      .then(function () {
-        $('#app table thead th:first').addClass('protected');
-        $('#app table tbody tr:odd th').addClass('protected');
-        $('#app table tbody tr:even td:first').addClass('protected');
+      .then(function (app) {
+        table.set('headers.cells.firstObject.isProtected', true);
+        table.get('body').forEach(function (row, index) {
+          row.get('cells')[index % 2 === 0 ? 1 : 0].set('isProtected', true);
+        });
+        return wait(app);
       })
       .clickOnDatatableCell(0, 0)
       .assertEditorNotShown(
@@ -129,7 +140,7 @@
       .pressEscInDatatable();
   });
 
-  test('cells with a class "protected" can not be edited', function () {
+  test('navigation based on enter', function () {
     expect(7);
 
     visit('/')

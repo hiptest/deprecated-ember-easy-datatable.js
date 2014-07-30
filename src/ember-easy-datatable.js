@@ -118,7 +118,6 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     return position.row;
   }.property('selectedCellPosition'),
 
-
   fixPosition: function (position) {
     var columnCount = this.get('model.body.firstObject.cells.length'),
       rowCount = this.get('model.body.length');
@@ -190,6 +189,7 @@ EasyDatatable.EasyDatatableRowView = Ember.View.extend({
 EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
+  showEditor: false,
 
   columnIndex: function () {
     return this.get('parentController.model.cells').indexOf(this.get('model'));
@@ -215,7 +215,11 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
-  classNameBindings: ['controller.isProtected:protected', 'controller.isHighlighted:highlighted'],
+  classNameBindings: [
+    'controller.isProtected:protected',
+    'controller.isSelected:selected',
+    'controller.isHighlighted:highlighted'
+  ],
   attributeBindings: ['tabindex'],
   tabindex: 1,
 
@@ -230,6 +234,12 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
 
   keyDown: function (event) {
     this.navigate(event);
+  },
+
+  click: function () {
+    if (!this.get('controller.isProtected')) {
+      this.set('controller.showEditor', true);
+    }
   },
 
   navigate: function (event) {
@@ -249,6 +259,10 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
     if (!Ember.isNone(action)) {
       event.preventDefault();
       this.get('controller.datatableController').send(action);
+    } else {
+      if (!this.get('controller.isProtected')) {
+        this.set('controller.showEditor', true);
+      }
     }
   },
 
@@ -263,3 +277,54 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   }.observes('controller.isSelected')
 });
 
+EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
+  originalValue: null,
+
+  storeOriginalValue: function () {
+    this.set('originalValue', this.get('value'));
+  }.on('init'),
+
+  restoreOriginalValue: function () {
+    this.set('parentView.controller.model.value', this.get('originalValue'));
+  },
+
+  keyDown: function (event) {
+    if (event.which === 27) {
+      this.restoreOriginalValue();
+      this.$().blur();
+    }
+
+    if (event.which === 13) {
+      this.get('parentView.controller.datatableController').send('navigateDown');
+      this.$().blur();
+    }
+
+    if (event.which === 9) {
+      event.preventDefault();
+      this.get('parentView.controller.datatableController').send(event.shiftKey ? 'navigateLeft' : 'navigateRight');
+      this.$().blur();
+    }
+
+    event.stopPropagation();
+  },
+
+  focusOut: function () {
+    this.set('parentView.controller.showEditor', false);
+    this.get('parentView').focusWhenSelected();
+  },
+
+  focusOnShow: function () {
+    var selectedCell = this.$().closest('th, td');
+
+    // We need absolute positionning before checking the width/height of the cell
+    // Otherwise, the input counts in the cell size
+    this.$()
+      .css({position: 'absolute'})
+      .css({
+        width: selectedCell.outerWidth(),
+        height: selectedCell.outerHeight(),
+        top: selectedCell.position().top,
+        left: selectedCell.position().left
+      }).focus();
+  }.on('didInsertElement')
+});
