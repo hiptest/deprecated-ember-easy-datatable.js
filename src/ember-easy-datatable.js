@@ -189,7 +189,19 @@ EasyDatatable.EasyDatatableRowView = Ember.View.extend({
 EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
-  showEditor: false,
+  editorShown: false,
+
+  actions: {
+    showEditor: function () {
+      if (!this.get('isProtected')) {
+        this.set('editorShown', true);
+      }
+    },
+
+    hideEditor: function () {
+      this.set('editorShown', false);
+    }
+  },
 
   columnIndex: function () {
     return this.get('parentController.model.cells').indexOf(this.get('model'));
@@ -237,9 +249,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   },
 
   click: function () {
-    if (!this.get('controller.isProtected')) {
-      this.set('controller.showEditor', true);
-    }
+    this.get('controller').send('showEditor');
   },
 
   navigate: function (event) {
@@ -260,9 +270,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
       event.preventDefault();
       this.get('controller.datatableController').send(action);
     } else {
-      if (!this.get('controller.isProtected')) {
-        this.set('controller.showEditor', true);
-      }
+      this.get('controller').send('showEditor');
     }
   },
 
@@ -309,7 +317,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   },
 
   focusOut: function () {
-    this.set('parentView.controller.showEditor', false);
+    this.get('parentView.controller').send('hideEditor');
     this.get('parentView').focusWhenSelected();
   },
 
