@@ -191,20 +191,6 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   attributeBindings: ['tabindex'],
   tabindex: 1,
 
-  keyCodes: {
-    ARROW_LEFT: 37,
-    ARROW_UP: 38,
-    ARROW_RIGHT: 39,
-    ARROW_DOWN: 40,
-    ENTER: 13,
-    TAB: 9,
-    ESC: 27,
-    INSER: 45,
-    DEL: 46,
-    PLUS: 107,
-    SHIFT: 16
-  },
-
   setTagName: function () {
     this.set('tagName', this.get('controller.model.isHeader') ? 'th' : 'td');
   }.observes('controller.model'),
@@ -230,10 +216,10 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
 
     if (event.which === 9) {
       action = event.shiftKey ? 'navigateLeft' : 'navigateRight';
-      event.preventDefault();
     }
 
     if (!Ember.isNone(action)) {
+      event.preventDefault();
       this.get('controller.datatableController').send(action);
     }
   },
