@@ -887,6 +887,22 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     }
   },
 
+  highlightedColumn: function () {
+    var position = this.get('selectedCellPosition');
+    if (Ember.isNone(position) || position.row !== -1) return;
+
+    return position.column;
+  }.property('selectedCellPosition'),
+
+  highlightedRow: function () {
+    var position = this.get('selectedCellPosition'),
+      cell = this.get('selectedCell');
+
+    if (Ember.isNone(cell) || !cell.get('isHeader') || position.row < 0) return;
+    return position.row;
+  }.property('selectedCellPosition'),
+
+
   fixPosition: function (position) {
     var columnCount = this.get('model.body.firstObject.cells.length'),
       rowCount = this.get('model.body.length');
@@ -909,28 +925,30 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     return position;
   },
 
+  selectedCell: function () {
+    var position = this.get('selectedCellPosition');
+    if (Ember.isNone(position) || Ember.isNone(position.row) || Ember.isNone(position.column)) return;
+
+    if (position.row === -1) {
+      return this.get('model.headers.cells')[position.column];
+    }
+    return this.get('model.body')[position.row].get('cells')[position.column];
+  }.property('selectedCellPosition'),
+
   updateSelection: function () {
-    var position = this.get('selectedCellPosition'),
-      previous = this.get('previouslySelectedCell')
-      cell = null;
+    var previous = this.get('previouslySelectedCell')
+      cell = this.get('selectedCell');
 
     if (!Ember.isNone(previous)) {
       previous.set('isSelected', false);
     }
 
-    if (Ember.isNone(position.row) || Ember.isNone(position.column)) {
+    if (Ember.isNone(cell)) {
       this.set('previouslySelectedCell', null);
-      return;
-    }
-
-    if (position.row === -1) {
-      cell = this.get('model.headers.cells')[position.column];
     } else {
-      cell = this.get('model.body')[position.row].get('cells')[position.column];
+      cell.set('isSelected', true);
+      this.set('previouslySelectedCell', cell);
     }
-
-    cell.set('isSelected', true);
-    this.set('previouslySelectedCell', cell);
   }.observes('selectedCellPosition')
 });
 
@@ -967,11 +985,21 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       column: this.get('columnIndex')
     }
   }.property('rowIndex', 'columnIndex'),
+
+  inHighlightedRow: function () {
+    return this.get('position.row') === this.get('datatableController.highlightedRow');
+  }.property('position', 'datatableController.highlightedRow'),
+
+  inHighlightedColumn: function () {
+    return this.get('position.column') === this.get('datatableController.highlightedColumn');
+  }.property('position', 'datatableController.highlightedColumn'),
+
+  isHighlighted: Ember.computed.or('inHighlightedRow', 'inHighlightedColumn')
 });
 
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
-  classNameBindings: ['isProtected:protected'],
+  classNameBindings: ['controller.isProtected:protected', 'controller.isHighlighted:highlighted'],
   attributeBindings: ['tabindex'],
   tabindex: 1,
 

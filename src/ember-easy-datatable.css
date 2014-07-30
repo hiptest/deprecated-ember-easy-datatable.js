@@ -2,11 +2,11 @@ table {
   position: relative;
 }
 
-td.selected {
+td.highlighted {
   background-color: #d9f6fe;
 }
 
-th.selected {
+th.highlighted {
   background-color: #ffb93e;
 }
 

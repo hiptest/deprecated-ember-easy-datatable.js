@@ -27,7 +27,9 @@
       EasyDatatable.declareDatatable(App);
       App.IndexView = Ember.View.extend({
         table: EasyDatatable.makeDatatable({
-          headers: ['', 'col 1', 'col 2', 'col 3', 'col 4', 'col 5'],
+          headers: [
+            {isProtected: true, value: ''}, 'col 1', 'col 2', 'col 3', 'col 4', 'col 5'
+          ],
           body: [
             [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
             [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
