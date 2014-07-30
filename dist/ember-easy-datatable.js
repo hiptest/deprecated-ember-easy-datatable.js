@@ -1017,6 +1017,11 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
       },
       action = mapping[event.which];
 
+    if (event.which === 9) {
+      action = event.shiftKey ? 'navigateLeft' : 'navigateRight';
+      event.preventDefault();
+    }
+
     if (!Ember.isNone(action)) {
       this.get('controller.datatableController').send(action);
     }
