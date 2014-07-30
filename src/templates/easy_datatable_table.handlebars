@@ -1,0 +1,8 @@
+<table class="table table-stripped table-collapsed">
+  <thead>
+    {{render "easy_datatable_row" headers}}
+  </thead>
+  <tbody>
+    {{#each row in body}}{{render "easy_datatable_row" row}}{{/each}}
+  </tbody>
+</table>

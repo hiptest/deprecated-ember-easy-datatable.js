@@ -3,11 +3,36 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-qunit-istanbul');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-ember-templates');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
 
   grunt.initConfig({
+    watch: {
+      scripts: {
+        files: ['src/*.js'],
+        tasks: ['concat'],
+      },
+      templates: {
+        files: ['src/templates/*.handlebars'],
+        tasks: ['emberTemplates', 'concat'],
+      }
+    },
+
+    emberTemplates: {
+      compile: {
+        options: {
+          templateBasePath: /src\/templates\//
+        },
+        files: {
+          'src/templates/compiled.js': 'src/templates/*.handlebars'
+        }
+      },
+    },
     concat: {
       dist: {
         src: [
+          'src/templates/compiled.js',
           'src/utils.js',
           'src/highlighter.js',
           'src/keyboard.js',
@@ -46,6 +71,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', 'jshint');
+  grunt.registerTask('default', ['emberTemplates', 'concat', 'jshint']);
   grunt.registerTask('travis', ['jshint:sources',  'qunit']);
 };

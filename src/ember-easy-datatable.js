@@ -1,85 +1,246 @@
-Ember.EasyDatatable = Ember.Object.extend(Ember.Evented, {
-  tabindex: 1,
-  tableSelector: '',
-  selectionClass: 'selected',
-  protectedClass: 'protected',
-  validationErrorClasses: ['error'],
-
-  behaviors: null,
-
-  allowedBehaviors: null,
-  behaviorContructors: {
-    highlighter: Ember.EasyDatatableHighlighter,
-    keyboard: Ember.EasyDatatableKeyboardMoves,
-    editor: Ember.EasyDatatableEditor,
-    orderer: Ember.EasyDatatableOrderer,
-    inserter: Ember.EasyDatatableInserter,
-    remover: Ember.EasyDatatableRemover
-  },
-  behaviorAttributes: {
-    highlighter: ['selectionClass'],
-    keyboard: [],
-    editor: [
-      'protectedClass',
-      'validationErrorClasses',
-      'validateCellValue',
-      'validateRowHeaderValue',
-      'validateColumnHeaderValue',
-      'updateCellValue',
-      'updateRowHeaderValue',
-      'updateColumnHeaderValue'
-    ],
-    orderer: [
-      'moveColumnRight',
-      'moveColumnLeft',
-      'moveRowUp',
-      'moveRowDown',
-      'allowMoveColumnRight',
-      'allowMoveColumnLeft',
-      'allowMoveRowUp',
-      'allowMoveRowDown'
-    ],
-    inserter: [],
-    remover: []
-  },
-
-  addBehaviors: function () {
-    var self = this,
-      allowedBehaviors = this.get('allowedBehaviors') || Ember.keys(this.get('behaviorContructors')),
-      behaviors = {};
-
-    allowedBehaviors.forEach(function (behavior) {
-      var constructor = self.get('behaviorContructors')[behavior],
-        attributes = self.makeSubObjectsCreationHash(self.get('behaviorAttributes')[behavior]);
-
-      behaviors[behavior] = constructor.create(attributes);
+EasyDatatable = Ember.Namespace.create({
+  declareDatatable: function (namespace) {
+    var copiedObjects = Ember.keys(EasyDatatable).filter(function (key) {
+      return key.indexOf('EasyDatatable') === 0
     });
-    this.set('behaviors', behaviors);
-  }.on('init'),
+    copiedObjects.forEach(function (obj) {
+      namespace[obj] = EasyDatatable[obj].extend();
+    })
+  },
 
-  makeSubObjectsCreationHash: function (copiedKeys) {
-    var self = this,
-      creationElements = {
-        datatable: this,
-        tabindex: this.get('tabindex'),
-        tableSelector: this.get('tableSelector')
-      };
-
-    copiedKeys.forEach(function (key) {
-      var value = self.get(key) || self[key];
-
-      if (!Ember.isNone(value)) {
-        creationElements[key] = value;
+  makeDatatable: function (datatable) {
+    if (datatable instanceof Array) {
+      datatable = {
+        headers: [],
+        body: datatable
       }
-    });
-    return creationElements;
+    }
+
+    var self = this;
+
+    return EasyDatatable.Datatable.create({
+      headers: self.makeHeaderRow(datatable.headers),
+      body: datatable.body.map(function (row) {
+        return self.makeRow(row)
+      })
+    })
   },
 
-  dispatchEvent: function (event, data) {
-    var behaviors = this.get('behaviors');
-    this.trigger(event, data);
-    Ember.keys(behaviors).forEach(function (behavior) {
-      behaviors[behavior].trigger(event, data);
+  makeHeaderRow: function (row) {
+    var dtRow = this.makeRow(row);
+    dtRow.get('cells').forEach(function (item) {
+      item.set('isHeader', true);
     });
+
+    return dtRow;
+  },
+
+  makeRow: function (row) {
+    var self = this;
+
+    return EasyDatatable.DatatableRow.create({
+      cells: row.map(function (item) {
+        return self.makeCell(item)
+      })
+    });
+  },
+
+  makeCell: function (value) {
+    if (!(value instanceof Object)) {
+      value = {value: value}
+    }
+    return EasyDatatable.DatatableCell.create(value);
   }
 });
+
+EasyDatatable.Datatable = Ember.Object.extend({
+  headers: null,
+  body: null
+});
+
+EasyDatatable.DatatableRow = Ember.Object.extend({
+  cells: null
+});
+
+EasyDatatable.DatatableCell = Ember.Object.extend({
+  isSelected: false,
+  isHeader: false,
+  isProtected: false,
+  value: null
+});
+
+EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
+  selectedCellPosition: null,
+  previouslySelectedCell : null,
+
+  actions: {
+    navigateLeft: function () {
+      var current = this.get('selectedCellPosition'),
+        newPosition = {row: current.row, column: current.column - 1};
+
+      this.set('selectedCellPosition', this.fixPosition(newPosition));
+    },
+
+    navigateUp: function () {
+      var current = this.get('selectedCellPosition'),
+        newPosition = {row: current.row - 1, column: current.column};
+
+      this.set('selectedCellPosition', this.fixPosition(newPosition));
+    },
+
+    navigateRight: function () {
+      var current = this.get('selectedCellPosition'),
+        newPosition = {row: current.row, column: current.column + 1};
+
+      this.set('selectedCellPosition', this.fixPosition(newPosition));
+    },
+
+    navigateDown: function () {
+      var current = this.get('selectedCellPosition'),
+        newPosition = {row: current.row + 1, column: current.column};
+
+      this.set('selectedCellPosition', this.fixPosition(newPosition));
+    }
+  },
+
+  fixPosition: function (position) {
+    var columnCount = this.get('model.body.firstObject.cells.length'),
+      rowCount = this.get('model.body.length');
+
+    if (position.column < 0) {
+      position.column = columnCount - 1;
+      position.row -= 1;
+    }
+
+    if (position.column >= columnCount) {
+      position.column = 0;
+      position.row += 1;
+    }
+
+    if (position.row < -1 || position.row >= rowCount) {
+      position.row = null;
+      position.column = null;
+    }
+
+    return position;
+  },
+
+  updateSelection: function () {
+    var position = this.get('selectedCellPosition'),
+      previous = this.get('previouslySelectedCell')
+      cell = null;
+
+    if (!Ember.isNone(previous)) {
+      previous.set('isSelected', false);
+    }
+
+    if (Ember.isNone(position.row) || Ember.isNone(position.column)) {
+      this.set('previouslySelectedCell', null);
+      return;
+    }
+
+    if (position.row === -1) {
+      cell = this.get('model.headers.cells')[position.column];
+    } else {
+      cell = this.get('model.body')[position.row].get('cells')[position.column];
+    }
+
+    cell.set('isSelected', true);
+    this.set('previouslySelectedCell', cell);
+  }.observes('selectedCellPosition')
+});
+
+EasyDatatable.EasyDatatableView = Ember.View.extend({
+  classNames: ['easy-datatable-container']
+});
+
+EasyDatatable.EasyDatatableTableController = Ember.ObjectController.extend({
+  datatableController: Ember.computed.alias('parentController')
+});
+
+EasyDatatable.EasyDatatableRowController = Ember.ObjectController.extend({
+  datatableController: Ember.computed.alias('parentController.datatableController'),
+  rowIndex: function () {
+    return this.get('datatableController.model.body').indexOf(this.get('model'));
+  }.property('model', 'datatableController.model.body.[]')
+});
+
+EasyDatatable.EasyDatatableRowView = Ember.View.extend({
+  tagName: 'tr'
+});
+
+EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
+  datatableController: Ember.computed.alias('parentController.datatableController'),
+  rowIndex: Ember.computed.alias('parentController.rowIndex'),
+
+  columnIndex: function () {
+    return this.get('parentController.model.cells').indexOf(this.get('model'));
+  }.property('model', 'parentController.model.cells.[]'),
+
+  position: function () {
+    return {
+      row: this.get('rowIndex'),
+      column: this.get('columnIndex')
+    }
+  }.property('rowIndex', 'columnIndex'),
+});
+
+EasyDatatable.EasyDatatableCellView = Ember.View.extend({
+  templateName: 'easy_datatable_cell',
+  classNameBindings: ['isProtected:protected'],
+  attributeBindings: ['tabindex'],
+  tabindex: 1,
+
+  keyCodes: {
+    ARROW_LEFT: 37,
+    ARROW_UP: 38,
+    ARROW_RIGHT: 39,
+    ARROW_DOWN: 40,
+    ENTER: 13,
+    TAB: 9,
+    ESC: 27,
+    INSER: 45,
+    DEL: 46,
+    PLUS: 107,
+    SHIFT: 16
+  },
+
+  setTagName: function () {
+    this.set('tagName', this.get('controller.model.isHeader') ? 'th' : 'td');
+  }.observes('controller.model'),
+
+  focusIn: function () {
+    if (this.get('controller.isSelected')) return;
+    this.set('controller.datatableController.selectedCellPosition', this.get('controller.position'));
+  },
+
+  keyDown: function (event) {
+    this.navigate(event);
+  },
+
+  navigate: function (event) {
+    if (event.ctrlKey) return;
+    var mapping = {
+        37: 'navigateLeft',
+        38: 'navigateUp',
+        39: 'navigateRight',
+        40: 'navigateDown'
+      },
+      action = mapping[event.which];
+
+    if (!Ember.isNone(action)) {
+      this.get('controller.datatableController').send(action);
+    }
+  },
+
+  focusWhenSelected: function () {
+    Ember.run.schedule('afterRender', this, function () {
+      if (this.get('controller.isSelected')) {
+        this.$().focus();
+      } else {
+        this.$().blur();
+      }
+    });
+  }.observes('controller.isSelected')
+});
+

@@ -8,47 +8,9 @@
     </script>
 
     <script type="text/x-handlebars" data-template-name="index">
-      <table id="sample1" class="table table-stripped">
-        <thead>
-          <tr>
-            <th class="protected"></th>
-            <th class="protected">Name</th>
-            <th>Value 1</th>
-            <th>Value 2</th>
-            <th>Value 3</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th>#1</th>
-            <td>My first row</td>
-            <td>1</td>
-            <td>2</td>
-            <td class="protected">3</td>
-          </tr>
-          <tr>
-            <th>#2</th>
-            <td>My second row</td>
-            <td>11</td>
-            <td>12</td>
-            <td class="protected">13</td>
-          </tr>
-          <tr>
-            <th>#3</th>
-            <td>My third row</td>
-            <td>21</td>
-            <td>22</td>
-            <td class="protected">23</td>
-          </tr>
-          <tr>
-            <th>#4</th>
-            <td>My last row</td>
-            <td>31</td>
-            <td>32</td>
-            <td class="protected">33</td>
-          </tr>
-        </tbody>
-      </table>
+    <div style="border: 1px solid red">
+      {{render "easy_datatable" view.table}}
+    </div>
     </script>
   </head>
   <body>
@@ -59,19 +21,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.5.1/ember.min.js"></script>
     <script src="../dist/ember-easy-datatable.js"></script>
     <script>
-      App = Ember.Application.create();
+      App = Ember.Application.create({
+        LOG_VIEW_LOOKUPS: true
+      });
+      EasyDatatable.declareDatatable(App);
       App.IndexView = Ember.View.extend({
-        addDatatable: function () {
-          Ember.EasyDatatable.create({
-            tableSelector: '#sample1',
-            validationErrorClasses: ['alert', 'alert-danger'],
-
-            validateCellValue: function (value, row, column) {
-              // Only numeric values are allowed in the cells
-              return column < 2 || !Ember.isNone(value.match(/^[0-9]+$/));
-            },
-          });
-        }.on('didInsertElement')
+        table: EasyDatatable.makeDatatable({
+          headers: ['', 'col 1', 'col 2', 'col 3', 'col 4', 'col 5'],
+          body: [
+            [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
+            [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
+            [{isHeader: true, isProtected: true, value: '#3'}, 21, 22, 23, 24, 25],
+            [{isHeader: true, isProtected: true, value: '#4'}, 31, 32, 33, 34, 35],
+            [{isHeader: true, isProtected: true, value: '#5'}, 41, 42, 43, 44, 45],
+            [{isHeader: true, isProtected: true, value: '#6'}, 51, 52, 53, 54, 55],
+          ]
+        })
       });
     </script>
   </body>
