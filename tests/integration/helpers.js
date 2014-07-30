@@ -195,7 +195,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
   },
 
   getHighlightedCellsText: function () {
-    return this.getDatatable().find('td.selected, th.selected').map(function () {
+    return this.getDatatable().find('td.highlighted, th.highlighted').map(function () {
       return $(this).text();
     }).get();
   },
