@@ -31,31 +31,39 @@
             {isProtected: true, value: ''}, 'col 1', 'col 2', 'col 3', 'col 4', 'col 5'
           ],
           body: [
-            [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
-            [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
-            [{isHeader: true, isProtected: true, value: '#3'}, 21, 22, 23, 24, 25],
-            [{isHeader: true, isProtected: true, value: '#4'}, 31, 32, 33, 34, 35],
-            [{isHeader: true, isProtected: true, value: '#5'}, 41, 42, 43, 44, 45],
-            [{isHeader: true, isProtected: true, value: '#6'}, 51, 52, 53, 54, 55],
-            [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
-            [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
-            [{isHeader: true, isProtected: true, value: '#3'}, 21, 22, 23, 24, 25],
-            [{isHeader: true, isProtected: true, value: '#4'}, 31, 32, 33, 34, 35],
-            [{isHeader: true, isProtected: true, value: '#5'}, 41, 42, 43, 44, 45],
-            [{isHeader: true, isProtected: true, value: '#6'}, 51, 52, 53, 54, 55],
-            [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
-            [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
-            [{isHeader: true, isProtected: true, value: '#3'}, 21, 22, 23, 24, 25],
-            [{isHeader: true, isProtected: true, value: '#4'}, 31, 32, 33, 34, 35],
-            [{isHeader: true, isProtected: true, value: '#5'}, 41, 42, 43, 44, 45],
-            [{isHeader: true, isProtected: true, value: '#6'}, 51, 52, 53, 54, 55],
-            [{isHeader: true, isProtected: true, value: '#1'}, 1, 2, 3, 4, 5],
-            [{isHeader: true, isProtected: true, value: '#2'}, 11, 12, 13, 14, 15],
-            [{isHeader: true, isProtected: true, value: '#3'}, 21, 22, 23, 24, 25],
-            [{isHeader: true, isProtected: true, value: '#4'}, 31, 32, 33, 34, 35],
-            [{isHeader: true, isProtected: true, value: '#5'}, 41, 42, 43, 44, 45],
-            [{isHeader: true, isProtected: true, value: '#6'}, 51, 52, 53, 54, 55],
-          ]
+            [{isHeader: true, isIndex: true, isProtected: true}, 1, 2, 3, 4, 5],
+            [{isHeader: true, isIndex: true, isProtected: true}, 11, 12, 13, 14, 15],
+            [{isHeader: true, isIndex: true, isProtected: true}, 21, 22, 23, 24, 25],
+            [{isHeader: true, isIndex: true, isProtected: true}, 31, 32, 33, 34, 35],
+            [{isHeader: true, isIndex: true, isProtected: true}, 41, 42, 43, 44, 45],
+            [{isHeader: true, isIndex: true, isProtected: true}, 51, 52, 53, 54, 55],
+            [{isHeader: true, isIndex: true, isProtected: true}, 1, 2, 3, 4, 5],
+            [{isHeader: true, isIndex: true, isProtected: true}, 11, 12, 13, 14, 15],
+            [{isHeader: true, isIndex: true, isProtected: true}, 21, 22, 23, 24, 25],
+            [{isHeader: true, isIndex: true, isProtected: true}, 31, 32, 33, 34, 35],
+            [{isHeader: true, isIndex: true, isProtected: true}, 41, 42, 43, 44, 45],
+            [{isHeader: true, isIndex: true, isProtected: true}, 51, 52, 53, 54, 55],
+            [{isHeader: true, isIndex: true, isProtected: true}, 1, 2, 3, 4, 5],
+            [{isHeader: true, isIndex: true, isProtected: true}, 11, 12, 13, 14, 15],
+            [{isHeader: true, isIndex: true, isProtected: true}, 21, 22, 23, 24, 25],
+            [{isHeader: true, isIndex: true, isProtected: true}, 31, 32, 33, 34, 35],
+            [{isHeader: true, isIndex: true, isProtected: true}, 41, 42, 43, 44, 45],
+            [{isHeader: true, isIndex: true, isProtected: true}, 51, 52, 53, 54, 55],
+            [{isHeader: true, isIndex: true, isProtected: true}, 1, 2, 3, 4, 5],
+            [{isHeader: true, isIndex: true, isProtected: true}, 11, 12, 13, 14, 15],
+            [{isHeader: true, isIndex: true, isProtected: true}, 21, 22, 23, 24, 25],
+            [{isHeader: true, isIndex: true, isProtected: true}, 31, 32, 33, 34, 35],
+            [{isHeader: true, isIndex: true, isProtected: true}, 41, 42, 43, 44, 45],
+            [{isHeader: true, isIndex: true, isProtected: true}, 51, 52, 53, 54, 55],
+          ],
+
+          makeDefaultRow: function (index) {
+            var row = this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
+            row[0].isHeader = true;
+            row[0].isProtected = true;
+            row[0].isIndex = true;
+            return row;
+          }
         })
       });
     </script>

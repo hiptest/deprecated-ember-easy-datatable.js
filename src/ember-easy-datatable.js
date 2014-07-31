@@ -16,14 +16,21 @@ EasyDatatable = Ember.Namespace.create({
       }
     }
 
-    var self = this;
+    var self = this,
+      creationHash = {
+        headers: self.makeHeaderRow(datatable.headers),
+        body: datatable.body.map(function (row) {
+          return self.makeRow(row)
+        })
+      },
+      copiedMethods = ['makeDefaultRow', 'makeDefaultColumn'];
 
-    return EasyDatatable.Datatable.create({
-      headers: self.makeHeaderRow(datatable.headers),
-      body: datatable.body.map(function (row) {
-        return self.makeRow(row)
-      })
+    copiedMethods.forEach(function (name) {
+      if (Ember.isNone(datatable[name])) return;
+      creationHash[name] = datatable[name];
     })
+
+    return EasyDatatable.Datatable.create(creationHash)
   },
 
   makeHeaderRow: function (row) {
@@ -55,7 +62,49 @@ EasyDatatable = Ember.Namespace.create({
 
 EasyDatatable.Datatable = Ember.Object.extend({
   headers: null,
-  body: null
+  body: null,
+
+  makeArrayOfEmptyHashes: function (length) {
+    return Array.apply(null, {length: length}).map(function () {return {}});
+  },
+
+  makeDefaultRow: function (index) {
+    return this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
+  },
+
+  makeDefaultColumn: function (index) {
+    var column =  this.makeArrayOfEmptyHashes(this.get('body.length') + 1);
+    column[0].isHeader = true;
+    return column;
+  },
+
+  insertRow: function (index) {
+    this.get('body').insertAt(index, EasyDatatable.DatatableRow.create({
+      cells: this.makeDefaultRow(index).map(function (cell) {
+        return EasyDatatable.DatatableCell.create(cell);
+      })
+    }))
+  },
+
+  insertColumn: function (index) {
+    var column = this.makeDefaultColumn(index);
+    this.get('headers.cells').insertAt(index, EasyDatatable.DatatableCell.create(column[0]));
+    this.get('body').forEach(function (row, rowIndex) {
+      row.get('cells').insertAt(index, EasyDatatable.DatatableCell.create(column[rowIndex + 1]));
+    });
+  },
+
+  removeRow: function (index) {
+    this.get('body').removeAt(index);
+  },
+
+  removeColumn: function (index) {
+    this.get('headers.cells').removeAt(index);
+    this.get('body').forEach(function (row) {
+      row.get('cells').removeAt(index);
+    });
+  },
+
 });
 
 EasyDatatable.DatatableRow = Ember.Object.extend({
@@ -103,31 +152,19 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     insertRow: function (index) {
-      this.get('body').insertAt(index, EasyDatatable.DatatableRow.create({
-        cells: this.get('headers.cells').map(function () {
-          return EasyDatatable.DatatableCell.create();
-        })
-      }));
+      this.get('model').insertRow(index);
     },
 
     removeRow: function (index) {
-      this.get('body').removeAt(index);
+      this.get('model').removeRow(index);
     },
 
     insertColumn: function (index) {
-      this.get('headers.cells').insertAt(index, EasyDatatable.DatatableCell.create({
-        isHeader: true
-      }));
-      this.get('body').forEach(function (row) {
-        row.get('cells').insertAt(index, EasyDatatable.DatatableCell.create());
-      });
+      this.get('model').insertColumn(index);
     },
 
     removeColumn: function (index) {
-      this.get('headers.cells').removeAt(index);
-      this.get('body').forEach(function (row) {
-        row.get('cells').removeAt(index);
-      });
+      this.get('model').removeColumn(index);
     },
   },
 
@@ -262,6 +299,10 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   ],
   attributeBindings: ['tabindex'],
   tabindex: 1,
+
+  displayableIndex: function () {
+    return this.get('controller.position.row') + 1;
+  }.property('controller.position'),
 
   setTagName: function () {
     this.set('tagName', this.get('controller.model.isHeader') ? 'th' : 'td');
