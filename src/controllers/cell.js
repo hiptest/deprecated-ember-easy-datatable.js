@@ -23,7 +23,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     return {
       row: this.get('rowIndex'),
       column: this.get('columnIndex')
-    }
+    };
   }.property('rowIndex', 'columnIndex'),
 
   inHighlightedRow: function () {

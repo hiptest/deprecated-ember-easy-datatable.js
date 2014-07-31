@@ -60,7 +60,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     moveRowDown: function (index) {
       if (index < this.get('model.body.length') - 1) {
-        this.get('model').moveRow(index, index + 1)
+        this.get('model').moveRow(index, index + 1);
         this.send('navigateDown');
       }
     },
@@ -74,7 +74,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     moveColumnRight: function (index) {
       if (index < this.get('model.headers.cells.length') - 1) {
-        this.get('model').moveColumn(index, index + 1)
+        this.get('model').moveColumn(index, index + 1);
         this.send('navigateRight');
       }
     }
@@ -128,7 +128,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   }.property('selectedCellPosition'),
 
   updateSelection: function () {
-    var previous = this.get('previouslySelectedCell')
+    var previous = this.get('previouslySelectedCell'),
       cell = this.get('selectedCell');
 
     if (!Ember.isNone(previous)) {

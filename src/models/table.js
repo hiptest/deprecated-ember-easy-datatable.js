@@ -7,7 +7,11 @@ EasyDatatable.Datatable = Ember.Object.extend({
   },
 
   makeArrayOfEmptyHashes: function (length) {
-    return Array.apply(null, {length: length}).map(function () {return {}});
+    var array = [], i;
+    for (i = 0; i < length; i++) {
+      array.push({});
+    }
+    return array;
   },
 
   makeDefaultRow: function (index) {
@@ -25,7 +29,7 @@ EasyDatatable.Datatable = Ember.Object.extend({
       cells: this.makeDefaultRow(index).map(function (cell) {
         return EasyDatatable.DatatableCell.create(cell);
       })
-    }))
+    }));
   },
 
   insertColumn: function (index) {

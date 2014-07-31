@@ -46,7 +46,12 @@ module.exports = function(grunt) {
       options: {
         coverage: {
           disposeCollector: true,
-          src: ['src/*.js'],
+          src: [
+            'src/ember-easy-datatable.js',
+            'src/models/*.js',
+            'src/controllers/*.js',
+            'src/views/*.js'
+          ],
           instrumentedFiles: 'temp/',
           lcovReport: 'report',
           linesThresholdPct: 95
@@ -56,7 +61,12 @@ module.exports = function(grunt) {
     },
     jshint: {
       sources: {
-        src: ['src/**/*.js']
+        src: [
+          'src/ember-easy-datatable.js',
+          'src/models/*.js',
+          'src/controllers/*.js',
+          'src/views/*.js'
+        ],
       },
       tests: {
         options: {

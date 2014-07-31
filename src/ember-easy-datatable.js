@@ -1,11 +1,12 @@
 EasyDatatable = Ember.Namespace.create({
   declareDatatable: function (namespace) {
     var copiedObjects = Ember.keys(EasyDatatable).filter(function (key) {
-      return key.indexOf('EasyDatatable') === 0
+      return key.indexOf('EasyDatatable') === 0;
     });
+
     copiedObjects.forEach(function (obj) {
       namespace[obj] = EasyDatatable[obj].extend();
-    })
+    });
   },
 
   makeDatatable: function (datatable) {
@@ -13,14 +14,14 @@ EasyDatatable = Ember.Namespace.create({
       datatable = {
         headers: [],
         body: datatable
-      }
+      };
     }
 
     var self = this,
       creationHash = {
         headers: self.makeHeaderRow(datatable.headers),
         body: datatable.body.map(function (row) {
-          return self.makeRow(row)
+          return self.makeRow(row);
         })
       },
       copiedMethods = ['makeDefaultRow', 'makeDefaultColumn', 'validateCell'];
@@ -28,9 +29,9 @@ EasyDatatable = Ember.Namespace.create({
     copiedMethods.forEach(function (name) {
       if (Ember.isNone(datatable[name])) return;
       creationHash[name] = datatable[name];
-    })
+    });
 
-    return EasyDatatable.Datatable.create(creationHash)
+    return EasyDatatable.Datatable.create(creationHash);
   },
 
   makeHeaderRow: function (row) {
@@ -47,14 +48,14 @@ EasyDatatable = Ember.Namespace.create({
 
     return EasyDatatable.DatatableRow.create({
       cells: row.map(function (item) {
-        return self.makeCell(item)
+        return self.makeCell(item);
       })
     });
   },
 
   makeCell: function (value) {
     if (!(value instanceof Object)) {
-      value = {value: value}
+      value = {value: value};
     }
     return EasyDatatable.DatatableCell.create(value);
   }
