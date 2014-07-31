@@ -33,14 +33,10 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'src/templates/compiled.js',
-          'src/utils.js',
-          'src/highlighter.js',
-          'src/keyboard.js',
-          'src/editor.js',
-          'src/orderer.js',
-          'src/insert.js',
-          'src/remove.js',
-          'src/ember-easy-datatable.js'
+          'src/ember-easy-datatable.js',
+          'src/models/*.js',
+          'src/controllers/*.js',
+          'src/views/*.js'
         ],
         dest: 'dist/ember-easy-datatable.js',
         nonull: true,
