@@ -100,7 +100,35 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
         newPosition = {row: current.row + 1, column: current.column};
 
       this.set('selectedCellPosition', this.fixPosition(newPosition));
-    }
+    },
+
+    insertRow: function (index) {
+      this.get('body').insertAt(index, EasyDatatable.DatatableRow.create({
+        cells: this.get('headers.cells').map(function () {
+          return EasyDatatable.DatatableCell.create();
+        })
+      }));
+    },
+
+    removeRow: function (index) {
+      this.get('body').removeAt(index);
+    },
+
+    insertColumn: function (index) {
+      this.get('headers.cells').insertAt(index, EasyDatatable.DatatableCell.create({
+        isHeader: true
+      }));
+      this.get('body').forEach(function (row) {
+        row.get('cells').insertAt(index, EasyDatatable.DatatableCell.create());
+      });
+    },
+
+    removeColumn: function (index) {
+      this.get('headers.cells').removeAt(index);
+      this.get('body').forEach(function (row) {
+        row.get('cells').removeAt(index);
+      });
+    },
   },
 
   highlightedColumn: function () {
@@ -253,7 +281,27 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   },
 
   navigate: function (event) {
-    if (event.ctrlKey) return;
+    if (event.ctrlKey) {
+      if (this.get('controller.model.isHeader')) {
+        if (event.keyCode === 45) { //INSERT
+          if (this.get('controller.position.row') === -1) {
+            this.get('controller.datatableController').send('insertColumn', this.get('controller.position.column') + 1);
+          } else {
+            this.get('controller.datatableController').send('insertRow', this.get('controller.position.row') + 1);
+          }
+        }
+
+        if (event.keyCode === 46) { //DELETE
+          if (this.get('controller.position.row') === -1) {
+            this.get('controller.datatableController').send('removeColumn', this.get('controller.position.column'));
+          } else {
+            this.get('controller.datatableController').send('removeRow', this.get('controller.position.row'));
+          }
+        }
+      }
+
+      return;
+    }
     var mapping = {
         37: 'navigateLeft',
         38: 'navigateUp',

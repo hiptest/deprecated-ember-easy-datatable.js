@@ -1,12 +1,20 @@
 (function () {
-  module('%@ integration - inserting data'.fmt(Ember.EasyDatatable.toString()), {
+  module('%@ integration - inserting data'.fmt(EasyDatatable.toString()), {
     setup: function () {
-      App.IndexView = Ember.View.extend({
-        template: Ember.Handlebars.compile(makeSampleTable()),
+      EasyDatatable.declareDatatable(App);
+      table = EasyDatatable.makeDatatable({
+        headers: ['', 'Name', 'Value 1', 'Value 2', 'Value 3'],
+        body: [
+          [{isHeader: true, value: '#0'}, 'Row 0', 0, 10, 20],
+          [{isHeader: true, value: '#1'}, 'Row 1', 1, 11, 21],
+          [{isHeader: true, value: '#2'}, 'Row 2', 2, 12, 22],
+          [{isHeader: true, value: '#3'}, 'Row 3', 3, 13, 23]
+        ]
+      });
 
-        addDatatable: function () {
-          Ember.EasyDatatable.create({tableSelector: '#sample1'});
-        }.on('didInsertElement')
+      App.IndexView = Ember.View.extend({
+        table: table,
+        template: Ember.Handlebars.compile('{{render "easy_datatable" view.table}}'),
       });
 
       DatatableIntegrationHelpers.registerHelpers();

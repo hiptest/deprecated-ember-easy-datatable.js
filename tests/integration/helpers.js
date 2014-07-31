@@ -177,7 +177,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
   getDatatableHeaders: function () {
     return this.getDatatable().find('thead th').map(function () {
-      return $(this).text();
+      return $(this).text().trim();
     }).get();
   },
 
