@@ -1,28 +1,40 @@
 (function () {
-  module('%@ integration - content edition with direct validation'.fmt(Ember.EasyDatatable.toString()), {
+  module('%@ integration - content edition with direct validation'.fmt(EasyDatatable.toString()), {
     setup: function () {
+      EasyDatatable.declareDatatable(App);
+      table = EasyDatatable.makeDatatable({
+        headers: ['', 'Name', 'Value 1', 'Value 2', 'Value 3'],
+        body: [
+          [{isHeader: true, value: '#0'}, 'Row 0', 0, 10, 20],
+          [{isHeader: true, value: '#1'}, 'Row 1', 1, 11, 21],
+          [{isHeader: true, value: '#2'}, 'Row 2', 2, 12, 22],
+          [{isHeader: true, value: '#3'}, 'Row 3', 3, 13, 23]
+        ],
+        makeDefaultRow: function () {
+          var row = this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
+          row[0].isHeader = true;
+          row[0].isProtected = true;
+          return row;
+        },
+        validateCell: function (cell, position, value) {
+          if (position.row === -1) {
+            // Should be "Value <numeric value>"
+            return !Ember.isNone(value.match(/^Value [0-9]+$/));
+          }
+
+          if (cell.isHeader) {
+            // Should be #<numeric value>
+            return !Ember.isNone(value.match(/^#[0-9]+$/));
+          }
+
+          // Only numeric values are allowed in the cells
+          return !Ember.isNone(value.match(/^[0-9]+$/));
+        }
+      });
+
       App.IndexView = Ember.View.extend({
-        template: Ember.Handlebars.compile(makeSampleTable()),
-
-        addDatatable: function () {
-          Ember.EasyDatatable.create({
-            tableSelector: '#sample1',
-            validateCellValue: function (value, row, column) {
-              // Only numeric values are allowed in the cells
-              return !Ember.isNone(value.match(/^[0-9]+$/));
-            },
-
-            validateRowHeaderValue: function (value, row, column) {
-              // Should be #<numeric value>
-              return !Ember.isNone(value.match(/^#[0-9]+$/));
-            },
-
-            validateColumnHeaderValue: function (value, row, column) {
-              // Should be "Value <numeric value>"
-              return !Ember.isNone(value.match(/^Value [0-9]+$/));
-            }
-          });
-        }.on('didInsertElement')
+        table: table,
+        template: Ember.Handlebars.compile('{{render "easy_datatable" view.table}}'),
       });
 
       DatatableIntegrationHelpers.registerHelpers();
