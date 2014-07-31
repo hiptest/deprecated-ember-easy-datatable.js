@@ -105,10 +105,32 @@ EasyDatatable.Datatable = Ember.Object.extend({
     });
   },
 
+  moveRow: function (from, to) {
+    var body = this.get('body'),
+      moved = body[from];
+
+    body.removeAt(from);
+    body.insertAt(to, moved);
+  },
+
+  moveColumn: function (from, to) {
+    this.get('headers').moveCell(from, to);
+    this.get('body').forEach(function (row) {
+      row.moveCell(from, to);
+    });
+  }
 });
 
 EasyDatatable.DatatableRow = Ember.Object.extend({
-  cells: null
+  cells: null,
+
+  moveCell: function (from, to) {
+    var cells = this.get('cells'),
+      moved = cells[from];
+
+    cells.removeAt(from);
+    cells.insertAt(to, moved);
+  }
 });
 
 EasyDatatable.DatatableCell = Ember.Object.extend({
@@ -153,19 +175,51 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     insertRow: function (index) {
       this.get('model').insertRow(index);
+      this.send('navigateDown');
     },
 
     removeRow: function (index) {
       this.get('model').removeRow(index);
+      this.notifyPropertyChange('selectedCellPosition');
     },
 
     insertColumn: function (index) {
       this.get('model').insertColumn(index);
+      this.send('navigateRight');
     },
 
     removeColumn: function (index) {
       this.get('model').removeColumn(index);
+      this.notifyPropertyChange('selectedCellPosition');
     },
+
+    moveRowUp: function (index) {
+      if (index > 0) {
+        this.get('model').moveRow(index, index - 1);
+        this.send('navigateUp');
+      }
+    },
+
+    moveRowDown: function (index) {
+      if (index < this.get('model.body.length') - 1) {
+        this.get('model').moveRow(index, index + 1)
+        this.send('navigateDown');
+      }
+    },
+
+    moveColumnLeft: function (index) {
+      if (index > 0) {
+        this.get('model').moveColumn(index, index - 1);
+        this.send('navigateLeft');
+      }
+    },
+
+    moveColumnRight: function (index) {
+      if (index < this.get('model.headers.cells.length') - 1) {
+        this.get('model').moveColumn(index, index + 1)
+        this.send('navigateRight');
+      }
+    }
   },
 
   highlightedColumn: function () {
@@ -339,8 +393,26 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
             this.get('controller.datatableController').send('removeRow', this.get('controller.position.row'));
           }
         }
-      }
 
+        if (this.get('controller.position.row') >= 0) {
+          if (event.which === 38) {
+            this.get('controller.datatableController').send('moveRowUp', this.get('controller.position.row'));
+          }
+
+          if (event.which === 40) {
+            this.get('controller.datatableController').send('moveRowDown', this.get('controller.position.row'));
+          }
+        } else {
+          if (event.which === 37) {
+            this.get('controller.datatableController').send('moveColumnLeft', this.get('controller.position.column'));
+          }
+
+          if (event.which === 39) {
+            this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
+          }
+        }
+
+      }
       return;
     }
     var mapping = {
