@@ -27,44 +27,9 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   keyDown: function (event) {
     if (event.ctrlKey) {
       if (this.get('controller.model.isHeader')) {
-        if (event.keyCode === 45) { //INSERT
-          if (this.get('controller.position.row') === -1) {
-            this.get('controller.datatableController').send('insertColumn', this.get('controller.position.column') + 1);
-          } else {
-            this.get('controller.datatableController').send('insertRow', this.get('controller.position.row') + 1);
-          }
-        }
-
-        if (event.keyCode === 46) { //DELETE
-          if (this.get('controller.position.row') === -1) {
-            this.get('controller.datatableController').send('removeColumn', this.get('controller.position.column'));
-          } else {
-            this.get('controller.datatableController').send('removeRow', this.get('controller.position.row'));
-          }
-        }
-
-        if (this.get('controller.position.row') >= 0) {
-          if (event.which === 38) {
-            this.get('controller.datatableController').send('moveRowUp', this.get('controller.position.row'));
-          }
-
-          if (event.which === 40) {
-            this.get('controller.datatableController').send('moveRowDown', this.get('controller.position.row'));
-          }
-        } else {
-          if (event.which === 37) {
-            this.get('controller.datatableController').send('moveColumnLeft', this.get('controller.position.column'));
-          }
-
-          if (event.which === 39) {
-            this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
-          }
-        }
+        this.manipulate(event);
       }
-      return;
-    }
-
-    if (!this.navigate(event)) {
+    } else if (!this.navigate(event)) {
       this.get('controller').send('showEditor');
     }
   },
@@ -86,6 +51,50 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
       event.preventDefault();
       this.get('controller.datatableController').send(action);
       return true;
+    }
+  },
+
+  manipulate: function (event) {
+    if (this.get('controller.position.row') === -1) {
+      this.manipulateColumns(event);
+    } else {
+      this.manipulateRows(event);
+    }
+  },
+
+  manipulateColumns: function (event) {
+    if (event.keyCode === 45) {
+      this.get('controller.datatableController').send('insertColumn', this.get('controller.position.column') + 1);
+    }
+
+    if (event.keyCode === 46) {
+      this.get('controller.datatableController').send('removeColumn', this.get('controller.position.column'));
+    }
+
+    if (event.which === 37) {
+      this.get('controller.datatableController').send('moveColumnLeft', this.get('controller.position.column'));
+    }
+
+    if (event.which === 39) {
+      this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
+    }
+  },
+
+  manipulateRows: function (event) {
+    if (event.keyCode === 45) {
+      this.get('controller.datatableController').send('insertRow', this.get('controller.position.row') + 1);
+    }
+
+    if (event.keyCode === 46) {
+      this.get('controller.datatableController').send('removeRow', this.get('controller.position.row'));
+    }
+
+    if (event.which === 38) {
+      this.get('controller.datatableController').send('moveRowUp', this.get('controller.position.row'));
+    }
+
+    if (event.which === 40) {
+      this.get('controller.datatableController').send('moveRowDown', this.get('controller.position.row'));
     }
   },
 
