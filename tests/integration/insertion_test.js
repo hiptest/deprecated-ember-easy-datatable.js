@@ -15,7 +15,7 @@
           var row = EasyDatatable.makeListOf(this.get('headers.cells.length'));
           row[0] = {
             isHeader: true,
-            isProtected: true
+            isEditable: false
           };
           return row;
         }

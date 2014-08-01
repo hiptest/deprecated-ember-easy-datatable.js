@@ -1,7 +1,7 @@
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
   classNameBindings: [
-    'controller.isProtected:protected',
+    'controller.isEditable::protected',
     'controller.isSelected:selected',
     'controller.isHighlighted:highlighted',
     'controller.inError:error',

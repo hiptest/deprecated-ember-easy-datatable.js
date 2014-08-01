@@ -102,14 +102,14 @@
       ]);
   });
 
-  test('cells with a class "protected" can not be edited', function () {
+  test('Cells with "isEditable" set to false can not be edited', function () {
     expect(6);
 
     visit('/')
       .then(function (app) {
-        table.set('headers.cells.firstObject.isProtected', true);
+        table.set('headers.cells.firstObject.isEditable', false);
         table.get('body').forEach(function (row, index) {
-          row.get('cells')[index % 2 === 0 ? 1 : 0].set('isProtected', true);
+          row.get('cells')[index % 2 === 0 ? 1 : 0].set('isEditable', false);
         });
         return wait(app);
       })
@@ -118,7 +118,7 @@
         'When clicking on the protected cell, the editor does not show up')
       .clickOnDatatableCell(0, 1)
       .assertEditorShown(
-        '(but it still work on a non protected cell)')
+        '(but it still work on an editable cell)')
       .pressEscInDatatable()
       .pressDownKeyInDatatable()
       .pressEnterInDatatable()
@@ -127,7 +127,7 @@
       .pressDownKeyInDatatable()
       .pressEnterInDatatable()
       .assertEditorShown(
-        '(but it still works in non protected cells)')
+        '(but it still works in editable cells)')
       .pressEscInDatatable()
       .pressLeftKeyInDatatable()
       .typeInDatatable('Hey')
@@ -136,7 +136,7 @@
       .pressDownKeyInDatatable()
       .typeInDatatable('Ho')
       .assertEditorShown(
-        '(but it still works in non protected cells)')
+        '(but it still works in editablecells)')
       .pressEscInDatatable();
   });
 

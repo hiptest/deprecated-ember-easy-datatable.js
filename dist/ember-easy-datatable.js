@@ -162,7 +162,7 @@ EasyDatatable = Ember.Namespace.create({
 EasyDatatable.DatatableCell = Ember.Object.extend({
   isSelected: false,
   isHeader: false,
-  isProtected: false,
+  isEditable: true,
   value: null
 });
 EasyDatatable.DatatableRow = Ember.Object.extend({
@@ -232,7 +232,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
   actions: {
     showEditor: function () {
-      if (!this.get('isProtected')) {
+      if (this.get('isEditable')) {
         this.set('editorShown', true);
       }
     },
@@ -456,7 +456,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
   classNameBindings: [
-    'controller.isProtected:protected',
+    'controller.isEditable::protected',
     'controller.isSelected:selected',
     'controller.isHighlighted:highlighted',
     'controller.inError:error',

@@ -6,7 +6,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
   actions: {
     showEditor: function () {
-      if (!this.get('isProtected')) {
+      if (this.get('isEditable')) {
         this.set('editorShown', true);
       }
     },
