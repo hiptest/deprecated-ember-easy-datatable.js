@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           ],
           instrumentedFiles: 'temp/',
           lcovReport: 'report',
-          linesThresholdPct: 95
+          linesThresholdPct: 90
         }
       },
       files: ['tests/index.html']
