@@ -7,4 +7,4 @@ ember-easy-datatable.js
 
 
 Simple Javascript/Ember.js library to navigate/edit/order a table.
-[Demo](http://jsfiddle.net/52VtD/6269/embedded/result/)
+[Demo](http://jsfiddle.net/52VtD/7211/embedded/result/)
