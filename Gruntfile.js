@@ -78,5 +78,5 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['emberTemplates', 'concat', 'jshint']);
-  grunt.registerTask('travis', ['jshint:sources',  'qunit']);
+  grunt.registerTask('travis', ['jshint:sources', 'emberTemplates', 'qunit']);
 };
