@@ -2,6 +2,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
   editorShown: false,
+  inError: false,
 
   actions: {
     showEditor: function () {
@@ -12,7 +13,41 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
     hideEditor: function () {
       this.set('editorShown', false);
+      this.notifyPropertyChange('isSelected');
+    },
+
+    save: function (postSaveAction) {
+      if (this.validateValue()) {
+        this.set('inError', false);
+        this.send('hideEditor');
+        this.get('datatableController').send(postSaveAction);
+      } else {
+        this.set('inError', true);
+      }
+    },
+
+    cancel: function (originalValue) {
+      this.set('model.value', originalValue);
+      this.set('inError', false);
+      this.send('hideEditor');
+    },
+
+    saveOnLeave: function (originalValue) {
+      if (this.validateValue()) {
+        this.set('inError', false);
+      } else {
+        this.set('model.value', originalValue);
+      }
+      this.send('hideEditor');
     }
+  },
+
+  validateValue: function () {
+    var datatable = this.get('datatableController.model'),
+      cell = this.get('model'),
+      position = this.get('position'),
+      value = cell.get('value');
+    return datatable.validateCell(cell, position, value);
   },
 
   columnIndex: function () {

@@ -1,51 +1,35 @@
 EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   originalValue: null,
+  cellController: Ember.computed.alias('parentView.controller'),
 
   storeOriginalValue: function () {
     this.set('originalValue', this.get('value'));
   }.on('init'),
 
-  restoreOriginalValue: function () {
-    this.set('parentView.controller.model.value', this.get('originalValue'));
-  },
-
   keyDown: function (event) {
+    event.stopPropagation();
     if (event.which === 27) {
-      this.restoreOriginalValue();
-      this.$().blur();
+      this.get('cellController').send('cancel', this.get('originalValue'));
     }
 
     if (event.which === 13 || event.which === 9) {
-      if (this.get('parentView.controller.datatableController.model').validateCell(
-          this.get('parentView.controller.model'),
-          this.get('parentView.controller.position'),
-          this.get('value'))) {
+      event.preventDefault();
 
-        if (event.which === 13) {
-          this.get('parentView.controller.datatableController').send('navigateDown');
-        }
-
-        if (event.which === 9) {
-          event.preventDefault();
-          this.get('parentView.controller.datatableController').send(event.shiftKey ? 'navigateLeft' : 'navigateRight');
-        }
-
-        this.set('parentView.inError', false);
-        this.$().blur();
-      } else {
-        this.set('parentView.inError', true);
+      var postSaveAction = 'navigateDown';
+      if (event.which === 9) {
+        postSaveAction = event.shiftKey ? 'navigateLeft' : 'navigateRight';
       }
+      this.get('cellController').send('save', postSaveAction);
     }
-    event.stopPropagation();
   },
 
   focusOut: function () {
-    this.get('parentView.controller').send('hideEditor');
-    this.get('parentView').focusWhenSelected();
+    this.get('cellController').send('saveOnLeave', this.get('originalValue'));
   },
 
-  focusOnShow: function () {
-    var selectedCell = this.$().closest('th, td');
+  placeAndFocusOnShow: function () {
+    var selectedCell = this.$().closest('th, td'),
+      domElement = this.$().get(0);
     // We need absolute positionning before checking the width/height of the cell
     // Otherwise, the input counts in the cell size
     this.$()
@@ -56,5 +40,9 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
         top: selectedCell.position().top,
         left: selectedCell.position().left
       }).focus();
-  }.on('didInsertElement')
+
+    domElement.selectionStart = 0;
+    domElement.selectionEnd = this.get('value').toString().length;
+  }.on('didInsertElement'),
+
 });

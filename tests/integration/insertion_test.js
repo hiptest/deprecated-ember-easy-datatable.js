@@ -10,10 +10,13 @@
           [{isHeader: true, value: '#2'}, 'Row 2', 2, 12, 22],
           [{isHeader: true, value: '#3'}, 'Row 3', 3, 13, 23]
         ],
+
         makeDefaultRow: function () {
-          var row = this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
-          row[0].isHeader = true;
-          row[0].isProtected = true;
+          var row = EasyDatatable.makeListOf(this.get('headers.cells.length'));
+          row[0] = {
+            isHeader: true,
+            isProtected: true
+          };
           return row;
         }
       });

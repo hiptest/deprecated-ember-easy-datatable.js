@@ -58,11 +58,30 @@
           ],
 
           makeDefaultRow: function (index) {
-            var row = this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
-            row[0].isHeader = true;
-            row[0].isProtected = true;
-            row[0].isIndex = true;
+            var row = EasyDatatable.makeListOf(this.get('headers.cells.length'));
+            row[0] = {
+              isHeader: true,
+              isProtected: true,
+              isIndex: true
+            };
             return row;
+          },
+
+          validateCell: function (cell, position, value) {
+            value = value.toString();
+
+            if (position.row === -1) {
+              // Should be "Value <numeric value>"
+              return !Ember.isNone(value.match(/^Value [0-9]+$/));
+            }
+
+            if (cell.isHeader) {
+              // Should be #<numeric value>
+              return !Ember.isNone(value.match(/^#[0-9]+$/));
+            }
+
+            // Only numeric values are allowed in the cells
+            return !Ember.isNone(value.match(/^[0-9]+$/));
           }
         })
       });

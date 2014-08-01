@@ -58,5 +58,20 @@ EasyDatatable = Ember.Namespace.create({
       value = {value: value};
     }
     return EasyDatatable.DatatableCell.create(value);
+  },
+
+  moveObject: function (list, from, to) {
+    var moved = list[from];
+
+    list.removeAt(from);
+    list.insertAt(to, moved);
+  },
+
+  makeListOf: function (size) {
+    var list = [], i;
+    for (i = 0; i < size; i++) {
+      list.push(null);
+    }
+    return list;
   }
 });

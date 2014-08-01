@@ -16,10 +16,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
       Ember.run(function () {
         var focused, character = String.fromCharCode(keyCode);
-
         $el.trigger(keyDownEvent);
-        $el.trigger(keyUpEvent);
-
         focused = $(document.activeElement);
 
         // Update input value if needed
@@ -29,6 +26,8 @@ DatatableIntegrationHelpers = Ember.Object.create({
             String.fromCharCode(keyCode),
             focused.val().slice(focused.get(0).selectionEnd)));
         }
+
+        focused.trigger(keyUpEvent);
       });
     },
 

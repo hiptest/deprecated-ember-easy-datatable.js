@@ -1,3 +1,7 @@
+EasyDatatable.EasyDatatableTableController = Ember.ObjectController.extend({
+  datatableController: Ember.computed.alias('parentController')
+});
+
 EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   selectedCellPosition: null,
   previouslySelectedCell : null,
@@ -142,8 +146,4 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
       this.set('previouslySelectedCell', cell);
     }
   }.observes('selectedCellPosition')
-});
-
-EasyDatatable.EasyDatatableTableController = Ember.ObjectController.extend({
-  datatableController: Ember.computed.alias('parentController')
 });

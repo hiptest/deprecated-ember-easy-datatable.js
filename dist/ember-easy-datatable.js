@@ -72,12 +72,12 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_row", "row", options) : helperMissing.call(depth0, "render", "easy_datatable_row", "row", options))));
   }
 
-  data.buffer.push("<table class=\"table table-stripped table-collapsed\">\n  <thead>\n    ");
+  data.buffer.push("<thead>\n  ");
   data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_row", "headers", options) : helperMissing.call(depth0, "render", "easy_datatable_row", "headers", options))));
-  data.buffer.push("\n  </thead>\n  <tbody>\n    ");
+  data.buffer.push("\n</thead>\n<tbody>\n  ");
   stack1 = helpers.each.call(depth0, "row", "in", "body", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n  </tbody>\n</table>");
+  data.buffer.push("\n</tbody>\n");
   return buffer;
   
 });
@@ -141,6 +141,21 @@ EasyDatatable = Ember.Namespace.create({
       value = {value: value};
     }
     return EasyDatatable.DatatableCell.create(value);
+  },
+
+  moveObject: function (list, from, to) {
+    var moved = list[from];
+
+    list.removeAt(from);
+    list.insertAt(to, moved);
+  },
+
+  makeListOf: function (size) {
+    var list = [], i;
+    for (i = 0; i < size; i++) {
+      list.push(null);
+    }
+    return list;
   }
 });
 
@@ -154,11 +169,7 @@ EasyDatatable.DatatableRow = Ember.Object.extend({
   cells: null,
 
   moveCell: function (from, to) {
-    var cells = this.get('cells'),
-      moved = cells[from];
-
-    cells.removeAt(from);
-    cells.insertAt(to, moved);
+    EasyDatatable.moveObject(this.get('cells'), from, to);
   }
 });
 EasyDatatable.Datatable = Ember.Object.extend({
@@ -169,35 +180,25 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return true;
   },
 
-  makeArrayOfEmptyHashes: function (length) {
-    return Array.apply(null, {length: length}).map(function () {
-      return {};
-    });
-  },
-
   makeDefaultRow: function (index) {
-    return this.makeArrayOfEmptyHashes(this.get('headers.cells.length'));
+    return EasyDatatable.makeListOf(this.get('headers.cells.length'));
   },
 
   makeDefaultColumn: function (index) {
-    var column =  this.makeArrayOfEmptyHashes(this.get('body.length') + 1);
-    column[0].isHeader = true;
+    var column = EasyDatatable.makeListOf(this.get('body.length') + 1);
+    column[0] = {isHeader: true};
     return column;
   },
 
   insertRow: function (index) {
-    this.get('body').insertAt(index, EasyDatatable.DatatableRow.create({
-      cells: this.makeDefaultRow(index).map(function (cell) {
-        return EasyDatatable.DatatableCell.create(cell);
-      })
-    }))
+    this.get('body').insertAt(index, EasyDatatable.makeRow(this.makeDefaultRow(index)));
   },
 
   insertColumn: function (index) {
     var column = this.makeDefaultColumn(index);
-    this.get('headers.cells').insertAt(index, EasyDatatable.DatatableCell.create(column[0]));
+    this.get('headers.cells').insertAt(index, EasyDatatable.makeCell(column[0]));
     this.get('body').forEach(function (row, rowIndex) {
-      row.get('cells').insertAt(index, EasyDatatable.DatatableCell.create(column[rowIndex + 1]));
+      row.get('cells').insertAt(index, EasyDatatable.makeCell(column[rowIndex + 1]));
     });
   },
 
@@ -213,11 +214,7 @@ EasyDatatable.Datatable = Ember.Object.extend({
   },
 
   moveRow: function (from, to) {
-    var body = this.get('body'),
-      moved = body[from];
-
-    body.removeAt(from);
-    body.insertAt(to, moved);
+    EasyDatatable.moveObject(this.get('body'), from, to);
   },
 
   moveColumn: function (from, to) {
@@ -231,6 +228,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
   editorShown: false,
+  inError: false,
 
   actions: {
     showEditor: function () {
@@ -241,7 +239,41 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
     hideEditor: function () {
       this.set('editorShown', false);
+      this.notifyPropertyChange('isSelected');
+    },
+
+    save: function (postSaveAction) {
+      if (this.validateValue()) {
+        this.set('inError', false);
+        this.send('hideEditor');
+        this.get('datatableController').send(postSaveAction);
+      } else {
+        this.set('inError', true);
+      }
+    },
+
+    cancel: function (originalValue) {
+      this.set('model.value', originalValue);
+      this.set('inError', false);
+      this.send('hideEditor');
+    },
+
+    saveOnLeave: function (originalValue) {
+      if (this.validateValue()) {
+        this.set('inError', false);
+      } else {
+        this.set('model.value', originalValue);
+      }
+      this.send('hideEditor');
     }
+  },
+
+  validateValue: function () {
+    var datatable = this.get('datatableController.model'),
+      cell = this.get('model'),
+      position = this.get('position'),
+      value = cell.get('value');
+    return datatable.validateCell(cell, position, value);
   },
 
   columnIndex: function () {
@@ -252,7 +284,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     return {
       row: this.get('rowIndex'),
       column: this.get('columnIndex')
-    }
+    };
   }.property('rowIndex', 'columnIndex'),
 
   inHighlightedRow: function () {
@@ -267,10 +299,15 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 });
 EasyDatatable.EasyDatatableRowController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
+
   rowIndex: function () {
     return this.get('datatableController.model.body').indexOf(this.get('model'));
   }.property('model', 'datatableController.model.body.[]')
 });
+EasyDatatable.EasyDatatableTableController = Ember.ObjectController.extend({
+  datatableController: Ember.computed.alias('parentController')
+});
+
 EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   selectedCellPosition: null,
   previouslySelectedCell : null,
@@ -333,7 +370,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     moveRowDown: function (index) {
       if (index < this.get('model.body.length') - 1) {
-        this.get('model').moveRow(index, index + 1)
+        this.get('model').moveRow(index, index + 1);
         this.send('navigateDown');
       }
     },
@@ -347,7 +384,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     moveColumnRight: function (index) {
       if (index < this.get('model.headers.cells.length') - 1) {
-        this.get('model').moveColumn(index, index + 1)
+        this.get('model').moveColumn(index, index + 1);
         this.send('navigateRight');
       }
     }
@@ -401,7 +438,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   }.property('selectedCellPosition'),
 
   updateSelection: function () {
-    var previous = this.get('previouslySelectedCell')
+    var previous = this.get('previouslySelectedCell'),
       cell = this.get('selectedCell');
 
     if (!Ember.isNone(previous)) {
@@ -416,17 +453,15 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     }
   }.observes('selectedCellPosition')
 });
-
-EasyDatatable.EasyDatatableTableController = Ember.ObjectController.extend({
-  datatableController: Ember.computed.alias('parentController')
-});
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
   classNameBindings: [
     'controller.isProtected:protected',
     'controller.isSelected:selected',
     'controller.isHighlighted:highlighted',
-    'inError:error'
+    'controller.inError:error',
+    'controller.inError:alert',
+    'controller.inError:alert-danger'
   ],
   attributeBindings: ['tabindex'],
   tabindex: 1,
@@ -480,11 +515,16 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
             this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
           }
         }
-
       }
       return;
     }
 
+    if (!this.navigate(event)) {
+      this.get('controller').send('showEditor');
+    }
+  },
+
+  navigate: function (event) {
     var mapping = {
         37: 'navigateLeft',
         38: 'navigateUp',
@@ -500,8 +540,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
     if (!Ember.isNone(action)) {
       event.preventDefault();
       this.get('controller.datatableController').send(action);
-    } else {
-      this.get('controller').send('showEditor');
+      return true;
     }
   },
 
@@ -521,52 +560,36 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
 });
 EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   originalValue: null,
+  cellController: Ember.computed.alias('parentView.controller'),
 
   storeOriginalValue: function () {
     this.set('originalValue', this.get('value'));
   }.on('init'),
 
-  restoreOriginalValue: function () {
-    this.set('parentView.controller.model.value', this.get('originalValue'));
-  },
-
   keyDown: function (event) {
+    event.stopPropagation();
     if (event.which === 27) {
-      this.restoreOriginalValue();
-      this.$().blur();
+      this.get('cellController').send('cancel', this.get('originalValue'));
     }
 
     if (event.which === 13 || event.which === 9) {
-      if (this.get('parentView.controller.datatableController.model').validateCell(
-          this.get('parentView.controller.model'),
-          this.get('parentView.controller.position'),
-          this.get('value'))) {
+      event.preventDefault();
 
-        if (event.which === 13) {
-          this.get('parentView.controller.datatableController').send('navigateDown');
-        }
-
-        if (event.which === 9) {
-          event.preventDefault();
-          this.get('parentView.controller.datatableController').send(event.shiftKey ? 'navigateLeft' : 'navigateRight');
-        }
-
-        this.set('parentView.inError', false);
-        this.$().blur();
-      } else {
-        this.set('parentView.inError', true);
+      var postSaveAction = 'navigateDown';
+      if (event.which === 9) {
+        postSaveAction = event.shiftKey ? 'navigateLeft' : 'navigateRight';
       }
+      this.get('cellController').send('save', postSaveAction);
     }
-    event.stopPropagation();
   },
 
   focusOut: function () {
-    this.get('parentView.controller').send('hideEditor');
-    this.get('parentView').focusWhenSelected();
+    this.get('cellController').send('saveOnLeave', this.get('originalValue'));
   },
 
-  focusOnShow: function () {
-    var selectedCell = this.$().closest('th, td');
+  placeAndFocusOnShow: function () {
+    var selectedCell = this.$().closest('th, td'),
+      domElement = this.$().get(0);
     // We need absolute positionning before checking the width/height of the cell
     // Otherwise, the input counts in the cell size
     this.$()
@@ -577,11 +600,20 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
         top: selectedCell.position().top,
         left: selectedCell.position().left
       }).focus();
-  }.on('didInsertElement')
+
+    domElement.selectionStart = 0;
+    domElement.selectionEnd = this.get('value').toString().length;
+  }.on('didInsertElement'),
+
 });
 EasyDatatable.EasyDatatableRowView = Ember.View.extend({
   tagName: 'tr'
 });
 EasyDatatable.EasyDatatableView = Ember.View.extend({
   classNames: ['easy-datatable-container']
+});
+
+EasyDatatable.EasyDatatableTableView = Ember.View.extend({
+  tagName: 'table',
+  classNames: ['table', 'table-stripped', 'table-collapsed']
 });

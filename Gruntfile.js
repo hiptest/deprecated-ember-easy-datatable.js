@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       scripts: {
-        files: ['src/*.js'],
+        files: ['src/*.js', 'src/**/*.js'],
         tasks: ['concat'],
       },
       templates: {

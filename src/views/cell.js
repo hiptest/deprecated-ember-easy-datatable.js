@@ -4,7 +4,9 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
     'controller.isProtected:protected',
     'controller.isSelected:selected',
     'controller.isHighlighted:highlighted',
-    'inError:error'
+    'controller.inError:error',
+    'controller.inError:alert',
+    'controller.inError:alert-danger'
   ],
   attributeBindings: ['tabindex'],
   tabindex: 1,
@@ -58,11 +60,16 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
             this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
           }
         }
-
       }
       return;
     }
 
+    if (!this.navigate(event)) {
+      this.get('controller').send('showEditor');
+    }
+  },
+
+  navigate: function (event) {
     var mapping = {
         37: 'navigateLeft',
         38: 'navigateUp',
@@ -78,8 +85,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
     if (!Ember.isNone(action)) {
       event.preventDefault();
       this.get('controller.datatableController').send(action);
-    } else {
-      this.get('controller').send('showEditor');
+      return true;
     }
   },
 
