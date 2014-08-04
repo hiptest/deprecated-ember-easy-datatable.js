@@ -73,8 +73,9 @@
     expect(10);
 
     visit('/')
-      .then(function () {
-        table.get('headers.cells')[2].set('isMovable', false)
+      .then(function (app) {
+        table.get('headers.cells')[2].set('isMovable', false);
+        return wait(app);
       })
       .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
       .assertDatatableContent([
@@ -162,8 +163,9 @@
     expect(5);
 
     visit('/')
-      .then(function () {
-        table.get('body')[1].set('cells.firstObject.isMovable', false)
+      .then(function (app) {
+        table.get('body')[1].set('cells.firstObject.isMovable', false);
+        return wait(app);
       })
       .assertDatatableContent([
         ['Row 0', '0', '10', '20'],

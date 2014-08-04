@@ -4,5 +4,7 @@ EasyDatatable.DatatableCell = Ember.Object.extend({
   isEditable: true,
   isMovable: true,
   isRemovable: true,
+  canInsertColumnAfter: true,
+  canInsertRowAfter: true,
   value: null
 });

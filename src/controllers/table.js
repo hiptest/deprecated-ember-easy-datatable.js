@@ -36,8 +36,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     insertRow: function (index) {
-      this.get('model').insertRow(index);
-      this.send('navigateDown');
+      if (this.get('model').rowCanBeInserted(index)) {
+        this.get('model').insertRow(index);
+        this.send('navigateDown');
+      }
     },
 
     removeRow: function (index) {
@@ -48,8 +50,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     insertColumn: function (index) {
-      this.get('model').insertColumn(index);
-      this.send('navigateRight');
+      if (this.get('model').columnCanBeInserted(index)) {
+        this.get('model').insertColumn(index);
+        this.send('navigateRight');
+      }
     },
 
     removeColumn: function (index) {

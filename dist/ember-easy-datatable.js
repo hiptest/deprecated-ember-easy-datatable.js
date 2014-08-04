@@ -165,6 +165,8 @@ EasyDatatable.DatatableCell = Ember.Object.extend({
   isEditable: true,
   isMovable: true,
   isRemovable: true,
+  canInsertColumnAfter: true,
+  canInsertRowAfter: true,
   value: null
 });
 EasyDatatable.DatatableRow = Ember.Object.extend({
@@ -177,6 +179,8 @@ EasyDatatable.DatatableRow = Ember.Object.extend({
 EasyDatatable.Datatable = Ember.Object.extend({
   headers: null,
   body: null,
+  canInsertColumns: true,
+  canInsertRows: true,
 
   validateCell: function (cell, position, value) {
     return true;
@@ -228,8 +232,26 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return column;
   },
 
+  rowCanBeInserted: function (index) {
+    if (this.get('canInsertRows')) {
+      if (index === 0) return true;
+      return this.get('body')[index - 1].get('cells').every(function (cell) {
+        return cell.get('canInsertRowAfter');
+      });
+    }
+    return false;
+  },
+
   insertRow: function (index) {
     this.get('body').insertAt(index, EasyDatatable.makeRow(this.makeDefaultRow(index)));
+  },
+
+  columnCanBeInserted: function (index) {
+    if (this.get('canInsertColumns')) {
+      if (index === 0) return true;
+      return this.get('headers.cells')[index - 1].get('canInsertColumnAfter');
+    }
+    return false;
   },
 
   insertColumn: function (index) {
@@ -380,8 +402,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     insertRow: function (index) {
-      this.get('model').insertRow(index);
-      this.send('navigateDown');
+      if (this.get('model').rowCanBeInserted(index)) {
+        this.get('model').insertRow(index);
+        this.send('navigateDown');
+      }
     },
 
     removeRow: function (index) {
@@ -392,8 +416,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     insertColumn: function (index) {
-      this.get('model').insertColumn(index);
-      this.send('navigateRight');
+      if (this.get('model').columnCanBeInserted(index)) {
+        this.get('model').insertColumn(index);
+        this.send('navigateRight');
+      }
     },
 
     removeColumn: function (index) {

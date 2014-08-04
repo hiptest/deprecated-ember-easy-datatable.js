@@ -1,6 +1,8 @@
 EasyDatatable.Datatable = Ember.Object.extend({
   headers: null,
   body: null,
+  canInsertColumns: true,
+  canInsertRows: true,
 
   validateCell: function (cell, position, value) {
     return true;
@@ -52,8 +54,26 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return column;
   },
 
+  rowCanBeInserted: function (index) {
+    if (this.get('canInsertRows')) {
+      if (index === 0) return true;
+      return this.get('body')[index - 1].get('cells').every(function (cell) {
+        return cell.get('canInsertRowAfter');
+      });
+    }
+    return false;
+  },
+
   insertRow: function (index) {
     this.get('body').insertAt(index, EasyDatatable.makeRow(this.makeDefaultRow(index)));
+  },
+
+  columnCanBeInserted: function (index) {
+    if (this.get('canInsertColumns')) {
+      if (index === 0) return true;
+      return this.get('headers.cells')[index - 1].get('canInsertColumnAfter');
+    }
+    return false;
   },
 
   insertColumn: function (index) {
