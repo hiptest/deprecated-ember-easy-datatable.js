@@ -69,6 +69,59 @@
       ], 'And the header too, of course');
   });
 
+  test('Column headers can be marked as non-movable', function () {
+    expect(10);
+
+    visit('/')
+      .then(function () {
+        table.get('headers.cells')[2].set('isMovable', false)
+      })
+      .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .clickOnDatatableCell(0, 2)
+      .pressEscInDatatable()
+      .pressCtrlRightKeyInDatatable()
+      .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], 'The header is maker as non-movable, so it can not be moved right ...')
+      .pressCtrlLeftKeyInDatatable()
+      .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], '... nor left')
+      .pressLeftKeyInDatatable()
+      .pressCtrlRightKeyInDatatable()
+      .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], 'Of course, trying  to switch the column on the left will not have any effect ...')
+      .pressRightKeyInDatatable()
+      .pressRightKeyInDatatable()
+      .pressCtrlLeftKeyInDatatable()
+      .assertDatatableHeader(["", "Name", "Value 1", "Value 2", "Value 3"])
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], '... same thing with the row on the right');
+  });
+
   test('Rows order can be changed using ctrl + up/down arrow', function () {
     expect(4);
 

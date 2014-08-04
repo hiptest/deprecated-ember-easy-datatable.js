@@ -163,6 +163,7 @@ EasyDatatable.DatatableCell = Ember.Object.extend({
   isSelected: false,
   isHeader: false,
   isEditable: true,
+  isMovable: true,
   value: null
 });
 EasyDatatable.DatatableRow = Ember.Object.extend({
@@ -178,6 +179,14 @@ EasyDatatable.Datatable = Ember.Object.extend({
 
   validateCell: function (cell, position, value) {
     return true;
+  },
+
+  columnCanMoveLeft: function (index) {
+    return this.get('headers.cells')[index].get('isMovable') && index > 0 && this.get('headers.cells')[index - 1].get('isMovable')
+  },
+
+  columnCanMoveRight: function (index) {
+    return this.get('headers.cells')[index].get('isMovable') && index < this.get('headers.cells.length') - 1  && this.get('headers.cells')[index + 1].get('isMovable');
   },
 
   makeDefaultRow: function (index) {
@@ -376,14 +385,14 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     moveColumnLeft: function (index) {
-      if (index > 0) {
+      if (this.get('model').columnCanMoveLeft(index)) {
         this.get('model').moveColumn(index, index - 1);
         this.send('navigateLeft');
       }
     },
 
     moveColumnRight: function (index) {
-      if (index < this.get('model.headers.cells.length') - 1) {
+      if (this.get('model').columnCanMoveRight(index)) {
         this.get('model').moveColumn(index, index + 1);
         this.send('navigateRight');
       }

@@ -6,6 +6,14 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return true;
   },
 
+  columnCanMoveLeft: function (index) {
+    return this.get('headers.cells')[index].get('isMovable') && index > 0 && this.get('headers.cells')[index - 1].get('isMovable')
+  },
+
+  columnCanMoveRight: function (index) {
+    return this.get('headers.cells')[index].get('isMovable') && index < this.get('headers.cells.length') - 1  && this.get('headers.cells')[index + 1].get('isMovable');
+  },
+
   makeDefaultRow: function (index) {
     return EasyDatatable.makeListOf(this.get('headers.cells.length'));
   },
