@@ -56,14 +56,14 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     moveRowUp: function (index) {
-      if (index > 0) {
+      if (this.get('model').rowCanMoveUp(index)) {
         this.get('model').moveRow(index, index - 1);
         this.send('navigateUp');
       }
     },
 
     moveRowDown: function (index) {
-      if (index < this.get('model.body.length') - 1) {
+      if (this.get('model').rowCanMoveDown(index)) {
         this.get('model').moveRow(index, index + 1);
         this.send('navigateDown');
       }
