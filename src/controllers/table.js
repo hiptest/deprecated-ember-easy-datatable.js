@@ -41,8 +41,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     removeRow: function (index) {
-      this.get('model').removeRow(index);
-      this.notifyPropertyChange('selectedCellPosition');
+      if (this.get('model').rowCanBeRemoved(index)) {
+        this.get('model').removeRow(index);
+        this.notifyPropertyChange('selectedCellPosition');
+      }
     },
 
     insertColumn: function (index) {
@@ -51,8 +53,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     removeColumn: function (index) {
-      this.get('model').removeColumn(index);
-      this.notifyPropertyChange('selectedCellPosition');
+      if (this.get('model').columnCanBeRemoved(index)) {
+        this.get('model').removeColumn(index);
+        this.notifyPropertyChange('selectedCellPosition');
+      }
     },
 
     moveRowUp: function (index) {

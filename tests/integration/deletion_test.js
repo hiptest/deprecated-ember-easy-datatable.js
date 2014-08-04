@@ -54,6 +54,31 @@
       ], 'Otherwise, the current row is removed');
   });
 
+  test('Row can me marked as non-removable', function () {
+    expect(2);
+
+    visit('/')
+      .then(function (app) {
+        table.set('body.firstObject.cells.firstObject.isRemovable', false);
+        return wait(app);
+      })
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .clickOnDatatableCell(1, 0)
+      .pressEscInDatatable()
+      .pressCtrlDelKeyInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], 'Nothing happens as the row is marked as non-removable');
+  });
+
   test('Removing a column', function () {
     expect(4);
 
@@ -83,5 +108,33 @@
       ], 'Otherwise, the current row is removed')
       .assertDatatableHeader([ "", 'Value 1', 'Value 2', 'Value 3'],
         'The header is also removed');
+  });
+
+  test('Columns can be marked as non-removable', function () {
+    expect(3);
+
+    visit('/')
+      .then(function (app) {
+        table.get('headers.cells')[1].set('isRemovable', false);
+        return wait(app);
+      })
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ])
+      .clickOnDatatableCell(0, 1)
+      .pressEscInDatatable()
+      .pressCtrlDelKeyInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], 'Nothing happens as the column is marker as non removable')
+      .assertDatatableHeader(['', 'Name', 'Value 1', 'Value 2', 'Value 3'],
+        'The header is still there');
+
   });
 })();

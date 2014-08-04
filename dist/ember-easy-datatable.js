@@ -164,6 +164,7 @@ EasyDatatable.DatatableCell = Ember.Object.extend({
   isHeader: false,
   isEditable: true,
   isMovable: true,
+  isRemovable: true,
   value: null
 });
 EasyDatatable.DatatableRow = Ember.Object.extend({
@@ -205,6 +206,16 @@ EasyDatatable.Datatable = Ember.Object.extend({
 
   rowCanMoveDown: function (index) {
     return this.rowCanMove(index) && index < this.get('body.length') - 1  && this.rowCanMove(index + 1);
+  },
+
+  columnCanBeRemoved: function (index) {
+    return this.get('headers.cells')[index].get('isRemovable');
+  },
+
+  rowCanBeRemoved: function (index) {
+    return this.get('body')[index].get('cells').every(function (cell) {
+      return cell.get('isRemovable');
+    });
   },
 
   makeDefaultRow: function (index) {
@@ -374,8 +385,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     removeRow: function (index) {
-      this.get('model').removeRow(index);
-      this.notifyPropertyChange('selectedCellPosition');
+      if (this.get('model').rowCanBeRemoved(index)) {
+        this.get('model').removeRow(index);
+        this.notifyPropertyChange('selectedCellPosition');
+      }
     },
 
     insertColumn: function (index) {
@@ -384,8 +397,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     },
 
     removeColumn: function (index) {
-      this.get('model').removeColumn(index);
-      this.notifyPropertyChange('selectedCellPosition');
+      if (this.get('model').columnCanBeRemoved(index)) {
+        this.get('model').removeColumn(index);
+        this.notifyPropertyChange('selectedCellPosition');
+      }
     },
 
     moveRowUp: function (index) {

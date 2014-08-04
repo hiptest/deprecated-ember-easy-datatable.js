@@ -32,6 +32,16 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return this.rowCanMove(index) && index < this.get('body.length') - 1  && this.rowCanMove(index + 1);
   },
 
+  columnCanBeRemoved: function (index) {
+    return this.get('headers.cells')[index].get('isRemovable');
+  },
+
+  rowCanBeRemoved: function (index) {
+    return this.get('body')[index].get('cells').every(function (cell) {
+      return cell.get('isRemovable');
+    });
+  },
+
   makeDefaultRow: function (index) {
     return EasyDatatable.makeListOf(this.get('headers.cells.length'));
   },
