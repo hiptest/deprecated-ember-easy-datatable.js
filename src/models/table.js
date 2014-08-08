@@ -1,8 +1,10 @@
 EasyDatatable.Datatable = Ember.Object.extend({
   headers: null,
   body: null,
+
   canInsertColumns: true,
   canInsertRows: true,
+  contentUpdated: false,
 
   validateCell: function (cell, position, value) {
     return true;
@@ -64,8 +66,35 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return false;
   },
 
+  getInsertableRowsIndices: function () {
+    var self = this,
+      insertableIndices = [];
+
+    if (this.get('canInsertRows')) {
+      insertableIndices.push(0);
+
+      this.get('body').forEach(function (row, index) {
+        if (self.rowCanBeInserted(index)) {
+          insertableIndices.push(index + 1);
+        }
+      });
+    }
+    return insertableIndices;
+  },
+
+  getIndexForFirstInsertableRow: function () {
+    var insertableIndices = this.getInsertableRowsIndices();
+    if (insertableIndices.length > 0) return Math.min.apply(Math, insertableIndices);
+  },
+
+  getIndexForLastInsertableRow: function () {
+    var insertableIndices = this.getInsertableRowsIndices();
+    if (insertableIndices.length > 0) return Math.max.apply(Math, insertableIndices);
+  },
+
   insertRow: function (index) {
     this.get('body').insertAt(index, EasyDatatable.makeRow(this.makeDefaultRow(index)));
+    this.notifyPropertyChange('contentUpdated');
   },
 
   columnCanBeInserted: function (index) {
@@ -76,16 +105,44 @@ EasyDatatable.Datatable = Ember.Object.extend({
     return false;
   },
 
+  getInsertableColumnsIndices: function () {
+    var self = this,
+      insertableIndices = [];
+
+    if (this.get('canInsertColumns')) {
+      insertableIndices.push(0);
+
+      this.get('headers.cells').map(function (cell, index) {
+        if (cell.get('canInsertColumnAfter')) {
+          insertableIndices.push(index + 1);
+        }
+      });
+    }
+    return insertableIndices;
+  },
+
+  getIndexForFirstInsertableColumn: function () {
+    var insertableIndices = this.getInsertableColumnsIndices();
+    if (insertableIndices.length > 0) return Math.min.apply(Math, insertableIndices);
+  },
+
+  getIndexForLastInsertableColumn: function () {
+    var insertableIndices = this.getInsertableColumnsIndices();
+    if (insertableIndices.length > 0) return Math.max.apply(Math, insertableIndices);
+  },
+
   insertColumn: function (index) {
     var column = this.makeDefaultColumn(index);
     this.get('headers.cells').insertAt(index, EasyDatatable.makeCell(column[0]));
     this.get('body').forEach(function (row, rowIndex) {
       row.get('cells').insertAt(index, EasyDatatable.makeCell(column[rowIndex + 1]));
     });
+    this.notifyPropertyChange('contentUpdated');
   },
 
   removeRow: function (index) {
     this.get('body').removeAt(index);
+    this.notifyPropertyChange('contentUpdated');
   },
 
   removeColumn: function (index) {
@@ -93,10 +150,12 @@ EasyDatatable.Datatable = Ember.Object.extend({
     this.get('body').forEach(function (row) {
       row.get('cells').removeAt(index);
     });
+    this.notifyPropertyChange('contentUpdated');
   },
 
   moveRow: function (from, to) {
     EasyDatatable.moveObject(this.get('body'), from, to);
+    this.notifyPropertyChange('contentUpdated');
   },
 
   moveColumn: function (from, to) {
@@ -104,5 +163,6 @@ EasyDatatable.Datatable = Ember.Object.extend({
     this.get('body').forEach(function (row) {
       row.moveCell(from, to);
     });
+    this.notifyPropertyChange('contentUpdated');
   }
 });

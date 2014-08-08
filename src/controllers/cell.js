@@ -20,7 +20,10 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       if (this.validateValue()) {
         this.set('inError', false);
         this.send('hideEditor');
-        this.get('datatableController').send(postSaveAction);
+        this.get('datatableController.model').notifyPropertyChange('contentUpdated');
+        if (!Ember.isNone(postSaveAction)) {
+          this.get('datatableController').send(postSaveAction);
+        }
       } else {
         this.set('inError', true);
       }
@@ -33,12 +36,45 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     },
 
     saveOnLeave: function (originalValue) {
-      if (this.validateValue()) {
-        this.set('inError', false);
-      } else {
+      this.send('save');
+
+      if (this.get('inError')) {
         this.set('model.value', originalValue);
+        this.set('inError', false);
+        this.send('hideEditor');
       }
-      this.send('hideEditor');
+    },
+
+    insertRowAfter: function () {
+      this.get('datatableController').send('insertRow', this.get('position.row') + 1);
+    },
+
+    removeRow: function () {
+      this.get('datatableController').send('removeRow', this.get('position.row'));
+    },
+
+    moveRowUp: function () {
+      this.get('datatableController').send('moveRowUp', this.get('position.row'));
+    },
+
+    moveRowDown: function () {
+      this.get('datatableController').send('moveRowDown', this.get('position.row'));
+    },
+
+    insertColumnAfter: function () {
+      this.get('datatableController').send('insertColumn', this.get('position.column') + 1);
+    },
+
+    removeColumn: function () {
+      this.get('datatableController').send('removeColumn', this.get('position.column'));
+    },
+
+    moveColumnLeft: function () {
+      this.get('datatableController').send('moveColumnLeft', this.get('position.column'));
+    },
+
+    moveColumnRight: function () {
+      this.get('datatableController').send('moveColumnRight', this.get('position.column'));
     }
   },
 

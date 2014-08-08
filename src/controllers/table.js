@@ -6,6 +6,9 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   selectedCellPosition: null,
   previouslySelectedCell : null,
 
+  editAfterInsertion: false,
+  showEditorForSelectedCell: false,
+
   actions: {
     navigateLeft: function () {
       var current = this.get('selectedCellPosition'),
@@ -35,17 +38,52 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
       this.set('selectedCellPosition', this.fixPosition(newPosition));
     },
 
+    addLastRow: function () {
+      var index = this.get('model').getIndexForLastInsertableRow();
+
+      if (!Ember.isNone(index)) {
+        this.get('model').insertRow(index);
+        this.set('selectedCellPosition', {row: index, column: 0});
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInRow();
+          this.set('showEditorForSelectedCell', true);
+        }
+      }
+    },
+
     insertRow: function (index) {
       if (this.get('model').rowCanBeInserted(index)) {
         this.get('model').insertRow(index);
         this.send('navigateDown');
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInRow();
+          this.set('showEditorForSelectedCell', true);
+        }
       }
     },
 
     removeRow: function (index) {
       if (this.get('model').rowCanBeRemoved(index)) {
         this.get('model').removeRow(index);
-        this.notifyPropertyChange('selectedCellPosition');
+
+        if (this.get('selectedCellPosition.row') === this.get('model.body.length')) {
+          this.send('navigateUp');
+        } else {
+          this.notifyPropertyChange('selectedCellPosition');
+        }
+      }
+    },
+
+    addLastColumn: function () {
+      var index = this.get('model').getIndexForLastInsertableColumn();
+
+      if (!Ember.isNone(index)) {
+        this.get('model').insertColumn(index);
+        this.set('selectedCellPosition', {row: -1, column: index});
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInColumn();
+          this.set('showEditorForSelectedCell', true);
+        }
       }
     },
 
@@ -53,6 +91,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
       if (this.get('model').columnCanBeInserted(index)) {
         this.get('model').insertColumn(index);
         this.send('navigateRight');
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInColumn();
+          this.set('showEditorForSelectedCell', true);
+        }
       }
     },
 
@@ -89,6 +131,43 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
         this.get('model').moveColumn(index, index + 1);
         this.send('navigateRight');
       }
+    }
+  },
+
+  firstEditableCellIndexInColumn: function (columnIndex) {
+    var index;
+
+    if (this.get('model.headers.cells')[columnIndex].get('isEditable')) {
+      return -1;
+    }
+    for (index = 0; index < this.get('model.body.length'); index++) {
+      if (this.get('model.body')[index].get('cells')[columnIndex].get('isEditable')) return index;
+    }
+  },
+
+  navigateToFirstEditableCellInColumn: function () {
+    var columnIndex = this.get('selectedCellPosition.column'),
+       rowIndex = this.firstEditableCellIndexInColumn(columnIndex);
+
+    if (!Ember.isNone(rowIndex)) {
+      this.set('selectedCellPosition', {row: rowIndex, column: columnIndex});
+    }
+  },
+
+  firstEditableCellIndexInRow: function (rowIndex) {
+    var index, row = this.get('model.body')[rowIndex].get('cells');
+
+    for (index = 0; index < row.length; index++) {
+      if (row[index].get('isEditable')) return index;
+    }
+  },
+
+  navigateToFirstEditableCellInRow: function () {
+    var rowIndex = this.get('selectedCellPosition.row'),
+      columnIndex = this.firstEditableCellIndexInRow(rowIndex);
+
+    if (!Ember.isNone(columnIndex)) {
+      this.set('selectedCellPosition', {row: rowIndex, column: columnIndex});
     }
   },
 

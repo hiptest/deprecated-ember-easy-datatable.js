@@ -51,6 +51,16 @@
       ]);
   });
 
+  test('Clicking moves the editor', function () {
+    expect(2);
+
+    visit('/')
+      .clickOnDatatableCell(1, 1)
+      .assertEditorShown()
+      .clickOnDatatableCell(3, 3)
+      .assertEditorShown();
+  });
+
   test('navigate, press enter and edit', function () {
     expect(4);
 

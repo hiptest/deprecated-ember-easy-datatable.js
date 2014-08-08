@@ -29,7 +29,9 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
 
   placeAndFocusOnShow: function () {
     var selectedCell = this.$().closest('th, td'),
-      domElement = this.$().get(0);
+      domElement = this.$().get(0),
+      value = this.get('value') || '';
+
     // We need absolute positionning before checking the width/height of the cell
     // Otherwise, the input counts in the cell size
     this.$()
@@ -42,7 +44,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
       }).focus();
 
     domElement.selectionStart = 0;
-    domElement.selectionEnd = this.get('value').toString().length;
+    domElement.selectionEnd = value.toString().length;
   }.on('didInsertElement'),
 
 });

@@ -55,46 +55,26 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   },
 
   manipulate: function (event) {
+    var mapping, action;
     if (this.get('controller.position.row') === -1) {
-      this.manipulateColumns(event);
+      mapping = {
+        45: 'insertColumnAfter',
+        46: 'removeColumn',
+        37: 'moveColumnLeft',
+        39: 'moveColumnRight'
+      };
     } else {
-      this.manipulateRows(event);
-    }
-  },
-
-  manipulateColumns: function (event) {
-    if (event.keyCode === 45) {
-      this.get('controller.datatableController').send('insertColumn', this.get('controller.position.column') + 1);
-    }
-
-    if (event.keyCode === 46) {
-      this.get('controller.datatableController').send('removeColumn', this.get('controller.position.column'));
+      mapping = {
+        45: 'insertRowAfter',
+        46: 'removeRow',
+        38: 'moveRowUp',
+        40: 'moveRowDown'
+      };
     }
 
-    if (event.which === 37) {
-      this.get('controller.datatableController').send('moveColumnLeft', this.get('controller.position.column'));
-    }
-
-    if (event.which === 39) {
-      this.get('controller.datatableController').send('moveColumnRight', this.get('controller.position.column'));
-    }
-  },
-
-  manipulateRows: function (event) {
-    if (event.keyCode === 45) {
-      this.get('controller.datatableController').send('insertRow', this.get('controller.position.row') + 1);
-    }
-
-    if (event.keyCode === 46) {
-      this.get('controller.datatableController').send('removeRow', this.get('controller.position.row'));
-    }
-
-    if (event.which === 38) {
-      this.get('controller.datatableController').send('moveRowUp', this.get('controller.position.row'));
-    }
-
-    if (event.which === 40) {
-      this.get('controller.datatableController').send('moveRowDown', this.get('controller.position.row'));
+    action = mapping[event.which];
+    if (!Ember.isNone(action)) {
+      this.get('controller').send(action);
     }
   },
 
@@ -102,9 +82,18 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
     this.get('controller').send('showEditor');
   },
 
+  showEditorWhenAsked: function () {
+    Ember.run.schedule('afterRender', this, function () {
+      if (this.get('controller.isSelected') && !this.get('controller.editorShown') && this.get('controller.datatableController.showEditorForSelectedCell')) {
+        this.get('controller').send('showEditor');
+        this.set('controller.datatableController.showEditorForSelectedCell', false);
+      }
+    });
+  }.observes('controller.datatableController.showEditorForSelectedCell'),
+
   focusWhenSelected: function () {
     Ember.run.schedule('afterRender', this, function () {
-      if (this.get('controller.isSelected')) {
+      if (this.get('controller.isSelected') && !this.get('controller.editorShown')) {
         this.$().focus();
       } else {
         this.$().blur();

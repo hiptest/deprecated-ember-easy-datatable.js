@@ -1,0 +1,39 @@
+{{#if view.showMoveColumnLeftButton}}
+<a {{action moveColumnLeft}}>
+  <i class="glyphicon glyphicon-arrow-left"></i>
+</a>
+{{/if}}
+
+{{#if view.showEditButton}}
+<i class="glyphicon glyphicon-pencil"></i>
+{{/if}}
+
+{{#if view.showRemoveColumnButton}}
+<a {{action removeColumn}}>
+  <i class="glyphicon glyphicon-remove"></i>
+</a>
+{{/if}}
+
+{{#if view.showRemoveRowButton}}
+<a {{action removeRow}}>
+  <i class="glyphicon glyphicon-remove"></i>
+</a>
+{{/if}}
+
+{{#if view.showMoveRowUpButton}}
+<a {{action moveRowUp}}>
+  <i class="glyphicon glyphicon-arrow-up"></i>
+</a>
+{{/if}}
+
+{{#if view.showMoveRowDownButton}}
+<a {{action moveRowDown}}>
+  <i class="glyphicon glyphicon-arrow-down"></i>
+</a>
+{{/if}}
+
+{{#if view.showMoveColumnRightButton}}
+<a {{action moveColumnRight}}>
+  <i class="glyphicon glyphicon-arrow-right"></i>
+</a>
+{{/if}}

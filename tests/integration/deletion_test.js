@@ -27,7 +27,7 @@
   });
 
   test('Removing a row', function () {
-    expect(3);
+    expect(7);
 
     visit('/')
       .assertDatatableContent([
@@ -51,7 +51,22 @@
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
-      ], 'Otherwise, the current row is removed');
+      ], 'Otherwise, the current row is removed')
+      .assertSelectedDatatableCell(1, 0,
+        'The row below is selected after deletion')
+      .pressDownKeyInDatatable()
+      .pressDownKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
+      .assertDatatableContent([
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22']
+      ])
+      .assertSelectedDatatableCell(2, 0,
+        'If the last row is selected, the selection moves the the row above')
+      .pressCtrlDelKeyInDatatable()
+      .pressCtrlDelKeyInDatatable()
+      .assertSelectedDatatableCell(0, 0,
+        'If the body is empty after deletion, selection moves to the header');
   });
 
   test('Row can me marked as non-removable', function () {
