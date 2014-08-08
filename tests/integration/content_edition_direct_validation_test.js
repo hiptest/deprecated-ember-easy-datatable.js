@@ -43,7 +43,7 @@
   });
 
   test('Cell edition', function () {
-    expect(6);
+    expect(7);
 
     visit('/')
       .assertDatatableContent([
@@ -52,20 +52,26 @@
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
       ])
-      .clickOnDatatableCell(1, 2)
+      .clickOnDatatableCell(1, 3)
       .typeInDatatable('This is not an numeric value')
       .pressEnterInDatatable()
       .assertEditorShown(
         'The editor is still there as validation failed')
       .assertCurrentCellHasError()
       .pressEscInDatatable()
+      .assertDatatableContent([
+        ['Row 0', '0', '10', '20'],
+        ['Row 1', '1', '11', '21'],
+        ['Row 2', '2', '12', '22'],
+        ['Row 3', '3', '13', '23']
+      ], 'After pressing esc, the cell value is back to the original one')
       .typeInDatatable('1664')
       .pressEnterInDatatable()
       .assertEditorNotShown(
         'The validation worked so the editor is hidden now')
       .assertCurrentCellHasNotError()
       .assertDatatableContent([
-        ['Row 0', '1664', '10', '20'],
+        ['Row 0', '0', '1664', '20'],
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']

@@ -74,7 +74,7 @@ EasyDatatable.Datatable = Ember.Object.extend({
       insertableIndices.push(0);
 
       this.get('body').forEach(function (row, index) {
-        if (self.rowCanBeInserted(index)) {
+        if (self.rowCanBeInserted(index + 1)) {
           insertableIndices.push(index + 1);
         }
       });

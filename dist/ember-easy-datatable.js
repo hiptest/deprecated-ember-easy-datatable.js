@@ -351,7 +351,7 @@ EasyDatatable.Datatable = Ember.Object.extend({
       insertableIndices.push(0);
 
       this.get('body').forEach(function (row, index) {
-        if (self.rowCanBeInserted(index)) {
+        if (self.rowCanBeInserted(index + 1)) {
           insertableIndices.push(index + 1);
         }
       });
@@ -599,6 +599,19 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
       this.set('selectedCellPosition', this.fixPosition(newPosition));
     },
 
+    addFirstRow: function () {
+      var index = this.get('model').getIndexForFirstInsertableRow();
+
+      if (!Ember.isNone(index)) {
+        this.get('model').insertRow(index);
+        this.set('selectedCellPosition', {row: index, column: 0});
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInRow();
+          this.set('showEditorForSelectedCell', true);
+        }
+      }
+    },
+
     addLastRow: function () {
       var index = this.get('model').getIndexForLastInsertableRow();
 
@@ -631,6 +644,19 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
           this.send('navigateUp');
         } else {
           this.notifyPropertyChange('selectedCellPosition');
+        }
+      }
+    },
+
+    addFirstColumn: function () {
+      var index = this.get('model').getIndexForFirstInsertableColumn();
+
+      if (!Ember.isNone(index)) {
+        this.get('model').insertColumn(index);
+        this.set('selectedCellPosition', {row: -1, column: index});
+        if (this.get('editAfterInsertion')) {
+          this.navigateToFirstEditableCellInColumn();
+          this.set('showEditorForSelectedCell', true);
         }
       }
     },
