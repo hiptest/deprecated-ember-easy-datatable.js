@@ -307,3 +307,128 @@
       ], 'It will search for the last place where a column is insertable if needed');
   });
 })();
+
+(function () {
+  module('%@ integration - inserting data and edit first cell'.fmt(EasyDatatable.toString()), {
+    setup: function () {
+      EasyDatatable.declareDatatable(App);
+      Ember.TEMPLATES.easy_datatable = Ember.Handlebars.compile([
+        '{{render "easy_datatable_table" model}}',
+        '<a class="add-first-row" {{action addFirstRow}}>Add first row</a>',
+        '<a class="add-last-row" {{action addLastRow}}>Add last row</a>',
+        '<a class="add-first-column" {{action addFirstColumn}}>Add first column</a>',
+        '<a class="add-last-column" {{action addLastColumn}}>Add last column</a>',
+      ].join("\n"));
+
+      table = EasyDatatable.makeDatatable({
+        headers: ['1', '2', '3', '4'],
+        body: [
+          [
+            {isEditable: false, value: '', isHeader: true},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''}
+          ],
+          [
+            {isEditable: false, value: '', isHeader: true},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''}
+          ],
+          [
+            {isEditable: false, value: '', isHeader: true},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''}
+          ],
+          [
+            {isEditable: false, value: '', isHeader: true},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''},
+            {isEditable: false, value: ''}
+          ],
+        ],
+
+        makeDefaultRow: function () {
+          return this.get('headers.cells').map(function (item, index) {
+            return {
+              value: index,
+              isEditable: index > 2
+            };
+          });
+        },
+
+        makeDefaultColumn: function (columnId) {
+          var column = [{
+            isHeader: true,
+            isEditable: false,
+            value: columnId
+          }];
+
+          this.get('body').forEach(function (item, index) {
+            column.push({
+              value: index,
+              isEditable: index > 2
+            });
+          });
+          return column;
+        }
+      });
+
+      App.IndexView = Ember.View.extend({
+        table: table,
+        template: Ember.Handlebars.compile('{{render "easy_datatable" view.table}}'),
+      });
+
+      App.EasyDatatableController.reopen({
+        editAfterInsertion: true
+      });
+
+      DatatableIntegrationHelpers.registerHelpers();
+      App.injectTestHelpers();
+    },
+
+    teardown: function () {
+      App.EasyDatatableController.reopen({
+        editAfterInsertion: false
+      });
+      App.reset();
+    }
+  });
+
+  test('If option "editAfterInsertion" is set to true, the editor is shown after inserting a new row', function () {
+    visit('/')
+      .clickOnDatatableCell(1, 0)
+      .pressCtrlInserKeyInDatatable()
+      .assertSelectedDatatableCell(2, 3,
+        'The first editable cell is selected (not the header) ...')
+      .assertEditorShown('... and the editor is shown')
+      .click('a.add-last-row')
+      .assertSelectedDatatableCell(6, 3,
+        'It also works when inserting last row ...')
+      .assertEditorShown()
+      .click('a.add-first-row')
+      .assertSelectedDatatableCell(1, 3,
+        '... or the first row')
+      .assertEditorShown();
+  });
+
+  test('If option "editAfterInsertion" is set to true, the editor is shown after inserting a new column', function () {
+
+    visit('/')
+      .clickOnDatatableCell(0, 2)
+      .pressEscInDatatable()
+      .pressCtrlInserKeyInDatatable()
+      .assertSelectedDatatableCell(4, 3,
+        'The same principle applies when inserting columns')
+      .assertEditorShown('... and the editor is also shown')
+      .click('a.add-first-column')
+      .assertSelectedDatatableCell(4, 0,
+        'It also works when inserting the first column ...')
+      .assertEditorShown()
+      .click('a.add-last-column')
+      .assertSelectedDatatableCell(4, 6,
+        '... or the last one')
+      .assertEditorShown();
+  });
+})();
