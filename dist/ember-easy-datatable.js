@@ -543,7 +543,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           failure();
         }
       }
-    }
+    };
   },
 
   columnIndex: function () {
