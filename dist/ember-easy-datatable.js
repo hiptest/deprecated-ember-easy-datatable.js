@@ -724,8 +724,48 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
   }.property('selectedCellPosition'),
 
   fixPosition: function (position) {
-    var columnCount = this.get('model.body.firstObject.cells.length'),
-      rowCount = this.get('model.body.length');
+    if (!this.isRowValid(position)) {
+      position = this.fixRowPosition(position);
+    } else if (!(this.isColumnValid(position))) {
+      position = this.fixColumnPosition(position);
+    }
+
+    if (!this.isRowValid(position) || !this.isColumnValid(position)) {
+      position.row = null;
+      position.column = null;
+    }
+
+    return position;
+  },
+
+  isRowValid: function (position) {
+    var rowCount = this.get('model.body.length');
+    return position.row >= -1 && position.row < rowCount;
+  },
+
+  isColumnValid: function (position) {
+    var columnCount = this.get('model.headers.cells.length');
+    return position.column >= 0 && position.column < columnCount;
+  },
+
+  fixRowPosition: function (position) {
+    var rowCount = this.get('model.body.length');
+
+    if (position.row < - 1) {
+      position.row = rowCount - 1;
+      position.column -= 1;
+    }
+
+    if (position.row >= rowCount) {
+      position.row = -1;
+      position.column += 1;
+    }
+
+    return position;
+  },
+
+  fixColumnPosition: function (position) {
+    var columnCount = this.get('model.body.firstObject.cells.length');
 
     if (position.column < 0) {
       position.column = columnCount - 1;
@@ -735,11 +775,6 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     if (position.column >= columnCount) {
       position.column = 0;
       position.row += 1;
-    }
-
-    if (position.row < -1 || position.row >= rowCount) {
-      position.row = null;
-      position.column = null;
     }
 
     return position;

@@ -86,4 +86,29 @@
       .clickOnDatatableCell(2, 3)
       .assertHightlightedCellsText([]);
   });
+
+  test('Switching to other rows/columns when needed', function () {
+    visit('/')
+      .clickOnDatatableCell(2, 0)
+      .pressEscInDatatable()
+      .pressLeftKeyInDatatable()
+      .assertSelectedDatatableCell(1, 4,
+        'Navigating left in the first column brings to the end of the previous row')
+      .pressRightKeyInDatatable()
+      .assertSelectedDatatableCell(2, 0,
+        'Navigating right at the end of a column brings to the beginning on the next row')
+      .pressDownKeyInDatatable()
+      .pressDownKeyInDatatable()
+      .pressDownKeyInDatatable()
+      .assertSelectedDatatableCell(0, 1,
+        'Navigating down at the bottom of the table brings to the start of the next column')
+      .pressUpKeyInDatatable()
+      .assertSelectedDatatableCell(4, 0,
+        'Navigating up at the beginning of a column bring at the bottom of the previous one')
+      .clickOnDatatableCell(4, 4)
+      .pressEscInDatatable()
+      .pressRightKeyInDatatable()
+      .assertSelectedDatatableCell(-1, -1,
+        'Navigating right at the bottom-right of the table empties the selection');
+  });
 })();
