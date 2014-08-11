@@ -17,16 +17,18 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     },
 
     save: function (postSaveAction) {
-      if (this.validateValue()) {
-        this.set('inError', false);
-        this.send('hideEditor');
-        this.get('datatableController.model').notifyPropertyChange('contentUpdated');
+      var self = this;
+
+      this.validateValue().then(function () {
+        self.set('inError', false);
+        self.send('hideEditor');
+        self.get('datatableController.model').notifyPropertyChange('contentUpdated');
         if (!Ember.isNone(postSaveAction)) {
-          this.get('datatableController').send(postSaveAction);
+          self.get('datatableController').send(postSaveAction);
         }
-      } else {
-        this.set('inError', true);
-      }
+      }, function () {
+        self.set('inError', true);
+      });
     },
 
     cancel: function (originalValue) {
@@ -83,7 +85,20 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       cell = this.get('model'),
       position = this.get('position'),
       value = cell.get('value');
-    return datatable.validateCell(cell, position, value);
+    return this.makePromise(datatable.validateCell(cell, position, value));
+  },
+
+  makePromise: function (value) {
+    if (value instanceof Ember.RSVP.Promise) return value;
+    return {
+      then: function (success, failure) {
+        if (value) {
+          success();
+        } else {
+          failure();
+        }
+      }
+    }
   },
 
   columnIndex: function () {
