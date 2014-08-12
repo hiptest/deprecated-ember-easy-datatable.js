@@ -93,11 +93,24 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
 
   focusWhenSelected: function () {
     Ember.run.schedule('afterRender', this, function () {
+      if (Ember.isNone(this.$())) return;
+
       if (this.get('controller.isSelected') && !this.get('controller.editorShown')) {
         this.$().focus();
       } else {
         this.$().blur();
       }
     });
-  }.observes('controller.isSelected')
+  }.observes('controller.isSelected'),
+
+  focusAfterRender: function () {
+    var position = this.get('controller.position'),
+      selected = this.get('controller.datatableController.selectedCellPosition');
+
+    if (this.get('controller.editorShown') || Ember.isNone(selected)) return;
+
+    if (position.row === selected.row && position.column === selected.column) {
+      this.$().focus();
+    }
+  }.on('didInsertElement')
 });
