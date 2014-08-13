@@ -40,7 +40,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     insertRow: function (index) {
       if (this.get('model').rowCanBeInserted(index)) {
-        this.insertRowAt(index, this.computeNavigateDownPosition());
+        this.insertRowAt(index, this.computeNavigateDownPosition);
       }
     },
 
@@ -70,7 +70,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     insertColumn: function (index) {
       if (this.get('model').columnCanBeInserted(index)) {
-        this.insertColumnAt(index, this.computeNavigateRightPosition());
+        this.insertColumnAt(index, this.computeNavigateRightPosition);
       }
     },
 
@@ -243,8 +243,11 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     if (Ember.isNone(index)) return;
 
     this.get('model').insertRow(index);
-    this.set('selectedCellPosition', nextPosition);
+    if (typeof(nextPosition) === 'function') {
+      nextPosition = nextPosition.apply(this);
+    }
 
+    this.set('selectedCellPosition', nextPosition);
     if (this.get('editAfterInsertion')) {
       this.navigateToFirstEditableCellInRow();
       this.set('showEditorForSelectedCell', true);
@@ -255,6 +258,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     if (Ember.isNone(index)) return;
 
     this.get('model').insertColumn(index);
+    if (typeof(nextPosition) === 'function') {
+      nextPosition = nextPosition.apply(this);
+    }
+
     this.set('selectedCellPosition', nextPosition);
     if (this.get('editAfterInsertion')) {
       this.navigateToFirstEditableCellInColumn();

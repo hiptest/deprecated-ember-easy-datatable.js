@@ -31,6 +31,16 @@ function program3(depth0,data) {
 
 function program5(depth0,data) {
   
+  var buffer = '', stack1;
+  data.buffer.push("<div class=\"error\">");
+  stack1 = helpers._triageMustache.call(depth0, "errorMessage", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</div>");
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
   
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_cell_actions", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   }
@@ -44,7 +54,10 @@ function program5(depth0,data) {
   stack1 = helpers['if'].call(depth0, "editorShown", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n");
-  stack1 = helpers['if'].call(depth0, "showActions", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data});
+  stack1 = helpers['if'].call(depth0, "inError", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "showActions", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   return buffer;
   
@@ -448,6 +461,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
   editorShown: false,
   inError: false,
+  errorMessage: '',
 
   actions: {
     showEditor: function () {
@@ -466,13 +480,15 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
       this.validateValue().then(function () {
         self.set('inError', false);
+        self.set('errorMessage', '');
         self.send('hideEditor');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
         if (!Ember.isNone(postSaveAction)) {
           self.get('datatableController').send(postSaveAction);
         }
-      }, function () {
+      }, function (error) {
         self.set('inError', true);
+        self.set('errorMessage', error);
       });
     },
 
@@ -616,7 +632,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     insertRow: function (index) {
       if (this.get('model').rowCanBeInserted(index)) {
-        this.insertRowAt(index, this.computeNavigateDownPosition());
+        this.insertRowAt(index, this.computeNavigateDownPosition);
       }
     },
 
@@ -646,7 +662,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
 
     insertColumn: function (index) {
       if (this.get('model').columnCanBeInserted(index)) {
-        this.insertColumnAt(index, this.computeNavigateRightPosition());
+        this.insertColumnAt(index, this.computeNavigateRightPosition);
       }
     },
 
@@ -819,8 +835,11 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     if (Ember.isNone(index)) return;
 
     this.get('model').insertRow(index);
-    this.set('selectedCellPosition', nextPosition);
+    if (typeof(nextPosition) === 'function') {
+      nextPosition = nextPosition.apply(this);
+    }
 
+    this.set('selectedCellPosition', nextPosition);
     if (this.get('editAfterInsertion')) {
       this.navigateToFirstEditableCellInRow();
       this.set('showEditorForSelectedCell', true);
@@ -831,6 +850,10 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     if (Ember.isNone(index)) return;
 
     this.get('model').insertColumn(index);
+    if (typeof(nextPosition) === 'function') {
+      nextPosition = nextPosition.apply(this);
+    }
+
     this.set('selectedCellPosition', nextPosition);
     if (this.get('editAfterInsertion')) {
       this.navigateToFirstEditableCellInColumn();

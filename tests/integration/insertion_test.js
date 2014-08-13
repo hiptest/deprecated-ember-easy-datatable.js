@@ -44,7 +44,7 @@
   });
 
   test('Inserting a new row', function () {
-    expect(3);
+    expect(5);
 
     visit('/')
       .assertDatatableContent([
@@ -70,7 +70,14 @@
         ['Row 1', '1', '11', '21'],
         ['Row 2', '2', '12', '22'],
         ['Row 3', '3', '13', '23']
-      ], 'Otherwise, a new empty row is added after the selected row');
+      ], 'Otherwise, a new empty row is added after the selected row')
+      .assertSelectedDatatableCell(2, 0,
+        'The header of the new row is selected')
+      .clickOnDatatableCell(5, 0)
+      .pressEscInDatatable()
+      .pressCtrlInserKeyInDatatable()
+      .assertSelectedDatatableCell(6, 0,
+        'Inserting the last row with a keyboard shortcut brings to the correct cell');
   });
 
   test('Inserting a new row can be prevented by setting "canInsertRows" at the table level', function () {
@@ -176,7 +183,7 @@
   });
 
   test('Inserting a new column', function () {
-    expect(4);
+    expect(6);
 
     visit('/')
       .assertDatatableContent([
@@ -203,7 +210,14 @@
         ['Row 3', '', '3', '13', '23']
       ], 'Otherwise, a new empty column is added after the selected column')
       .assertDatatableHeader([ "", 'Name', '', 'Value 1', 'Value 2', 'Value 3'],
-        'An empty header is also added');
+        'An empty header is also added')
+      .assertSelectedDatatableCell(0, 2,
+        'The correct header cell is selected after insertion')
+      .clickOnDatatableCell(0, 5)
+      .pressEscInDatatable()
+      .pressCtrlInserKeyInDatatable()
+      .assertSelectedDatatableCell(0, 6,
+        'After inserting the last column, the correct cell is selected)');
   });
 
   test('Inserting a new column can be prevented by setting "canInsertColumns" to false at table level', function () {
