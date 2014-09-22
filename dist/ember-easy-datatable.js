@@ -993,16 +993,19 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   }.observes('controller.isSelected'),
 
   focusAfterRender: function () {
-    var position = this.get('controller.position'),
-      selected = this.get('controller.datatableController.selectedCellPosition');
+    Ember.run.schedule('afterRender', this, function () {
+      var position = this.get('controller.position'),
+        selected = this.get('controller.datatableController.selectedCellPosition');
 
-    if (this.get('controller.editorShown') || Ember.isNone(selected)) return;
+      if (this.get('controller.editorShown') || Ember.isNone(selected)) return;
 
-    if (position.row === selected.row && position.column === selected.column) {
-      this.$().focus();
-    }
+      if (position.row === selected.row && position.column === selected.column) {
+        this.$().focus();
+      }
+    });
   }.on('didInsertElement')
 });
+
 EasyDatatable.EasyDatatableCellActionsView = Ember.View.extend({
   templateName: 'easy_datatable_cell_actions',
   classNameBindings: [
