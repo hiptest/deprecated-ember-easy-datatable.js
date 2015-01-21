@@ -4,10 +4,10 @@
       EasyDatatable.declareDatatable(App);
       Ember.TEMPLATES.easy_datatable = Ember.Handlebars.compile([
         '{{render "easy_datatable_table" model}}',
-        '<a class="add-first-row" {{action addFirstRow}}>Add first row</a>',
-        '<a class="add-last-row" {{action addLastRow}}>Add last row</a>',
-        '<a class="add-first-column" {{action addFirstColumn}}>Add first column</a>',
-        '<a class="add-last-column" {{action addLastColumn}}>Add last column</a>',
+        '<a class="add-first-row" {{action \'addFirstRow\'}}>Add first row</a>',
+        '<a class="add-last-row" {{action \'addLastRow\'}}>Add last row</a>',
+        '<a class="add-first-column" {{action \'addFirstColumn\'}}>Add first column</a>',
+        '<a class="add-last-column" {{action \'addLastColumn\'}}>Add last column</a>',
       ].join("\n"));
 
       table = EasyDatatable.makeDatatable({
@@ -328,10 +328,10 @@
       EasyDatatable.declareDatatable(App);
       Ember.TEMPLATES.easy_datatable = Ember.Handlebars.compile([
         '{{render "easy_datatable_table" model}}',
-        '<a class="add-first-row" {{action addFirstRow}}>Add first row</a>',
-        '<a class="add-last-row" {{action addLastRow}}>Add last row</a>',
-        '<a class="add-first-column" {{action addFirstColumn}}>Add first column</a>',
-        '<a class="add-last-column" {{action addLastColumn}}>Add last column</a>',
+        '<a class="add-first-row" {{action \'addFirstRow\'}}>Add first row</a>',
+        '<a class="add-last-row" {{action \'addLastRow\'}}>Add last row</a>',
+        '<a class="add-first-column" {{action \'addFirstColumn\'}}>Add first column</a>',
+        '<a class="add-last-column" {{action \'addLastColumn\'}}>Add last column</a>',
       ].join("\n"));
 
       table = EasyDatatable.makeDatatable({
