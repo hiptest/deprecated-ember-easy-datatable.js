@@ -152,7 +152,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
         var app = arguments[0],
           result = helpers[name].apply(self, Array.prototype.slice.call(arguments, 1));
 
-        return result || wait(app);
+        return result || wait();
       });
     });
   },
