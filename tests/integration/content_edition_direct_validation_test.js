@@ -45,80 +45,80 @@
   test('Cell edition', function () {
     expect(7);
 
-    visit('/')
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ])
-      .clickOnDatatableCell(1, 3)
-      .typeInDatatable('This is not an numeric value')
-      .pressEnterInDatatable()
-      .assertEditorShown(
-        'The editor is still there as validation failed')
-      .assertCurrentCellHasError()
-      .pressEscInDatatable()
-      .assertDatatableContent([
-        ['Row 0', '0', '10', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ], 'After pressing esc, the cell value is back to the original one')
-      .typeInDatatable('1664')
-      .pressEnterInDatatable()
-      .assertEditorNotShown(
-        'The validation worked so the editor is hidden now')
-      .assertCurrentCellHasNotError()
-      .assertDatatableContent([
-        ['Row 0', '0', '1664', '20'],
-        ['Row 1', '1', '11', '21'],
-        ['Row 2', '2', '12', '22'],
-        ['Row 3', '3', '13', '23']
-      ]);
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('This is not an numeric value');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'The editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEscInDatatable();
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After pressing esc, the cell value is back to the original one');
+    typeInDatatable('1664');
+    pressEnterInDatatable();
+    assertEditorNotShown(
+      'The validation worked so the editor is hidden now');
+    assertCurrentCellHasNotError();
+    assertDatatableContent([
+      ['Row 0', '0', '1664', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
   });
 
   test('Row header', function () {
     expect(7);
 
-    visit('/')
-      .clickOnDatatableCell(3, 0)
-      .assertHightlightedCellsText(['#2', 'Row 2', '2', '12', '22'])
-      .assertEditorShown()
-      .typeInDatatable('I forgot it should be #something')
-      .pressEnterInDatatable()
-      .assertEditorShown(
-        'The editor is still there as validation failed')
-      .assertCurrentCellHasError()
-      .pressEscInDatatable()
-      .typeInDatatable('#123')
-      .pressEnterInDatatable()
-      .assertEditorNotShown(
-        'The validation worked so the editor is hidden now')
-      .assertCurrentCellHasNotError()
-      .pressUpKeyInDatatable()
-      .assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22']);
+    visit('/');
+    clickOnDatatableCell(3, 0);
+    assertHightlightedCellsText(['#2', 'Row 2', '2', '12', '22']);
+    assertEditorShown();
+    typeInDatatable('I forgot it should be #something');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'The editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEscInDatatable();
+    typeInDatatable('#123');
+    pressEnterInDatatable();
+    assertEditorNotShown(
+      'The validation worked so the editor is hidden now');
+    assertCurrentCellHasNotError();
+    pressUpKeyInDatatable();
+    assertHightlightedCellsText(['#123', 'Row 2', '2', '12', '22']);
   });
 
   test('Column header', function () {
     expect(7);
 
-    visit('/')
-      .clickOnDatatableCell(0, 3)
-      .assertHightlightedCellsText(['Value 2', '10', '11', '12', '13'])
-      .assertEditorShown()
-      .typeInDatatable('I forgot it should be #something')
-      .pressEnterInDatatable()
-      .assertEditorShown(
-        'The editor is still there as validation failed')
-      .assertCurrentCellHasError()
-      .pressEscInDatatable()
-      .typeInDatatable('Value 951')
-      .pressEnterInDatatable()
-      .pressUpKeyInDatatable()
-      .assertEditorNotShown(
-        'The validation worked so the editor is hidden now')
-      .assertCurrentCellHasNotError()
-      .assertHightlightedCellsText(['Value 951', '10', '11', '12', '13']);
+    visit('/');
+    clickOnDatatableCell(0, 3);
+    assertHightlightedCellsText(['Value 2', '10', '11', '12', '13']);
+    assertEditorShown();
+    typeInDatatable('I forgot it should be #something');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'The editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEscInDatatable();
+    typeInDatatable('Value 951');
+    pressEnterInDatatable();
+    pressUpKeyInDatatable();
+    assertEditorNotShown(
+      'The validation worked so the editor is hidden now');
+    assertCurrentCellHasNotError();
+    assertHightlightedCellsText(['Value 951', '10', '11', '12', '13']);
   });
 })();

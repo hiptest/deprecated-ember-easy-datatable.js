@@ -75,70 +75,70 @@ DatatableIntegrationHelpers = Ember.Object.create({
       var element = this.getDatatable().find('tr:nth(%@)'.fmt(row)).find('td, th').eq(column);
       element.focus();
 
-      return click(element);
+      click(element);
     },
 
     typeInDatatable: function (value) {
       if (value !== '') {
-        return pressKey(value.charCodeAt(0))
-          .typeInDatatable(value.slice(1));
+        pressKey(value.charCodeAt(0));
+        typeInDatatable(value.slice(1));
       }
     },
 
     pressEnterInDatatable: function () {
-      return pressKey(13);
+      pressKey(13);
     },
 
     pressEscInDatatable: function () {
-      return pressKey(27);
+      pressKey(27);
     },
 
     pressUpKeyInDatatable: function () {
-      return pressKey(38);
+      pressKey(38);
     },
 
     pressDownKeyInDatatable: function () {
-      return pressKey(40);
+      pressKey(40);
     },
 
     pressRightKeyInDatatable: function () {
-      return pressKey(39);
+      pressKey(39);
     },
 
     pressLeftKeyInDatatable: function () {
-      return pressKey(37);
+      pressKey(37);
     },
 
     pressCtrlUpKeyInDatatable: function () {
-      return pressKey(38, true);
+      pressKey(38, true);
     },
 
     pressCtrlDownKeyInDatatable: function () {
-      return pressKey(40, true);
+      pressKey(40, true);
     },
 
     pressCtrlRightKeyInDatatable: function () {
-      return pressKey(39, true);
+      pressKey(39, true);
     },
 
     pressCtrlLeftKeyInDatatable: function () {
-      return pressKey(37, true);
+      pressKey(37, true);
     },
 
     pressCtrlDelKeyInDatatable: function () {
-      return pressKey(46, true);
+      pressKey(46, true);
     },
 
     pressCtrlInserKeyInDatatable: function () {
-      return pressKey(45, true);
+      pressKey(45, true);
     },
 
     pressTabKeyInDatatable: function () {
-      return pressKey(9);
+      pressKey(9);
     },
 
     pressShiftTabKeyInDatatable: function () {
-      return pressKey(9, false, true);
+      pressKey(9, false, true);
     }
   },
 
@@ -149,10 +149,7 @@ DatatableIntegrationHelpers = Ember.Object.create({
 
     names.forEach(function (name) {
       Ember.Test.registerAsyncHelper(name, function () {
-        var app = arguments[0],
-          result = helpers[name].apply(self, Array.prototype.slice.call(arguments, 1));
-
-        return result || wait();
+        return helpers[name].apply(self, Array.prototype.slice.call(arguments, 1));
       });
     });
   },

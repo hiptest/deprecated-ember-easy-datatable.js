@@ -42,47 +42,47 @@
   test('When isIndex is set to true, the cell displays the row + 1', function () {
     expect(1);
 
-    visit('/')
-      .assertDatatableContent([
-        ['1', 'Row 1'],
-        ['2', 'Row 2'],
-        ['3', 'Row 3'],
-        ['4', 'Row 4']
-      ]);
+    visit('/');
+    assertDatatableContent([
+      ['1', 'Row 1'],
+      ['2', 'Row 2'],
+      ['3', 'Row 3'],
+      ['4', 'Row 4']
+    ]);
   });
 
   test('Is keeps showing the correct value after insertion, removing or reordering', function () {
     expect(4);
 
-    visit('/')
-      .assertDatatableContent([
-        ['1', 'Row 1'],
-        ['2', 'Row 2'],
-        ['3', 'Row 3'],
-        ['4', 'Row 4']
-      ])
-      .clickOnDatatableCell(1, 0)
-      .pressCtrlInserKeyInDatatable()
-      .assertDatatableContent([
-        ['1', 'Row 1'],
-        ['2', ''],
-        ['3', 'Row 2'],
-        ['4', 'Row 3'],
-        ['5', 'Row 4']
-      ])
-      .pressCtrlDelKeyInDatatable()
-      .assertDatatableContent([
-        ['1', 'Row 1'],
-        ['2', 'Row 2'],
-        ['3', 'Row 3'],
-        ['4', 'Row 4']
-      ])
-      .pressCtrlDownKeyInDatatable()
-      .assertDatatableContent([
-        ['1', 'Row 1'],
-        ['2', 'Row 3'],
-        ['3', 'Row 2'],
-        ['4', 'Row 4']
-      ]);
+    visit('/');
+    assertDatatableContent([
+      ['1', 'Row 1'],
+      ['2', 'Row 2'],
+      ['3', 'Row 3'],
+      ['4', 'Row 4']
+    ]);
+    clickOnDatatableCell(1, 0);
+    pressCtrlInserKeyInDatatable();
+    assertDatatableContent([
+      ['1', 'Row 1'],
+      ['2', ''],
+      ['3', 'Row 2'],
+      ['4', 'Row 3'],
+      ['5', 'Row 4']
+    ]);
+    pressCtrlDelKeyInDatatable();
+    assertDatatableContent([
+      ['1', 'Row 1'],
+      ['2', 'Row 2'],
+      ['3', 'Row 3'],
+      ['4', 'Row 4']
+    ]);
+    pressCtrlDownKeyInDatatable();
+    assertDatatableContent([
+      ['1', 'Row 1'],
+      ['2', 'Row 3'],
+      ['3', 'Row 2'],
+      ['4', 'Row 4']
+    ]);
   });
 })();
