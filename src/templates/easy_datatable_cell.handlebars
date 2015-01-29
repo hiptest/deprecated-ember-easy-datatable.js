@@ -1,5 +1,5 @@
 {{#if isIndex}}{{view.displayableIndex}}{{/if}}
 {{value}}
-{{#if editorShown}}{{view "easy_datatable_editor" valueBinding="value"}}{{/if}}
+{{#if editorShown}}{{view "easy_datatable_editor" oneWayValueBinding="value"}}{{/if}}
 {{#if inError}}<div class="error">{{errorMessage}}</div>{{/if}}
 {{#if showActions}}{{view "easy_datatable_cell_actions"}}{{/if}}

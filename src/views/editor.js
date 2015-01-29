@@ -1,5 +1,7 @@
 EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   originalValue: null,
+  valueBinding: Ember.Binding.oneWay('oneWayValue'),  // so updating input value
+                                                      // does not update the originating value
   cellController: Ember.computed.alias('parentView.controller'),
 
   storeOriginalValue: function () {
@@ -9,7 +11,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   keyDown: function (event) {
     event.stopPropagation();
     if (event.which === 27) {
-      this.get('cellController').send('cancel', this.get('originalValue'));
+      this.get('cellController').send('cancel');
     }
 
     if (event.which === 13 || event.which === 9) {
@@ -19,12 +21,12 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
       if (event.which === 9) {
         postSaveAction = event.shiftKey ? 'navigateLeft' : 'navigateRight';
       }
-      this.get('cellController').send('save', postSaveAction);
+      this.get('cellController').send('save', this.get('value'), postSaveAction);
     }
   },
 
   focusOut: function () {
-    this.get('cellController').send('saveOnLeave', this.get('originalValue'));
+    this.get('cellController').send('saveOnLeave', this.get('value'), this.get('originalValue'));
   },
 
   placeAndFocusOnShow: function () {

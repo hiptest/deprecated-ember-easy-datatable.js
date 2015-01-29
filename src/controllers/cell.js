@@ -17,8 +17,9 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       this.notifyPropertyChange('isSelected');
     },
 
-    save: function (postSaveAction) {
+    save: function (newValue, postSaveAction) {
       var self = this;
+      this.set('model.value', newValue);
 
       this.validateValue().then(function () {
         self.set('inError', false);
@@ -34,14 +35,13 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       });
     },
 
-    cancel: function (originalValue) {
-      this.set('model.value', originalValue);
+    cancel: function () {
       this.set('inError', false);
       this.send('hideEditor');
     },
 
-    saveOnLeave: function (originalValue) {
-      this.send('save');
+    saveOnLeave: function (newValue, originalValue) {
+      this.send('save', newValue);
 
       if (this.get('inError')) {
         this.set('model.value', originalValue);
