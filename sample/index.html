@@ -18,13 +18,20 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.7.1/ember.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.7.1/ember.js"></script>
     <script src="../dist/ember-easy-datatable.js"></script>
     <script>
       App = Ember.Application.create({
         LOG_VIEW_LOOKUPS: true
       });
       EasyDatatable.declareDatatable(App);
+      Ember.TEMPLATES.easy_datatable = Ember.Handlebars.compile([
+        '<a class="add-first-row" {{action \'addFirstRow\'}}>Add first row</a>',
+        '<a class="add-last-row" {{action \'addLastRow\'}}>Add last row</a>',
+        '<a class="add-first-column" {{action \'addFirstColumn\'}}>Add first column</a>',
+        '<a class="add-last-column" {{action \'addLastColumn\'}}>Add last column</a>',
+        '{{render "easy_datatable_table" model}}',
+      ].join("\n"));
       App.IndexView = Ember.View.extend({
         table: EasyDatatable.makeDatatable({
           headers: [
@@ -81,7 +88,16 @@
             }
 
             // Only numeric values are allowed in the cells
-            return !Ember.isNone(value.match(/^[0-9]+$/));
+            return new Ember.RSVP.Promise(function (resolve, reject) {
+              // use a timer to simulate asynchronous validation
+              Ember.run.later(function() {
+                if (Ember.isNone(value.match(/^[0-9]+$/))) {
+                  reject("must be numeric");
+                } else {
+                  resolve(value);
+                }
+              }, 500);
+            })
           }
         })
       });
