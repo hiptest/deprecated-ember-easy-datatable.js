@@ -19,9 +19,9 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
     save: function (newValue, postSaveAction) {
       var self = this;
-      this.set('model.value', newValue);
 
-      this.validateValue().then(function () {
+      this.validateValue(newValue).then(function (validatedNewValue) {
+        self.set('model.value', validatedNewValue);
         self.set('inError', false);
         self.set('errorMessage', '');
         self.send('hideEditor');
@@ -40,14 +40,25 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       this.send('hideEditor');
     },
 
-    saveOnLeave: function (newValue, originalValue) {
-      this.send('save', newValue);
+    saveOnLeave: function (newValue) {
+      var self = this;
 
+      this.validateValue(newValue).then(function (validatedNewValue) {
+        self.set('model.value', validatedNewValue);
+        self.set('inError', false);
+        self.set('errorMessage', '');
+        self.send('hideEditor');
+        self.get('datatableController.model').notifyPropertyChange('contentUpdated');
+      }, function (error) {
+        self.send('hideEditor');
+      });
+    },
+
+    leaveEdition: function() {
       if (this.get('inError')) {
-        this.set('model.value', originalValue);
         this.set('inError', false);
-        this.send('hideEditor');
       }
+      this.send('hideEditor');
     },
 
     insertRowAfter: function () {
@@ -83,25 +94,21 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     }
   },
 
-  validateValue: function () {
+  validateValue: function (value) {
     var datatable = this.get('datatableController.model'),
       cell = this.get('model'),
       position = this.get('position'),
-      value = cell.get('value');
-    return this.makePromise(datatable.validateCell(cell, position, value));
-  },
-
-  makePromise: function (value) {
-    if (value instanceof Ember.RSVP.Promise) return value;
-    return {
-      then: function (success, failure) {
-        if (value) {
-          success();
-        } else {
-          failure();
-        }
-      }
-    };
+      isValid;
+    isValid = datatable.validateCell(cell, position, value);
+    // is it a promise? (async validation)
+    if (isValid instanceof Ember.RSVP.Promise) {
+      return isValid;
+    // no, so it is a boolean (sync validation)
+    } else if (isValid) {
+      return Ember.RSVP.Promise.resolve(value);
+    } else {
+      return Ember.RSVP.Promise.reject("Invalid value");
+    }
   },
 
   columnIndex: function () {

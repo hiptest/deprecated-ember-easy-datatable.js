@@ -25,8 +25,8 @@ function program3(depth0,data) {
   
   
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_editor", {hash:{
-    'valueBinding': ("value")
-  },hashTypes:{'valueBinding': "STRING"},hashContexts:{'valueBinding': depth0},contexts:[depth0],types:["STRING"],data:data})));
+    'oneWayValueBinding': ("value")
+  },hashTypes:{'oneWayValueBinding': "STRING"},hashContexts:{'oneWayValueBinding': depth0},contexts:[depth0],types:["STRING"],data:data})));
   }
 
 function program5(depth0,data) {
@@ -59,6 +59,7 @@ function program7(depth0,data) {
   data.buffer.push("\n");
   stack1 = helpers['if'].call(depth0, "showActions", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
   return buffer;
   
 });
@@ -72,7 +73,7 @@ function program1(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnLeft", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnLeft", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-left\"></i>\n</a>\n");
   return buffer;
   }
@@ -87,7 +88,7 @@ function program5(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeColumn", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeColumn", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-remove\"></i>\n</a>\n");
   return buffer;
   }
@@ -96,7 +97,7 @@ function program7(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeRow", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeRow", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-remove\"></i>\n</a>\n");
   return buffer;
   }
@@ -105,7 +106,7 @@ function program9(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowUp", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowUp", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-up\"></i>\n</a>\n");
   return buffer;
   }
@@ -114,7 +115,7 @@ function program11(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowDown", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowDown", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-down\"></i>\n</a>\n");
   return buffer;
   }
@@ -123,7 +124,7 @@ function program13(depth0,data) {
   
   var buffer = '';
   data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnRight", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnRight", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-right\"></i>\n</a>\n");
   return buffer;
   }
@@ -148,6 +149,7 @@ function program13(depth0,data) {
   data.buffer.push("\n\n");
   stack1 = helpers['if'].call(depth0, "view.showMoveColumnRightButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
   return buffer;
   
 });
@@ -296,8 +298,18 @@ EasyDatatable.Datatable = Ember.Object.extend({
   canInsertRows: true,
   contentUpdated: false,
 
+  /**
+    Checks if a value is valid for a cell.
+
+    For synchronous validation, it must return true if the value is valid, false
+    otherwise.
+
+    For asynchronous validation, it must return a Ember.RSVP.Promise which
+    resolves to the validated value, or rejects with the validation error
+    message.
+  */
   validateCell: function (cell, position, value) {
-    return true;
+    return Ember.RSVP.Promise.resolve(value);
   },
 
   columnCanMove: function (index) {
@@ -456,6 +468,7 @@ EasyDatatable.Datatable = Ember.Object.extend({
     this.notifyPropertyChange('contentUpdated');
   }
 });
+
 EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
@@ -475,10 +488,11 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       this.notifyPropertyChange('isSelected');
     },
 
-    save: function (postSaveAction) {
+    save: function (newValue, postSaveAction) {
       var self = this;
 
-      this.validateValue().then(function () {
+      this.validateValue(newValue).then(function (validatedNewValue) {
+        self.set('model.value', validatedNewValue);
         self.set('inError', false);
         self.set('errorMessage', '');
         self.send('hideEditor');
@@ -492,20 +506,30 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       });
     },
 
-    cancel: function (originalValue) {
-      this.set('model.value', originalValue);
+    cancel: function () {
       this.set('inError', false);
       this.send('hideEditor');
     },
 
-    saveOnLeave: function (originalValue) {
-      this.send('save');
+    saveOnLeave: function (newValue) {
+      var self = this;
 
+      this.validateValue(newValue).then(function (validatedNewValue) {
+        self.set('model.value', validatedNewValue);
+        self.set('inError', false);
+        self.set('errorMessage', '');
+        self.send('hideEditor');
+        self.get('datatableController.model').notifyPropertyChange('contentUpdated');
+      }, function (error) {
+        self.send('hideEditor');
+      });
+    },
+
+    leaveEdition: function() {
       if (this.get('inError')) {
-        this.set('model.value', originalValue);
         this.set('inError', false);
-        this.send('hideEditor');
       }
+      this.send('hideEditor');
     },
 
     insertRowAfter: function () {
@@ -541,25 +565,21 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
     }
   },
 
-  validateValue: function () {
+  validateValue: function (value) {
     var datatable = this.get('datatableController.model'),
       cell = this.get('model'),
       position = this.get('position'),
-      value = cell.get('value');
-    return this.makePromise(datatable.validateCell(cell, position, value));
-  },
-
-  makePromise: function (value) {
-    if (value instanceof Ember.RSVP.Promise) return value;
-    return {
-      then: function (success, failure) {
-        if (value) {
-          success();
-        } else {
-          failure();
-        }
-      }
-    };
+      isValid;
+    isValid = datatable.validateCell(cell, position, value);
+    // is it a promise? (async validation)
+    if (isValid instanceof Ember.RSVP.Promise) {
+      return isValid;
+    // no, so it is a boolean (sync validation)
+    } else if (isValid) {
+      return Ember.RSVP.Promise.resolve(value);
+    } else {
+      return Ember.RSVP.Promise.reject("Invalid value");
+    }
   },
 
   columnIndex: function () {
@@ -583,6 +603,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
   isHighlighted: Ember.computed.or('inHighlightedRow', 'inHighlightedColumn')
 });
+
 EasyDatatable.EasyDatatableRowController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
 
@@ -887,6 +908,7 @@ EasyDatatable.EasyDatatableController = Ember.ObjectController.extend({
     }
   }.observes('selectedCellPosition')
 });
+
 EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   templateName: 'easy_datatable_cell',
   classNameBindings: [
@@ -1055,17 +1077,34 @@ EasyDatatable.EasyDatatableCellActionsView = Ember.View.extend({
   }.property('showRowButtons', 'cell.isMovable', 'row', 'datatable.body.length')
 });
 EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
-  originalValue: null,
+  valueState: 'unmodified',  // valid values are 'unmodified', 'modified', 'saved'
+  valueBinding: Ember.Binding.oneWay('oneWayValue'),  // so updating input value
+                                                      // does not update the originating value
   cellController: Ember.computed.alias('parentView.controller'),
 
-  storeOriginalValue: function () {
-    this.set('originalValue', this.get('value'));
+  originalValue: function() {
+    if (this.get('oneWayValue') === undefined) {
+      return undefined;
+    } else {
+      return this.get('oneWayValue').toString();
+    }
+  }.property('oneWayValue'),
+
+  initValueState: function () {
+    this.set('valueState', 'unmodified');
   }.on('init'),
+
+  onValueChanged: function() {
+    if (this.get('originalValue') !== this.get('value')) {
+      this.set('valueState', 'modified');
+    }
+  }.observes('value'),
 
   keyDown: function (event) {
     event.stopPropagation();
     if (event.which === 27) {
-      this.get('cellController').send('cancel', this.get('originalValue'));
+      this.set('valueState', 'unmodified');
+      this.get('cellController').send('cancel');
     }
 
     if (event.which === 13 || event.which === 9) {
@@ -1075,12 +1114,28 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
       if (event.which === 9) {
         postSaveAction = event.shiftKey ? 'navigateLeft' : 'navigateRight';
       }
-      this.get('cellController').send('save', postSaveAction);
+
+      if (this.get('valueState') === 'unmodified') {
+        // warning: if edition is not leaved at this point, then it will trigger
+        // an extra valueDidChange and it will save the value on focusOut. I
+        // could not reproduce it in the test 'cell validation is not called at
+        // all if not modified' because this behavior is at the jquery events
+        // level and the test acts at the ember events level...
+        this.get('cellController').send('leaveEdition');
+        this.get('cellController').send(postSaveAction);
+      } else {
+        this.get('cellController').send('save', this.get('value'), postSaveAction);
+        this.set('valueState', 'saved');
+      }
     }
   },
 
   focusOut: function () {
-    this.get('cellController').send('saveOnLeave', this.get('originalValue'));
+    if (this.get('valueState') === 'modified') {
+      this.get('cellController').send('saveOnLeave', this.get('value'));
+    } else {
+      this.get('cellController').send('leaveEdition');
+    }
   },
 
   placeAndFocusOnShow: function () {
@@ -1104,6 +1159,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   }.on('didInsertElement'),
 
 });
+
 EasyDatatable.EasyDatatableRowView = Ember.View.extend({
   tagName: 'tr'
 });

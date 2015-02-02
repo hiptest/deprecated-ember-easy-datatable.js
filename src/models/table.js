@@ -6,8 +6,18 @@ EasyDatatable.Datatable = Ember.Object.extend({
   canInsertRows: true,
   contentUpdated: false,
 
+  /**
+    Checks if a value is valid for a cell.
+
+    For synchronous validation, it must return true if the value is valid, false
+    otherwise.
+
+    For asynchronous validation, it must return a Ember.RSVP.Promise which
+    resolves to the validated value, or rejects with the validation error
+    message.
+  */
   validateCell: function (cell, position, value) {
-    return true;
+    return Ember.RSVP.Promise.resolve(value);
   },
 
   columnCanMove: function (index) {

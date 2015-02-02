@@ -85,6 +85,10 @@ DatatableIntegrationHelpers = Ember.Object.create({
       }
     },
 
+    clearValueInDatatable: function () {
+      fillIn($(document.activeElement), "");
+    },
+
     pressEnterInDatatable: function () {
       pressKey(13);
     },

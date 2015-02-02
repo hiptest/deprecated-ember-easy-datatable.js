@@ -78,6 +78,162 @@
     ]);
   });
 
+  test('Cell edition, enter invalid text, focus out, should revert to original value', function () {
+    expect(4);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('This is not an numeric value');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    clickOnDatatableCell(1, 2);
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After clicking another cell, the cell value is back to the original one');
+  });
+
+  test('Cell edition, enter invalid text, press escape, should revert to original value', function () {
+    expect(4);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('This is not an numeric value');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEscInDatatable();
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After pressing escape, the cell value is back to the original one');
+  });
+
+  test('Cell edition, enter invalid text, press enter again, should still be in error', function () {
+    expect(5);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('This is not an numeric value');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After pressing enter again, the editor is still there');
+    assertCurrentCellHasError();
+  });
+
+  test('Cell edition, enter invalid text, re-enter invalid text, press escape, should revert to original value', function () {
+    expect(6);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('This is not an numeric value');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    typeInDatatable('nor this one');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering some more text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    pressEscInDatatable();
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After pressing escape, the cell value is back to the original one');
+  });
+
+  test('Cell edition, enter invalid text, enter valid text, should validate new value', function () {
+    expect(4);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('bad');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    clearValueInDatatable();
+    typeInDatatable('1234');
+    pressEnterInDatatable();
+    assertDatatableContent([
+      ['Row 0', '0', '1234', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After deleting previous text and entering valid value, the datable is updated');
+  });
+
+  test('Cell edition, enter invalid text, type valid text, click another cell, should validate new value', function () {
+    expect(4);
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('bad');
+    pressEnterInDatatable();
+    assertEditorShown(
+      'After entering text in cell, the editor is still there as validation failed');
+    assertCurrentCellHasError();
+    clearValueInDatatable();
+    typeInDatatable('1234');
+    clickOnDatatableCell(1, 2);
+    assertDatatableContent([
+      ['Row 0', '0', '1234', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'After deleting previous text and typing valid value and clicking another cell, the datable is updated');
+  });
+
   test('Row header', function () {
     expect(7);
 
