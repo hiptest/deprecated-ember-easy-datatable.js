@@ -2,6 +2,10 @@
   module('%@ integration - deleting data'.fmt(EasyDatatable.toString()), {
     setup: function () {
       EasyDatatable.declareDatatable(App);
+      Ember.TEMPLATES.easy_datatable = Ember.Handlebars.compile([
+        '<a class="remove-first-row" {{action \'removeRow\' 0}}>Add first row</a>',
+        '{{render "easy_datatable_table" model showActions=true}}',
+      ].join("\n"));
       table = EasyDatatable.makeDatatable({
         headers: ['', 'Name', 'Value 1', 'Value 2', 'Value 3'],
         body: [
@@ -67,6 +71,62 @@
     pressCtrlDelKeyInDatatable();
     assertSelectedDatatableCell(0, 0,
       'If the body is empty after deletion, selection moves to the header');
+  });
+
+  test('Validate to true a cell asynchronously and remove the row before validation ends', function () {
+    expect(2);
+
+    table.validateCell = function countValidateCell(cell, position, value) {
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        Ember.run.later(function () {
+          resolve(value);
+        }, 0);
+      });
+    };
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('12345');
+    click('a.remove-first-row'); // will focusOut, trigger the validation, but cell deleted
+    assertDatatableContent([
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'The row has been deleted and the validation has not produced any "calling set on destroyed object" error');
+  });
+
+  test('Validate to false a cell asynchronously and remove the row before validation ends', function () {
+    expect(2);
+
+    table.validateCell = function countValidateCell(cell, position, value) {
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        Ember.run.later(function () {
+          reject("this value is invalid");
+        }, 0);
+      });
+    };
+
+    visit('/');
+    assertDatatableContent([
+      ['Row 0', '0', '10', '20'],
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ]);
+    clickOnDatatableCell(1, 3);
+    typeInDatatable('12345');
+    click('a.remove-first-row'); // will focusOut, trigger the validation, but cell deleted
+    assertDatatableContent([
+      ['Row 1', '1', '11', '21'],
+      ['Row 2', '2', '12', '22'],
+      ['Row 3', '3', '13', '23']
+    ], 'The row has been deleted and the validation has not produced any "calling set on destroyed object" error');
   });
 
   test('Row can me marked as non-removable', function () {

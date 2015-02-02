@@ -492,6 +492,9 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       var self = this;
 
       this.validateValue(newValue).then(function (validatedNewValue) {
+        if (self.get('isDestroyed')) {
+          return;
+        }
         self.set('model.value', validatedNewValue);
         self.set('inError', false);
         self.set('errorMessage', '');
@@ -501,6 +504,9 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           self.get('datatableController').send(postSaveAction);
         }
       }, function (error) {
+        if (self.get('isDestroyed')) {
+          return;
+        }
         self.set('inError', true);
         self.set('errorMessage', error);
       });
@@ -515,12 +521,18 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       var self = this;
 
       this.validateValue(newValue).then(function (validatedNewValue) {
+        if (self.get('isDestroyed')) {
+          return;
+        }
         self.set('model.value', validatedNewValue);
         self.set('inError', false);
         self.set('errorMessage', '');
         self.send('hideEditor');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
       }, function (error) {
+        if (self.get('isDestroyed')) {
+          return;
+        }
         self.send('hideEditor');
       });
     },
