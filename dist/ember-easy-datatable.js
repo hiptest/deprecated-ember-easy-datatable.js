@@ -1083,8 +1083,8 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
   cellController: Ember.computed.alias('parentView.controller'),
 
   originalValue: function() {
-    if (this.get('oneWayValue') === undefined) {
-      return undefined;
+    if (Ember.isNone(this.get('oneWayValue'))) {
+      return this.get('oneWayValue');
     } else {
       return this.get('oneWayValue').toString();
     }
