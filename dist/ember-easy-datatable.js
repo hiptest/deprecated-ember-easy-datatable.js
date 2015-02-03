@@ -473,7 +473,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   datatableController: Ember.computed.alias('parentController.datatableController'),
   rowIndex: Ember.computed.alias('parentController.rowIndex'),
   editorShown: false,
-  inError: false,
+  inError: Ember.computed.notEmpty('errorMessage'),
   errorMessage: '',
 
   actions: {
@@ -485,7 +485,6 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
 
     stopEdition: function () {
       this.set('errorMessage', '');
-      this.set('inError', false);
       this.set('editorShown', false);
       this.notifyPropertyChange('isSelected');
     },
@@ -507,7 +506,6 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
         if (self.get('isDestroyed')) {
           return;
         }
-        self.set('inError', true);
         self.set('errorMessage', error);
       });
     },
