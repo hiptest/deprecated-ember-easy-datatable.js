@@ -477,13 +477,15 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   errorMessage: '',
 
   actions: {
-    showEditor: function () {
+    startEdition: function () {
       if (this.get('isEditable')) {
         this.set('editorShown', true);
       }
     },
 
-    hideEditor: function () {
+    stopEdition: function () {
+      this.set('errorMessage', '');
+      this.set('inError', false);
       this.set('editorShown', false);
       this.notifyPropertyChange('isSelected');
     },
@@ -496,9 +498,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           return;
         }
         self.set('model.value', validatedNewValue);
-        self.set('inError', false);
-        self.set('errorMessage', '');
-        self.send('hideEditor');
+        self.send('stopEdition');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
         if (!Ember.isNone(postSaveAction)) {
           self.get('datatableController').send(postSaveAction);
@@ -512,11 +512,6 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       });
     },
 
-    cancel: function () {
-      this.set('inError', false);
-      this.send('hideEditor');
-    },
-
     saveOnLeave: function (newValue) {
       var self = this;
 
@@ -525,23 +520,14 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           return;
         }
         self.set('model.value', validatedNewValue);
-        self.set('inError', false);
-        self.set('errorMessage', '');
-        self.send('hideEditor');
+        self.send('stopEdition');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
       }, function (error) {
         if (self.get('isDestroyed')) {
           return;
         }
-        self.send('hideEditor');
+        self.send('stopEdition');
       });
-    },
-
-    leaveEdition: function() {
-      if (this.get('inError')) {
-        this.set('inError', false);
-      }
-      this.send('hideEditor');
     },
 
     insertRowAfter: function () {
@@ -953,7 +939,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
         this.manipulate(event);
       }
     } else if (!this.navigate(event)) {
-      this.get('controller').send('showEditor');
+      this.get('controller').send('startEdition');
     }
   },
 
@@ -1002,13 +988,13 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   },
 
   click: function () {
-    this.get('controller').send('showEditor');
+    this.get('controller').send('startEdition');
   },
 
-  showEditorWhenAsked: function () {
+  startEditionWhenAsked: function () {
     Ember.run.schedule('afterRender', this, function () {
       if (this.get('controller.isSelected') && !this.get('controller.editorShown') && this.get('controller.datatableController.showEditorForSelectedCell')) {
-        this.get('controller').send('showEditor');
+        this.get('controller').send('startEdition');
         this.set('controller.datatableController.showEditorForSelectedCell', false);
       }
     });
@@ -1116,7 +1102,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
     event.stopPropagation();
     if (event.which === 27) {
       this.set('valueState', 'unmodified');
-      this.get('cellController').send('cancel');
+      this.get('cellController').send('stopEdition');
     }
 
     if (event.which === 13 || event.which === 9) {
@@ -1133,7 +1119,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
         // could not reproduce it in the test 'cell validation is not called at
         // all if not modified' because this behavior is at the jquery events
         // level and the test acts at the ember events level...
-        this.get('cellController').send('leaveEdition');
+        this.get('cellController').send('stopEdition');
         this.get('cellController').send(postSaveAction);
       } else {
         this.get('cellController').send('save', this.get('value'), postSaveAction);
@@ -1146,7 +1132,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
     if (this.get('valueState') === 'modified') {
       this.get('cellController').send('saveOnLeave', this.get('value'));
     } else {
-      this.get('cellController').send('leaveEdition');
+      this.get('cellController').send('stopEdition');
     }
   },
 

@@ -6,13 +6,15 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
   errorMessage: '',
 
   actions: {
-    showEditor: function () {
+    startEdition: function () {
       if (this.get('isEditable')) {
         this.set('editorShown', true);
       }
     },
 
-    hideEditor: function () {
+    stopEdition: function () {
+      this.set('errorMessage', '');
+      this.set('inError', false);
       this.set('editorShown', false);
       this.notifyPropertyChange('isSelected');
     },
@@ -25,9 +27,7 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           return;
         }
         self.set('model.value', validatedNewValue);
-        self.set('inError', false);
-        self.set('errorMessage', '');
-        self.send('hideEditor');
+        self.send('stopEdition');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
         if (!Ember.isNone(postSaveAction)) {
           self.get('datatableController').send(postSaveAction);
@@ -41,11 +41,6 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
       });
     },
 
-    cancel: function () {
-      this.set('inError', false);
-      this.send('hideEditor');
-    },
-
     saveOnLeave: function (newValue) {
       var self = this;
 
@@ -54,23 +49,14 @@ EasyDatatable.EasyDatatableCellController = Ember.ObjectController.extend({
           return;
         }
         self.set('model.value', validatedNewValue);
-        self.set('inError', false);
-        self.set('errorMessage', '');
-        self.send('hideEditor');
+        self.send('stopEdition');
         self.get('datatableController.model').notifyPropertyChange('contentUpdated');
       }, function (error) {
         if (self.get('isDestroyed')) {
           return;
         }
-        self.send('hideEditor');
+        self.send('stopEdition');
       });
-    },
-
-    leaveEdition: function() {
-      if (this.get('inError')) {
-        this.set('inError', false);
-      }
-      this.send('hideEditor');
     },
 
     insertRowAfter: function () {

@@ -26,7 +26,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
     event.stopPropagation();
     if (event.which === 27) {
       this.set('valueState', 'unmodified');
-      this.get('cellController').send('cancel');
+      this.get('cellController').send('stopEdition');
     }
 
     if (event.which === 13 || event.which === 9) {
@@ -43,7 +43,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
         // could not reproduce it in the test 'cell validation is not called at
         // all if not modified' because this behavior is at the jquery events
         // level and the test acts at the ember events level...
-        this.get('cellController').send('leaveEdition');
+        this.get('cellController').send('stopEdition');
         this.get('cellController').send(postSaveAction);
       } else {
         this.get('cellController').send('save', this.get('value'), postSaveAction);
@@ -56,7 +56,7 @@ EasyDatatable.EasyDatatableEditorView = Ember.TextField.extend({
     if (this.get('valueState') === 'modified') {
       this.get('cellController').send('saveOnLeave', this.get('value'));
     } else {
-      this.get('cellController').send('leaveEdition');
+      this.get('cellController').send('stopEdition');
     }
   },
 

@@ -30,7 +30,7 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
         this.manipulate(event);
       }
     } else if (!this.navigate(event)) {
-      this.get('controller').send('showEditor');
+      this.get('controller').send('startEdition');
     }
   },
 
@@ -79,13 +79,13 @@ EasyDatatable.EasyDatatableCellView = Ember.View.extend({
   },
 
   click: function () {
-    this.get('controller').send('showEditor');
+    this.get('controller').send('startEdition');
   },
 
-  showEditorWhenAsked: function () {
+  startEditionWhenAsked: function () {
     Ember.run.schedule('afterRender', this, function () {
       if (this.get('controller.isSelected') && !this.get('controller.editorShown') && this.get('controller.datatableController.showEditorForSelectedCell')) {
-        this.get('controller').send('showEditor');
+        this.get('controller').send('startEdition');
         this.set('controller.datatableController.showEditorForSelectedCell', false);
       }
     });
