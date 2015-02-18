@@ -1,199 +1,137 @@
-Ember.TEMPLATES["easy_datatable"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+Ember.TEMPLATES["easy_datatable"] = Ember.Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  data.buffer.push(escapeExpression(((helpers.render || (depth0 && depth0.render) || helperMissing).call(depth0, "easy_datatable_table", "model", {"name":"render","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING","ID"],"contexts":[depth0,depth0],"data":data}))));
+  },"useData":true});
 
-
-  data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_table", "model", options) : helperMissing.call(depth0, "render", "easy_datatable_table", "model", options))));
-  
-});
-
-Ember.TEMPLATES["easy_datatable_cell"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
+Ember.TEMPLATES["easy_datatable_cell"] = Ember.Handlebars.template({"1":function(depth0,helpers,partials,data) {
   var stack1;
-  stack1 = helpers._triageMustache.call(depth0, "view.displayableIndex", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers._triageMustache.call(depth0, "view.displayableIndex", {"name":"_triageMustache","hash":{},"hashTypes":{},"hashContexts":{},"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   else { data.buffer.push(''); }
-  }
-
-function program3(depth0,data) {
-  
-  
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_editor", {hash:{
+  },"3":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression;
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_editor", {"name":"view","hash":{
     'oneWayValueBinding': ("value")
-  },hashTypes:{'oneWayValueBinding': "STRING"},hashContexts:{'oneWayValueBinding': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = '', stack1;
+  },"hashTypes":{'oneWayValueBinding': "STRING"},"hashContexts":{'oneWayValueBinding': depth0},"types":["STRING"],"contexts":[depth0],"data":data})));
+  },"5":function(depth0,helpers,partials,data) {
+  var stack1, buffer = '';
   data.buffer.push("<div class=\"error\">");
-  stack1 = helpers._triageMustache.call(depth0, "errorMessage", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers._triageMustache.call(depth0, "errorMessage", {"name":"_triageMustache","hash":{},"hashTypes":{},"hashContexts":{},"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("</div>");
   return buffer;
-  }
-
-function program7(depth0,data) {
-  
-  
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_cell_actions", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
-  }
-
-  stack1 = helpers['if'].call(depth0, "isIndex", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+},"7":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression;
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "easy_datatable_cell_actions", {"name":"view","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = '';
+  stack1 = helpers['if'].call(depth0, "isIndex", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(1, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n");
-  stack1 = helpers._triageMustache.call(depth0, "value", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers._triageMustache.call(depth0, "value", {"name":"_triageMustache","hash":{},"hashTypes":{},"hashContexts":{},"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n");
-  stack1 = helpers['if'].call(depth0, "editorShown", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers['if'].call(depth0, "editorShown", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(3, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n");
-  stack1 = helpers['if'].call(depth0, "inError", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers['if'].call(depth0, "inError", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(5, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n");
-  stack1 = helpers['if'].call(depth0, "showActions", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers['if'].call(depth0, "showActions", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(7, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n");
   return buffer;
-  
-});
+},"useData":true});
 
-Ember.TEMPLATES["easy_datatable_cell_actions"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnLeft", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+Ember.TEMPLATES["easy_datatable_cell_actions"] = Ember.Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnLeft", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-left\"></i>\n</a>\n");
   return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  
-  data.buffer.push("\n<i class=\"glyphicon glyphicon-pencil\"></i>\n");
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeColumn", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+},"3":function(depth0,helpers,partials,data) {
+  data.buffer.push("<i class=\"glyphicon glyphicon-pencil\"></i>\n");
+  },"5":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeColumn", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-remove\"></i>\n</a>\n");
   return buffer;
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeRow", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+},"7":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "removeRow", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-remove\"></i>\n</a>\n");
   return buffer;
-  }
-
-function program9(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowUp", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+},"9":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowUp", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-up\"></i>\n</a>\n");
   return buffer;
-  }
-
-function program11(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowDown", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+},"11":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveRowDown", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-down\"></i>\n</a>\n");
   return buffer;
-  }
-
-function program13(depth0,data) {
-  
-  var buffer = '';
-  data.buffer.push("\n<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnRight", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["STRING"],data:data})));
+},"13":function(depth0,helpers,partials,data) {
+  var escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("<a ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "moveColumnRight", {"name":"action","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING"],"contexts":[depth0],"data":data})));
   data.buffer.push(">\n  <i class=\"glyphicon glyphicon-arrow-right\"></i>\n</a>\n");
   return buffer;
-  }
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, buffer = '';
+  stack1 = helpers['if'].call(depth0, "view.showMoveColumnLeftButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(1, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showEditButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(3, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showRemoveColumnButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(5, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showRemoveRowButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(7, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showMoveRowUpButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(9, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showMoveRowDownButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(11, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  stack1 = helpers['if'].call(depth0, "view.showMoveColumnRightButton", {"name":"if","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(13, data),"inverse":this.noop,"types":["ID"],"contexts":[depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
+  return buffer;
+},"useData":true});
 
-  stack1 = helpers['if'].call(depth0, "view.showMoveColumnLeftButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showEditButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showRemoveColumnButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showRemoveRowButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showMoveRowUpButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showMoveRowDownButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n");
-  stack1 = helpers['if'].call(depth0, "view.showMoveColumnRightButton", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+Ember.TEMPLATES["easy_datatable_row"] = Ember.Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = '';
+  data.buffer.push("  ");
+  data.buffer.push(escapeExpression(((helpers.render || (depth0 && depth0.render) || helperMissing).call(depth0, "easy_datatable_cell", "cell", {"name":"render","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING","ID"],"contexts":[depth0,depth0],"data":data}))));
   data.buffer.push("\n");
   return buffer;
-  
-});
-
-Ember.TEMPLATES["easy_datatable_row"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = '', helper, options;
-  data.buffer.push("\n  ");
-  data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_cell", "cell", options) : helperMissing.call(depth0, "render", "easy_datatable_cell", "cell", options))));
-  data.buffer.push("\n");
-  return buffer;
-  }
-
-  stack1 = helpers.each.call(depth0, "cell", "in", "cells", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1;
+  stack1 = helpers.each.call(depth0, "cell", "in", "cells", {"name":"each","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(1, data),"inverse":this.noop,"types":["ID","ID","ID"],"contexts":[depth0,depth0,depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   else { data.buffer.push(''); }
-  
-});
+  },"useData":true});
 
-Ember.TEMPLATES["easy_datatable_table"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var helper, options;
-  data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_row", "row", options) : helperMissing.call(depth0, "render", "easy_datatable_row", "row", options))));
-  }
-
+Ember.TEMPLATES["easy_datatable_table"] = Ember.Handlebars.template({"1":function(depth0,helpers,partials,data) {
+  var helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  data.buffer.push(escapeExpression(((helpers.render || (depth0 && depth0.render) || helperMissing).call(depth0, "easy_datatable_row", "row", {"name":"render","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING","ID"],"contexts":[depth0,depth0],"data":data}))));
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = '';
   data.buffer.push("<thead>\n  ");
-  data.buffer.push(escapeExpression((helper = helpers.render || (depth0 && depth0.render),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "easy_datatable_row", "headers", options) : helperMissing.call(depth0, "render", "easy_datatable_row", "headers", options))));
+  data.buffer.push(escapeExpression(((helpers.render || (depth0 && depth0.render) || helperMissing).call(depth0, "easy_datatable_row", "headers", {"name":"render","hash":{},"hashTypes":{},"hashContexts":{},"types":["STRING","ID"],"contexts":[depth0,depth0],"data":data}))));
   data.buffer.push("\n</thead>\n<tbody>\n  ");
-  stack1 = helpers.each.call(depth0, "row", "in", "body", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack1 = helpers.each.call(depth0, "row", "in", "body", {"name":"each","hash":{},"hashTypes":{},"hashContexts":{},"fn":this.program(1, data),"inverse":this.noop,"types":["ID","ID","ID"],"contexts":[depth0,depth0,depth0],"data":data});
+  if (stack1 != null) { data.buffer.push(stack1); }
   data.buffer.push("\n</tbody>\n");
   return buffer;
-  
-});
+},"useData":true});
 EasyDatatable = Ember.Namespace.create({
   declareDatatable: function (namespace) {
     var copiedObjects = Ember.keys(EasyDatatable).filter(function (key) {
@@ -313,7 +251,13 @@ EasyDatatable.Datatable = Ember.Object.extend({
   },
 
   columnCanMove: function (index) {
-    return this.get('headers.cells')[index].get('isMovable');
+    var column = this.get('headers.cells')[index];
+
+    if (Ember.isNone(column)) {
+      return false;
+    } else {
+      return column.get('isMovable');
+    }
   },
 
   columnCanMoveLeft: function (index) {
