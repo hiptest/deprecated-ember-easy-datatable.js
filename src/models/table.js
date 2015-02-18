@@ -21,7 +21,13 @@ EasyDatatable.Datatable = Ember.Object.extend({
   },
 
   columnCanMove: function (index) {
-    return this.get('headers.cells')[index].get('isMovable');
+    var column = this.get('headers.cells')[index];
+
+    if (Ember.isNone(column)) {
+      return false;
+    } else {
+      return column.get('isMovable');
+    }
   },
 
   columnCanMoveLeft: function (index) {
