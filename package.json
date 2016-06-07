@@ -1,5 +1,6 @@
 {
   "name": "ember-easy-datatable.js",
+  "version": "0.0.1",
   "devDependencies": {
     "codeclimate-test-reporter": "0.0.3",
     "ember-template-compiler": "^1.6.1",
